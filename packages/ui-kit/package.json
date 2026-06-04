@@ -1,0 +1,9 @@
+{
+  "name": "@racegps/ui-kit",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "tokens.css",
+  "scripts": {
+    "build": "node -e \"console.log('ui-kit css only')\""
+  }
+}

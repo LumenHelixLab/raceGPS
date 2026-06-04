@@ -1,0 +1,23 @@
+name: Route template
+description: Propose a route/challenge template
+title: "[Route]: "
+labels: ["route", "gameplay"]
+body:
+  - type: input
+    id: city
+    attributes:
+      label: City / area
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - Cruise
+        - Race
+        - Challenge
+        - Hot Pursuit
+        - Explore
+  - type: textarea
+    id: details
+    attributes:
+      label: Details

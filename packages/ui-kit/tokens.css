@@ -1,0 +1,12 @@
+:root {
+  --racegps-bg: #06070b;
+  --racegps-panel: rgba(15, 18, 28, 0.82);
+  --racegps-text: #f7f9ff;
+  --racegps-muted: #a7b0c7;
+  --racegps-neon: #35ffb6;
+  --racegps-hot: #ff375f;
+  --racegps-blue: #42a5ff;
+  --racegps-gold: #ffcc66;
+  --racegps-radius: 18px;
+  --racegps-shadow: 0 24px 70px rgba(0,0,0,.45);
+}

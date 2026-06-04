@@ -1,0 +1,11 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    environment:
+      RACEGPS_PORT: 8787
+      RACEGPS_WEB_ORIGIN: http://localhost:5173
+      RACEGPS_SESSION_SECRET: local-dev-secret
+    ports:
+      - "8787:8787"

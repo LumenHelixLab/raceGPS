@@ -1,0 +1,30 @@
+{
+  "name": "racegps-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "raceGPS: Real World Driving \u2014 lightweight multiplayer real-world racing network.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @racegps/backend & npm run dev --workspace @racegps/web-client",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "keywords": [
+    "racing",
+    "websocket",
+    "multiplayer",
+    "maps",
+    "geospatial",
+    "game",
+    "racegps"
+  ],
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

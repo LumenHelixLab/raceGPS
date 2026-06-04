@@ -1,0 +1,5 @@
+- What if every city became a multiplayer racing room?
+- I flashed another driver and the map generated a race.
+- Cookies handle identity. WebSockets handle the world.
+- One Earth. Many cities. One racing career.
+- Real World Driving is coming.

@@ -1,0 +1,12 @@
+<svg width="920" height="220" viewBox="0 0 920 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="920" height="220" rx="32" fill="#06070B"/>
+<g transform="translate(42 34) scale(.58)">
+<rect width="256" height="256" rx="56" fill="#0B0F18"/>
+<path d="M62 169C84 119 110 84 152 71C171 65 192 65 212 72" stroke="#35FFB6" stroke-width="16" stroke-linecap="round"/>
+<path d="M42 118C76 95 111 91 145 107C171 119 190 141 213 182" stroke="#42A5FF" stroke-width="16" stroke-linecap="round"/>
+<circle cx="128" cy="128" r="22" fill="#FF375F"/>
+</g>
+<text x="220" y="105" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="900" fill="#F7F9FF">race<tspan fill="#35FFB6">GPS</tspan></text>
+<text x="224" y="152" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="3" fill="#A7B0C7">REAL WORLD DRIVING</text>
+<path d="M222 176H825" stroke="#35FFB6" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg width="1280" height="420" viewBox="0 0 1280 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1280" height="420" fill="#06070B"/>
+<circle cx="1090" cy="70" r="210" fill="#42A5FF" opacity=".16"/>
+<circle cx="150" cy="350" r="260" fill="#35FFB6" opacity=".13"/>
+<path d="M0 310C207 236 370 360 552 286C724 216 806 96 1280 160" stroke="#35FFB6" stroke-width="10" opacity=".7"/>
+<path d="M0 250C242 150 420 226 613 215C818 203 926 97 1280 82" stroke="#42A5FF" stroke-width="6" opacity=".6"/>
+<text x="78" y="160" font-family="Inter, Arial, sans-serif" font-size="88" font-weight="900" fill="#F7F9FF">race<tspan fill="#35FFB6">GPS</tspan></text>
+<text x="84" y="220" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="4" fill="#A7B0C7">REAL WORLD DRIVING</text>
+<text x="84" y="280" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#F7F9FF">One Earth. Many cities. Many rooms. One global career.</text>
+<rect x="860" y="260" width="330" height="64" rx="32" fill="#35FFB6"/>
+<text x="907" y="302" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="900" fill="#06110D">TYPE. SPAWN. DRIVE.</text>
+</svg>

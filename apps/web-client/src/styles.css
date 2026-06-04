@@ -1,0 +1,79 @@
+@import '../../../packages/ui-kit/tokens.css';
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--racegps-text);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(53,255,182,.18), transparent 28%),
+    radial-gradient(circle at 80% 20%, rgba(66,165,255,.18), transparent 30%),
+    linear-gradient(135deg, #05060a, #0b0d15 55%, #06070b);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+}
+button, input, select { font: inherit; }
+.shell { display: grid; grid-template-columns: 390px 1fr; min-height: 100vh; }
+.panel {
+  padding: 24px;
+  background: var(--racegps-panel);
+  border-right: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--racegps-shadow);
+  overflow: auto;
+}
+.brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.brand-mark { width: 48px; height: 48px; filter: drop-shadow(0 0 20px rgba(53,255,182,.32)); }
+.brand h1 { margin: 0; font-size: 30px; letter-spacing: -.04em; }
+.brand span { color: var(--racegps-neon); }
+.tagline { margin: 4px 0 0; color: var(--racegps-muted); }
+.card {
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.045);
+  border-radius: var(--racegps-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+label { display: block; color: var(--racegps-muted); margin: 10px 0 6px; font-size: 13px; }
+input, select {
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.14);
+  color: var(--racegps-text); background: rgba(0,0,0,.28); outline: none;
+}
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+button {
+  border: 0; border-radius: 12px; padding: 12px 14px; cursor: pointer; color: #07100d;
+  background: linear-gradient(135deg, var(--racegps-neon), #9dffdf); font-weight: 800;
+}
+button.secondary { background: rgba(255,255,255,.10); color: var(--racegps-text); border: 1px solid rgba(255,255,255,.12); }
+.mode-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+.mode-grid button { font-size: 13px; padding: 10px; }
+.map-wrap { position: relative; min-height: 100vh; overflow: hidden; }
+#map { position: absolute; inset: 0; }
+.mock-map-grid {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px),
+    radial-gradient(circle at center, rgba(53,255,182,.12), transparent 38%),
+    #070a10;
+  background-size: 52px 52px, 52px 52px, auto, auto;
+}
+.mock-map-title { position: absolute; right: 20px; top: 18px; color: rgba(255,255,255,.55); font-size: 13px; }
+.player-marker {
+  position: absolute; transform: translate(-50%,-50%); width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--racegps-neon); color: #05100c; font-weight: 900; border: 3px solid rgba(255,255,255,.8); box-shadow: 0 0 28px rgba(53,255,182,.55);
+}
+.hud {
+  position: absolute; left: 24px; right: 24px; bottom: 24px; display: grid; grid-template-columns: 1fr 360px; gap: 16px; pointer-events: none;
+}
+.hud-card { pointer-events: auto; background: rgba(6,7,11,.78); border: 1px solid rgba(255,255,255,.10); border-radius: 18px; padding: 14px; backdrop-filter: blur(20px); }
+.chat-log { height: 190px; overflow: auto; font-size: 13px; color: var(--racegps-muted); margin-bottom: 10px; }
+.chat-line strong { color: var(--racegps-text); }
+.chat-form { display: flex; gap: 8px; }
+.chat-form input { flex: 1; }
+.chat-form button { width: 90px; }
+.signal-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.signal-row button { padding: 9px 10px; font-size: 12px; }
+.status { color: var(--racegps-muted); font-size: 13px; line-height: 1.5; }
+.hot { color: var(--racegps-hot); }
+.neon { color: var(--racegps-neon); }
+@media (max-width: 900px) { .shell { grid-template-columns: 1fr; } .panel { min-height: auto; } .map-wrap { min-height: 70vh; } .hud { grid-template-columns: 1fr; } }
