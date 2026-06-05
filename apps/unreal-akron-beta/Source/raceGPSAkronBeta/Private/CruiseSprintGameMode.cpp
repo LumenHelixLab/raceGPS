@@ -1,4 +1,5 @@
 #include "CruiseSprintGameMode.h"
+#include "raceGPSGameInstance.h"
 #include "ChaosVehiclePawn.h"
 #include "AkronXodrImporter.h"
 #include "CheckpointGate.h"
@@ -9,6 +10,11 @@
 #include "RaceReplayManager.h"
 #include "LeaderboardSystem.h"
 #include "LoadingScreenWidget.h"
+#include "PostRaceStatsWidget.h"
+#include "TutorialSystem.h"
+#include "TutorialWidget.h"
+#include "AchievementSystem.h"
+#include "ConsoleCommands.h"
 #include "MinimapWidget.h"
 #include "CompassWidget.h"
 #include "DeveloperConsole.h"
@@ -43,6 +49,29 @@ void ACruiseSprintGameMode::StartPlay()
     if (!LeaderboardSystem)
     {
         LeaderboardSystem = NewObject<ULeaderboardSystem>(this);
+    }
+
+    if (!TutorialSystem)
+    {
+        TutorialSystem = NewObject<UTutorialSystem>(this);
+        TutorialSystem->Steps = {
+            { TEXT("move"), TEXT("Getting Moving"), TEXT("Use W and S to accelerate and brake."), TEXT("Throttle"), 0.0f, true },
+            { TEXT("steer"), TEXT("Steering"), TEXT("Use A and D to steer left and right."), TEXT("Steer"), 0.0f, true },
+            { TEXT("handbrake"), TEXT("Drifting"), TEXT("Press Space to use the handbrake for tight corners."), TEXT("Handbrake"), 0.0f, true },
+            { TEXT("checkpoint"), TEXT("Checkpoints"), TEXT("Drive through the glowing gates to progress."), TEXT("Throttle"), 5.0f, false },
+            { TEXT("finish"), TEXT("Good Luck!"), TEXT("Complete the route as fast as you can."), TEXT("Throttle"), 3.0f, false }
+        };
+    }
+
+    if (!AchievementSystem)
+    {
+        AchievementSystem = NewObject<UAchievementSystem>(this);
+        AchievementSystem->InitializeAchievements();
+    }
+
+    if (!ConsoleCommands)
+    {
+        ConsoleCommands = NewObject<UConsoleCommands>(this);
     }
 
     LoadCityData();
@@ -264,6 +293,24 @@ void ACruiseSprintGameMode::StartRace()
     CurrentCheckpoint = 0;
     SpawnRouteSpline();
 
+    // Start tutorial on first race
+    if (TutorialSystem && !TutorialSystem->IsActive())
+    {
+        TutorialSystem->StartTutorial();
+
+        APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+        if (PC && TutorialWidgetClass)
+        {
+            UTutorialWidget* TutWidget = CreateWidget<UTutorialWidget>(PC, TutorialWidgetClass);
+            if (TutWidget)
+            {
+                FTutorialStep Step = TutorialSystem->GetCurrentStep();
+                TutWidget->ShowStep(Step.Title, Step.Description, Step.InputAction);
+                TutWidget->AddToViewport(60);
+            }
+        }
+    }
+
     // Load best replay ghost
     if (ReplayManager && LoadedRoutes.Num() > 0 && SelectedRouteIndex < LoadedRoutes.Num())
     {
@@ -421,12 +468,6 @@ void ACruiseSprintGameMode::OnCheckpointReached(int32 CheckpointIndex)
     }
 }
 
-void ACruiseSprintGameMode::OnCheckpointReached()
-{
-    // Overload for delegate binding — delegates don't support int32 params directly
-    // The actual index is handled by the lambda/caller binding
-}
-
 int32 ACruiseSprintGameMode::GetTotalCheckpoints() const
 {
     if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return 0;
@@ -443,4 +484,13 @@ void ACruiseSprintGameMode::OnRaceStateChanged(ECruiseSprintState NewState)
 {
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] Race state changed to: %s"),
         *UEnum::GetValueAsString(NewState));
+
+    // Advance tutorial on state changes
+    if (TutorialSystem && TutorialSystem->IsActive())
+    {
+        if (NewState == ECruiseSprintState::Racing)
+        {
+            // Tutorial auto-advances when race starts
+        }
+    }
 }

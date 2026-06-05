@@ -106,6 +106,12 @@ public:
     TSubclassOf<class ULoadingScreenWidget> LoadingScreenClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
+    TSubclassOf<class UPostRaceStatsWidget> PostRaceStatsClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
+    TSubclassOf<class UTutorialWidget> TutorialWidgetClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
     TSubclassOf<class ANeonHUD> NeonHUDClass;
 
     UPROPERTY(BlueprintReadOnly, Category = "raceGPS|GameMode")
@@ -140,6 +146,15 @@ public:
 
     UPROPERTY()
     TObjectPtr<class ULeaderboardSystem> LeaderboardSystem;
+
+    UPROPERTY()
+    TObjectPtr<class UTutorialSystem> TutorialSystem;
+
+    UPROPERTY()
+    TObjectPtr<class UAchievementSystem> AchievementSystem;
+
+    UPROPERTY()
+    TObjectPtr<class UConsoleCommands> ConsoleCommands;
 
     UPROPERTY()
     TObjectPtr<class AGhostVehicle> BestGhost;
