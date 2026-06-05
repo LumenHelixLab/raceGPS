@@ -102,6 +102,9 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
     TSubclassOf<class UDeveloperConsole> DeveloperConsoleClass;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
+    TSubclassOf<class ANeonHUD> NeonHUDClass;
+
     UPROPERTY(BlueprintReadOnly, Category = "raceGPS|GameMode")
     TArray<FAkronRouteSpline> LoadedRoutes;
 

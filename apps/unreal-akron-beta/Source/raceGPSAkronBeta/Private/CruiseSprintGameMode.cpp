@@ -12,6 +12,7 @@
 #include "GhostVehicle.h"
 #include "DayNightCycle.h"
 #include "TrafficSpawner.h"
+#include "NeonHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
