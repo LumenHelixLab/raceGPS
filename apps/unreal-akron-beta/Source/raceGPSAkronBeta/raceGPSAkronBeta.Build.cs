@@ -24,7 +24,8 @@ public class raceGPSAkronBeta : ModuleRules
             "XmlParser",
             "Projects",
             "RenderCore",
-            "RHI"
+            "RHI",
+            "ProceduralMeshComponent"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]
