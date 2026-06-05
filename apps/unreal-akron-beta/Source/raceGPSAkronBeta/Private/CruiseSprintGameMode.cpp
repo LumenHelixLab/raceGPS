@@ -63,6 +63,7 @@ void ACruiseSprintGameMode::StartPlay()
             { TEXT("steer"), TEXT("Steering"), TEXT("Use A and D to steer left and right."), TEXT("Steer"), 0.0f, true },
             { TEXT("handbrake"), TEXT("Drifting"), TEXT("Press Space to use the handbrake for tight corners."), TEXT("Handbrake"), 0.0f, true },
             { TEXT("checkpoint"), TEXT("Checkpoints"), TEXT("Drive through the glowing gates to progress."), TEXT("Throttle"), 5.0f, false },
+            { TEXT("create"), TEXT("Create Your World"), TEXT("Open the menu and create your own race route!"), TEXT("Throttle"), 5.0f, false },
             { TEXT("finish"), TEXT("Good Luck!"), TEXT("Complete the route as fast as you can."), TEXT("Throttle"), 3.0f, false }
         };
     }
