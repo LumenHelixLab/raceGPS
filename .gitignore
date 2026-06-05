@@ -3,3 +3,5 @@ dist/
 .env
 *.log
 .DS_Store
+akron_raw.json
+akron_roads.json

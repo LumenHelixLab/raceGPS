@@ -1,6 +1,38 @@
 export type RaceGPSMode = 'cruise' | 'race' | 'challenge' | 'hot_pursuit' | 'explore';
 export type PlayerRole = 'driver' | 'cop' | 'runner' | 'ghost';
 
+// ── CityPack (for client rendering) ─────────────────────────────
+
+export interface CityPackPoint { lat: number; lon: number }
+
+export interface CityPackRoad {
+  id: string;
+  name: string;
+  highway: string;
+  oneway: boolean;
+  width: number;
+  points: CityPackPoint[];
+}
+
+export interface CityPack {
+  name: string;
+  version: number;
+  center: CityPackPoint;
+  roads: CityPackRoad[];
+}
+
+// ── Physics Tick (server-authoritative) ─────────────────────────
+
+export interface PhysicsTick {
+  position: CityPackPoint;
+  heading: number;
+  speed: number;
+  onRoad: boolean;
+  isCrashed: boolean;
+  crashCause: string;
+  distanceFromRoad: number;
+}
+
 // ── Race Lobby ──────────────────────────────────────────────
 
 export type RaceState = 'lobby' | 'countdown' | 'racing' | 'finished';
@@ -71,9 +103,12 @@ export type ServerMessage =
   | { type: 'race_lobby_snapshot'; lobby: RaceLobby }
   | { type: 'race_lobby_updated'; lobby: RaceLobby }
   | { type: 'race_countdown'; secondsRemaining: number }
-  | { type: 'race_started'; lobbyId: string; raceStart: number }
+  | { type: 'race_started'; lobbyId: string; raceStart: number; citypack?: CityPack }
   | { type: 'race_player_finished'; lobbyId: string; result: RaceResult }
-  | { type: 'race_results'; lobbyId: string; results: RaceResult[]; winner: RaceResult };
+  | { type: 'race_results'; lobbyId: string; results: RaceResult[]; winner: RaceResult }
+  // Physics / Crash
+  | { type: 'race_physics_update'; lobbyId: string; playerId: string; tick: PhysicsTick }
+  | { type: 'race_crash_event'; lobbyId: string; playerId: string; displayName: string; cause: string };
 
 // ── Signals & Challenge Types ────────────────────────────────
 

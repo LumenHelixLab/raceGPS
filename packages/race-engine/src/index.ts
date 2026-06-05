@@ -14,7 +14,15 @@ export function haversineMeters(a: GeoPoint, b: GeoPoint): number {
   return 2 * r * Math.asin(Math.sqrt(h));
 }
 
-function toRad(deg: number): number { return deg * Math.PI / 180; }
+export function toRad(deg: number): number { return deg * Math.PI / 180; }
+export function toDeg(rad: number): number { return rad * 180 / Math.PI; }
+
+export function interpolatePoint(a: GeoPoint, b: GeoPoint, t: number): GeoPoint {
+  return {
+    lat: a.lat + (b.lat - a.lat) * t,
+    lon: a.lon + (b.lon - a.lon) * t,
+  };
+}
 
 export function isWithinRadius(player: GeoPoint, target: GeoPoint, radiusMeters: number): boolean {
   return haversineMeters(player, target) <= radiusMeters;
@@ -202,3 +210,22 @@ export function routeToCheckpoints(route: GeoPoint[], startIndex = 0): Checkpoin
     order: i,
   }));
 }
+
+// Re-export physics engine
+export {
+  createRoadNetwork, projectPointOnSegment, nearestRoadPoint, isOnRoad,
+  createVehiclePhysics, tickVehiclePhysics,
+  createObstacle, spawnRouteObstacles,
+  detectVehicleCollisions, detectObstacleCollisions,
+} from './physics.js';
+export type {
+  RoadSegment, RoadNetwork, VehiclePhysics, PhysicsInput, PhysicsTickResult,
+  CrashCause, Obstacle, ObstacleType, CollisionEvent,
+} from './physics.js';
+
+// Re-export CityPack loader
+export {
+  cityPackToRoadNetwork, cityPackToRichNetwork, richToSimple,
+  extractRoadGeometries, extractCircuit,
+} from './citypack.js';
+export type { CityPack as CityPackFull, CityPackRoad, RichRoadNetwork, RichRoadSegment } from './citypack.js';

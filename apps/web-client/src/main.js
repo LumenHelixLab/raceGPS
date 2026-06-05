@@ -9,6 +9,23 @@ let seq = 0;
 let lat = 41.4993;
 let lon = -81.6944;
 const map = new MockMapAdapter();
+// Race state
+let currentLobbyId = '';
+let raceActive = false;
+let raceStartMs = 0;
+let cpIndex = 0;
+const totalCPs = 5; // matches default
+// Driving state
+let speed = 0; // m/s
+let heading = 0; // degrees, 0 = north
+const MAX_SPEED = 22; // ~80 km/h
+const ACCEL = 6; // m/s²
+const BRAKE_DECEL = 12;
+const FRICTION = 2;
+const TURN_RATE = 90; // deg/s at full lock
+const keys = {};
+let driveInterval;
+let serverCrashed = false;
 document.querySelector('#app').innerHTML = `
   <main class="shell">
     <aside class="panel">
@@ -17,7 +34,7 @@ document.querySelector('#app').innerHTML = `
         <div><h1>race<span>GPS</span></h1><p class="tagline">Real World Driving</p></div>
       </div>
 
-      <section class="card">
+      <section class="card" id="connectCard">
         <p class="status"><strong>One Earth.</strong> Many cities. Many rooms. One player identity. One global career.</p>
         <label>Display name</label>
         <input id="displayName" value="Raziel13" />
@@ -34,6 +51,37 @@ document.querySelector('#app').innerHTML = `
         <div class="btn-row"><button id="connectBtn">Connect</button><button class="secondary" id="moveBtn">Move Marker</button></div>
       </section>
 
+      <!-- Race Lobby Panel (hidden until race lobby active) -->
+      <section class="card" id="lobbyCard" style="display:none">
+        <h3>🏁 Race Lobby</h3>
+        <div id="lobbyInfo"></div>
+        <div id="lobbyPlayers" class="lobby-players"></div>
+        <div class="btn-row" id="lobbyActions">
+          <button id="readyBtn">Ready Up</button>
+          <button class="secondary" id="startRaceBtn" disabled>Start Race</button>
+        </div>
+        <button class="secondary" id="leaveLobbyBtn" style="width:100%;margin-top:8px">Leave Lobby</button>
+      </section>
+
+      <!-- Race HUD (hidden until race active) -->
+      <section class="card" id="raceHud" style="display:none">
+        <h3>🏎️ Race</h3>
+        <div class="race-timer" id="raceTimer">00:00.0</div>
+        <div class="race-speed" id="raceSpeed">0 km/h</div>
+        <div class="cp-bar"><div class="cp-fill" id="cpBar" style="width:0%"></div></div>
+        <p class="status" id="cpText">Checkpoints: 0/5</p>
+        <p class="status" style="font-size:11px;color:#636e72">↑↓ throttle · ←→ steer · Space brake</p>
+        <button class="secondary" id="finishBtn" style="width:100%;margin-top:8px">Cross Finish Line</button>
+      </section>
+
+      <!-- Race Results (hidden until race over) -->
+      <section class="card" id="resultsCard" style="display:none">
+        <h3>🏆 Results</h3>
+        <div id="resultsList"></div>
+        <button id="backToRoomBtn" style="width:100%;margin-top:8px">Back to Room</button>
+      </section>
+
+      <!-- Signal Challenge -->
       <section class="card">
         <h3>Signal Challenge</h3>
         <div class="signal-row">
@@ -46,6 +94,13 @@ document.querySelector('#app').innerHTML = `
       </section>
 
       <section class="card">
+        <h3>Race Lobby</h3>
+        <label>Lobby Name</label>
+        <input id="lobbyName" value="Cleveland Sprint" />
+        <button id="createLobbyBtn" style="width:100%;margin-top:8px">Create Race Lobby</button>
+      </section>
+
+      <section class="card">
         <h3>Mode Spine</h3>
         <p class="status">Cruise → signal → lobby → race/chase/challenge → score → share.</p>
       </section>
@@ -53,6 +108,10 @@ document.querySelector('#app').innerHTML = `
 
     <section class="map-wrap">
       <div id="map"></div>
+      <!-- Countdown Overlay -->
+      <div class="countdown-overlay" id="countdownOverlay" style="display:none">
+        <div class="countdown-number" id="countdownNumber">5</div>
+      </div>
       <div class="hud">
         <div class="hud-card"><div class="status" id="status">Disconnected. Connect to enter the raceGPS world.</div></div>
         <div class="hud-card">
@@ -66,14 +125,25 @@ document.querySelector('#app').innerHTML = `
 const mapEl = document.querySelector('#map');
 map.mount(mapEl);
 map.setCenter({ lat, lon });
-// The public folder mirrors the brand asset into Vite path at runtime if served from repo root.
 const markImg = document.querySelector('.brand-mark');
 if (markImg)
     markImg.onerror = () => markImg.style.display = 'none';
+// ── Event Bindings ──────────────────────────────────────
 document.querySelector('#connectBtn').addEventListener('click', connect);
 document.querySelector('#moveBtn').addEventListener('click', () => sendPosition(true));
 document.querySelector('#chatForm').addEventListener('submit', (e) => { e.preventDefault(); sendChat(); });
 document.querySelectorAll('[data-signal]').forEach(btn => btn.addEventListener('click', () => sendSignal(btn.dataset.signal)));
+// Race lobby
+document.querySelector('#createLobbyBtn').addEventListener('click', createLobby);
+document.querySelector('#readyBtn').addEventListener('click', toggleReady);
+document.querySelector('#startRaceBtn').addEventListener('click', startRace);
+document.querySelector('#leaveLobbyBtn').addEventListener('click', leaveLobby);
+document.querySelector('#finishBtn').addEventListener('click', finishRace);
+document.querySelector('#backToRoomBtn').addEventListener('click', backToRoom);
+// ── Keyboard Controls ────────────────────────────────────
+addEventListener('keydown', e => { keys[e.key] = true; e.preventDefault(); });
+addEventListener('keyup', e => { keys[e.key] = false; e.preventDefault(); });
+// ── Connection ──────────────────────────────────────────
 async function connect() {
     displayName = (document.querySelector('#displayName').value || 'Driver').trim();
     roomId = (document.querySelector('#roomId').value || 'global-cruise').trim();
@@ -88,10 +158,58 @@ async function connect() {
         status(`Connected as <span class="neon">${displayName}</span> in ${roomId}.`);
         ws?.send(JSON.stringify({ type: 'join_room', roomId, displayName, mode }));
         sendPosition(false);
+        resetRaceUI();
     };
     ws.onmessage = ev => handleMessage(JSON.parse(ev.data));
     ws.onclose = () => status('Disconnected.');
 }
+function resetRaceUI() {
+    currentLobbyId = '';
+    raceActive = false;
+    cpIndex = 0;
+    stopDriving();
+    speed = 0;
+    document.querySelector('#lobbyCard').style.display = 'none';
+    document.querySelector('#raceHud').style.display = 'none';
+    document.querySelector('#resultsCard').style.display = 'none';
+    document.querySelector('#countdownOverlay').style.display = 'none';
+}
+// ── Race Lobby Actions ──────────────────────────────────
+function createLobby() {
+    if (!ws || ws.readyState !== WebSocket.OPEN)
+        return;
+    const name = (document.querySelector('#lobbyName').value || 'Sprint Race').trim();
+    ws.send(JSON.stringify({ type: 'race_create_lobby', roomId, title: name, checkpointIds: [], laps: 1, maxPlayers: 8 }));
+}
+function toggleReady() {
+    if (!ws || !currentLobbyId)
+        return;
+    ws.send(JSON.stringify({ type: 'race_toggle_ready', roomId, lobbyId: currentLobbyId }));
+    // Optimistic UI: toggle button text
+    const btn = document.querySelector('#readyBtn');
+    btn.textContent = btn.textContent === 'Ready Up' ? 'Not Ready' : 'Ready Up';
+}
+function startRace() {
+    if (!ws || !currentLobbyId)
+        return;
+    ws.send(JSON.stringify({ type: 'race_start_countdown', roomId, lobbyId: currentLobbyId }));
+}
+function leaveLobby() {
+    if (!ws || !currentLobbyId)
+        return;
+    ws.send(JSON.stringify({ type: 'race_leave_lobby', roomId, lobbyId: currentLobbyId }));
+    resetRaceUI();
+}
+function finishRace() {
+    if (!ws || !currentLobbyId || !raceActive)
+        return;
+    const elapsed = Date.now() - raceStartMs;
+    ws.send(JSON.stringify({ type: 'race_finished', roomId, lobbyId: currentLobbyId, elapsedMs: elapsed, ghost: [] }));
+}
+function backToRoom() {
+    resetRaceUI();
+}
+// ── Message Handler ─────────────────────────────────────
 function handleMessage(msg) {
     switch (msg.type) {
         case 'welcome':
@@ -121,12 +239,211 @@ function handleMessage(msg) {
         case 'system_message':
             chat(`[System] ${escapeHtml(msg.message)}`);
             break;
-        case 'game_event':
-            chat(`[Game] ${msg.playerId}: ${msg.event.kind}`);
+        case 'game_event': {
+            if (msg.event.kind === 'checkpoint_hit' && raceActive) {
+                cpIndex++;
+                updateCPBar();
+            }
+            break;
+        }
+        // ── Race Lobby Messages ─────────────────────────────
+        case 'race_lobby_snapshot':
+        case 'race_lobby_updated':
+            updateLobbyUI(msg.lobby);
+            break;
+        case 'race_countdown':
+            showCountdown(msg.secondsRemaining);
+            break;
+        case 'race_started':
+            raceActive = true;
+            raceStartMs = msg.raceStart;
+            cpIndex = 0;
+            // Render city road network if provided
+            if (msg.citypack) {
+                renderCityRoads(msg.citypack);
+            }
+            showRaceHUD();
+            break;
+        case 'race_player_finished':
+            chat(`[Race] ${msg.result.displayName} finished in ${(msg.result.elapsedMs / 1000).toFixed(1)}s`);
+            break;
+        case 'race_results':
+            showResults(msg.results, msg.winner);
+            break;
+        // ── Physics Messages ─────────────────────────────────
+        case 'race_physics_update':
+            map.upsertPlayerMarker(msg.playerId, msg.tick.position, msg.playerId === playerId ? displayName : msg.playerId);
+            // Track server crash state + speedometer for local player
+            if (msg.playerId === playerId) {
+                serverCrashed = msg.tick.isCrashed;
+                const kmh = Math.round(msg.tick.speed * 3.6);
+                const speedEl = document.querySelector('#raceSpeed');
+                if (speedEl)
+                    speedEl.textContent = `${kmh} km/h`;
+                if (msg.tick.isCrashed) {
+                    status(`<span class="hot">💥 CRASHED — ${msg.tick.crashCause}</span>`);
+                }
+            }
+            break;
+        case 'race_crash_event':
+            if (msg.cause !== 'recovered') {
+                chat(`<span class="hot">[Crash]</span> ${msg.displayName} crashed: ${msg.cause}`);
+            }
+            else {
+                chat(`[Race] ${msg.displayName} recovered from crash`);
+                if (msg.playerId === playerId)
+                    serverCrashed = false;
+            }
             break;
     }
 }
-function sendPosition(randomize) {
+// ── Lobby UI ────────────────────────────────────────────
+function updateLobbyUI(lobby) {
+    currentLobbyId = lobby.lobbyId;
+    document.querySelector('#lobbyCard').style.display = 'block';
+    const info = document.querySelector('#lobbyInfo');
+    info.innerHTML = `<p><strong>${escapeHtml(lobby.title)}</strong> — ${lobby.state === 'lobby' ? 'Waiting for players' : lobby.state === 'countdown' ? 'Starting...' : lobby.state === 'racing' ? 'Racing!' : 'Finished'}</p>`;
+    const playersEl = document.querySelector('#lobbyPlayers');
+    playersEl.innerHTML = lobby.players.map(p => `<div class="lobby-player ${p.ready ? 'ready' : ''}">
+      <span class="player-name">${escapeHtml(p.displayName)}</span>
+      <span class="player-ready">${p.ready ? '✅' : '⏳'}</span>
+    </div>`).join('');
+    // Enable start button if all ready (host check — first player)
+    const allReady = lobby.players.length > 0 && lobby.players.every(p => p.ready);
+    const startBtn = document.querySelector('#startRaceBtn');
+    startBtn.disabled = !allReady || lobby.state !== 'lobby';
+}
+// ── Countdown Overlay ───────────────────────────────────
+function showCountdown(seconds) {
+    const overlay = document.querySelector('#countdownOverlay');
+    const num = document.querySelector('#countdownNumber');
+    overlay.style.display = 'flex';
+    if (seconds === 0) {
+        num.textContent = 'GO!';
+        num.className = 'countdown-number go';
+        setTimeout(() => { overlay.style.display = 'none'; }, 800);
+    }
+    else {
+        num.textContent = String(seconds);
+        num.className = 'countdown-number';
+    }
+}
+// ── Race HUD ────────────────────────────────────────────
+function showRaceHUD() {
+    document.querySelector('#lobbyCard').style.display = 'none';
+    document.querySelector('#raceHud').style.display = 'block';
+    document.querySelector('#resultsCard').style.display = 'none';
+    serverCrashed = false;
+    updateCPBar();
+    startRaceTimer();
+    startDriving();
+}
+function updateCPBar() {
+    const pct = Math.min(100, (cpIndex / totalCPs) * 100);
+    document.querySelector('#cpBar').style.width = `${pct}%`;
+    document.querySelector('#cpText').textContent = `Checkpoints: ${cpIndex}/${totalCPs}`;
+}
+let raceTimerInterval;
+function startRaceTimer() {
+    if (raceTimerInterval)
+        clearInterval(raceTimerInterval);
+    raceTimerInterval = setInterval(() => {
+        if (!raceActive) {
+            clearInterval(raceTimerInterval);
+            return;
+        }
+        const elapsed = Date.now() - raceStartMs;
+        const totalSec = (elapsed / 1000).toFixed(1);
+        document.querySelector('#raceTimer').textContent = `${totalSec}s`;
+    }, 100);
+}
+// ── Results ─────────────────────────────────────────────
+function showResults(results, winner) {
+    raceActive = false;
+    if (raceTimerInterval)
+        clearInterval(raceTimerInterval);
+    stopDriving();
+    speed = 0;
+    document.querySelector('#raceHud').style.display = 'none';
+    document.querySelector('#lobbyCard').style.display = 'none';
+    document.querySelector('#resultsCard').style.display = 'block';
+    const list = document.querySelector('#resultsList');
+    list.innerHTML = `
+    <div class="winner-banner">🏆 ${escapeHtml(winner.displayName)} — ${(winner.elapsedMs / 1000).toFixed(1)}s</div>
+    ${results.map((r, i) => `
+      <div class="result-row ${r.playerId === playerId ? 'me' : ''}">
+        <span class="result-pos">${i + 1}.</span>
+        <span class="result-name">${escapeHtml(r.displayName)}</span>
+        <span class="result-time">${(r.elapsedMs / 1000).toFixed(1)}s</span>
+      </div>
+    `).join('')}
+  `;
+}
+// ── Driving Physics ──────────────────────────────────────
+function startDriving() {
+    if (driveInterval)
+        clearInterval(driveInterval);
+    driveInterval = setInterval(driveTick, 50); // 20 Hz local simulation
+}
+function stopDriving() {
+    if (driveInterval) {
+        clearInterval(driveInterval);
+        driveInterval = undefined;
+    }
+}
+function driveTick() {
+    if (serverCrashed)
+        return;
+    const dt = 0.05; // 50ms tick
+    const throttle = (keys['ArrowUp'] || keys['w'] || keys['W']) ? 1 : (keys['ArrowDown'] || keys['s'] || keys['S']) ? -0.5 : 0;
+    const steer = (keys['ArrowLeft'] || keys['a'] || keys['A']) ? -1 : (keys['ArrowRight'] || keys['d'] || keys['D']) ? 1 : 0;
+    const brake = keys[' '] || keys['Spacebar'];
+    // Acceleration
+    if (throttle > 0) {
+        speed = Math.min(MAX_SPEED, speed + ACCEL * dt * throttle);
+    }
+    else if (throttle < 0) {
+        speed = Math.max(-4, speed - ACCEL * dt * Math.abs(throttle));
+    }
+    // Brake
+    if (brake && speed > 0) {
+        speed = Math.max(0, speed - BRAKE_DECEL * dt);
+    }
+    // Friction
+    if (!brake && throttle === 0) {
+        speed = Math.max(0, speed - FRICTION * dt);
+    }
+    // Steering
+    if (steer !== 0 && Math.abs(speed) > 0.5) {
+        const speedFactor = 1 - (Math.abs(speed) / MAX_SPEED) * 0.6;
+        heading = (heading + TURN_RATE * steer * Math.max(0.3, speedFactor) * dt + 360) % 360;
+    }
+    // Move
+    if (Math.abs(speed) > 0.01) {
+        const headingRad = heading * Math.PI / 180;
+        const speedDegPerSec = speed / 111320;
+        lat += speedDegPerSec * Math.cos(headingRad) * dt;
+        lon += speedDegPerSec * Math.sin(headingRad) / Math.cos(lat * Math.PI / 180) * dt;
+    }
+    // Update marker + send position
+    map.upsertPlayerMarker(playerId, { lat, lon }, displayName);
+    seq++;
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'player_position', roomId, lat, lon, heading, speed, seq }));
+        // Auto-hit checkpoint if in race and near one
+        if (raceActive && currentLobbyId && cpIndex < totalCPs) {
+            if (seq % 10 === 0) { // throttle checkpoint checks
+                ws.send(JSON.stringify({ type: 'race_checkpoint_hit', roomId, lobbyId: currentLobbyId, checkpointId: `cp_${cpIndex}`, seq }));
+            }
+        }
+    }
+    // Update speedometer
+    const kmh = Math.round(speed * 3.6);
+    const speedEl = document.querySelector('#raceSpeed');
+    if (speedEl)
+        speedEl.textContent = `${kmh} km/h`;
+}
+async function sendPosition(randomize) {
     if (!ws || ws.readyState !== WebSocket.OPEN)
         return;
     if (randomize) {
@@ -134,7 +451,8 @@ function sendPosition(randomize) {
         lon += (Math.random() - .5) * .01;
     }
     map.upsertPlayerMarker(playerId || 'me', { lat, lon }, displayName || 'ME');
-    ws.send(JSON.stringify({ type: 'player_position', roomId, lat, lon, heading: Math.random() * 360, speed: Math.random() * 80, seq: ++seq }));
+    seq++;
+    ws.send(JSON.stringify({ type: 'player_position', roomId, lat, lon, heading, speed, seq }));
 }
 function sendChat() {
     const input = document.querySelector('#chatInput');
@@ -149,6 +467,86 @@ function sendSignal(signal) {
         return;
     ws.send(JSON.stringify({ type: 'challenge_signal', roomId, signal, challengeType: signal === 'hot_signal' ? 'hot_pursuit' : 'quick_sprint' }));
 }
+// ── Road Renderer ────────────────────────────────────────
+function renderCityRoads(pack) {
+    const el = document.querySelector('#map');
+    // Clear old roads
+    el.querySelectorAll('.city-road').forEach(e => e.remove());
+    // Draw roads on canvas overlay
+    const canvas = document.createElement('canvas');
+    canvas.className = 'city-road';
+    canvas.width = el.clientWidth;
+    canvas.height = el.clientHeight;
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    el.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    // Project geo coords to canvas pixels
+    const bounds = {
+        minLat: Infinity, maxLat: -Infinity,
+        minLon: Infinity, maxLon: -Infinity,
+    };
+    for (const road of pack.roads) {
+        for (const pt of road.points) {
+            if (pt.lat < bounds.minLat)
+                bounds.minLat = pt.lat;
+            if (pt.lat > bounds.maxLat)
+                bounds.maxLat = pt.lat;
+            if (pt.lon < bounds.minLon)
+                bounds.minLon = pt.lon;
+            if (pt.lon > bounds.maxLon)
+                bounds.maxLon = pt.lon;
+        }
+    }
+    // Add padding
+    const pad = 0.02;
+    bounds.minLat -= pad;
+    bounds.maxLat += pad;
+    bounds.minLon -= pad;
+    bounds.maxLon += pad;
+    const toPixel = (lat, lon) => ({
+        x: ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * canvas.width,
+        y: ((bounds.maxLat - lat) / (bounds.maxLat - bounds.minLat)) * canvas.height,
+    });
+    // Road colors by type
+    const roadColors = {
+        motorway: '#ff6b35',
+        motorway_link: '#ff8c5a',
+        trunk: '#ff9f43',
+        trunk_link: '#ffb366',
+        primary: '#feca57',
+        primary_link: '#ffd780',
+        secondary: '#ffdd59',
+        secondary_link: '#ffe680',
+        tertiary: '#dfe6e9',
+        residential: '#b2bec3',
+        living_street: '#636e72',
+        service: '#b2bec3',
+        unclassified: '#dfe6e9',
+    };
+    for (const road of pack.roads) {
+        if (road.points.length < 2)
+            continue;
+        const color = roadColors[road.highway] || '#b2bec3';
+        const width = Math.max(1, road.width * 0.3); // scale down for canvas
+        ctx.beginPath();
+        const start = toPixel(road.points[0].lat, road.points[0].lon);
+        ctx.moveTo(start.x, start.y);
+        for (let i = 1; i < road.points.length; i++) {
+            const pt = toPixel(road.points[i].lat, road.points[i].lon);
+            ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+    }
+    chat(`[Map] Rendered ${pack.roads.length} Akron roads`);
+}
+// ── Utilities ───────────────────────────────────────────
 function chat(html) {
     const log = document.querySelector('#chatLog');
     const line = document.createElement('div');
@@ -158,4 +556,4 @@ function chat(html) {
     log.scrollTop = log.scrollHeight;
 }
 function status(html) { document.querySelector('#status').innerHTML = html; }
-function escapeHtml(s) { return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function escapeHtml(s) { return s.replace(/[&<>\"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[c])); }

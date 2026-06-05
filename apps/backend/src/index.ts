@@ -7,14 +7,25 @@ import { WebSocketServer, WebSocket } from 'ws';
 import type {
   ClientMessage, RaceGPSMode, RoomPlayer, RoomSnapshot, ServerMessage,
   RaceLobby, RaceLobbyPlayer, RaceState, RaceResult,
+  CityPack as ClientCityPack,
 } from '@racegps/protocol';
 import { parseClientMessage } from '@racegps/protocol';
 import {
   createRacerState, validateCheckpoint, allCheckpointsHit, recordGhostTick,
   createGhostReplay, createAIDriver, tickAIDriver, generateDefaultRoute,
-  routeToCheckpoints,
+  routeToCheckpoints, haversineMeters,
+  createVehiclePhysics, tickVehiclePhysics, nearestRoadPoint, isOnRoad,
+  createRoadNetwork, cityPackToRichNetwork, richToSimple, extractCircuit,
+  toRad, toDeg,
+  spawnRouteObstacles,
   type Checkpoint, type RacerState, type AIDriver,
+  type GeoPoint, type RoadNetwork,
+  type VehiclePhysics, type PhysicsInput, type Obstacle, type ObstacleType,
+  type CityPackFull,
 } from '@racegps/race-engine';
+import { readFileSync, existsSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const PORT = Number(process.env.RACEGPS_PORT || 8787);
 const WEB_ORIGIN = process.env.RACEGPS_WEB_ORIGIN || 'http://localhost:5173';
@@ -42,12 +53,48 @@ interface RaceLobbyInternal {
   raceStartTimer?: ReturnType<typeof setTimeout>;
   raceStartMs: number;
   results: RaceResult[];
+  // Physics
+  roadNetwork: RoadNetwork;
+  vehicles: Map<string, VehiclePhysics>;
+  obstacles: Obstacle[];
+  physicsTickInterval?: ReturnType<typeof setInterval>;
 }
 
 // ── State ────────────────────────────────────────────────────
 
 const sessions = new Map<string, Session>();
 const rooms = new Map<string, Room>();
+
+// ── City Pack ──────────────────────────────────────────────
+let cityPack: CityPackFull | null = null;
+let defaultRoadNetwork: RoadNetwork = { segments: [] };
+
+function toClientCityPack(pack: CityPackFull): ClientCityPack {
+  return {
+    name: pack.name, version: pack.version, center: pack.center,
+    roads: pack.roads.map(r => ({
+      id: r.id, name: r.name, highway: r.highway,
+      oneway: r.oneway, width: r.width, points: r.points,
+    })),
+  };
+}
+
+function loadCityPack(): void {
+  try {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const packPath = join(__dirname, '..', '..', '..', 'akron_citypack.json');
+    if (existsSync(packPath)) {
+      const raw = readFileSync(packPath, 'utf-8');
+      cityPack = JSON.parse(raw) as CityPackFull;
+      defaultRoadNetwork = richToSimple(cityPackToRichNetwork(cityPack));
+      console.log(`CityPack loaded: ${cityPack.name} — ${cityPack.roads.length} roads, ${defaultRoadNetwork.segments.length} segments`);
+    } else {
+      console.log(`CityPack not found at ${packPath}, using empty road network`);
+    }
+  } catch (err) {
+    console.error('Failed to load CityPack:', err);
+  }
+}
 
 const app = express();
 app.use(express.json());
@@ -142,6 +189,30 @@ function handleClientMessage(ws: WebSocket, state: SocketState, msg: ClientMessa
       if (!room) return;
       const player = room.players.get(state.playerId);
       if (player) { player.lat = msg.lat; player.lon = msg.lon; player.heading = msg.heading; player.speed = msg.speed; }
+
+      // Race lobbies: update server vehicle state and validate road constraints
+      if (state.lobbyId) {
+        const li = room.lobbies.get(state.lobbyId);
+        if (li && li.lobby.state === 'racing') {
+          const validation = validateHumanPosition(state.playerId, { lat: msg.lat, lon: msg.lon }, li);
+          const vehicle = li.vehicles.get(state.playerId);
+          if (vehicle) {
+            if (!validation.onRoad) {
+              // Snap to road
+              vehicle.lat = validation.nearest.lat;
+              vehicle.lon = validation.nearest.lon;
+            } else {
+              vehicle.lat = msg.lat;
+              vehicle.lon = msg.lon;
+            }
+            vehicle.heading = msg.heading || 0;
+            vehicle.speed = msg.speed || 0;
+          }
+          // During races, physics tick handles all position broadcasting
+          break;
+        }
+      }
+
       broadcast(room, { type: 'player_position', playerId: state.playerId, lat: msg.lat, lon: msg.lon, heading: msg.heading, speed: msg.speed, seq: msg.seq }, ws);
       break;
     }
@@ -209,6 +280,9 @@ function handleRaceCreateLobby(ws: WebSocket, state: SocketState, roomId: string
   const internal: RaceLobbyInternal = {
     lobby, checkpoints,
     racers: new Map(), aiDrivers: [], raceStartMs: 0, results: [],
+    roadNetwork: defaultRoadNetwork,
+    vehicles: new Map(),
+    obstacles: [],
   };
 
   // Auto-join creator
@@ -312,12 +386,35 @@ function startRace(room: Room, li: RaceLobbyInternal): void {
   li.raceStartMs = li.lobby.raceStart;
   li.results = [];
 
-  broadcast(room, { type: 'race_started', lobbyId: li.lobby.lobbyId, raceStart: li.raceStartMs });
+  // Send race_started with optional citypack for client rendering
+  const clientPack = cityPack ? toClientCityPack(cityPack) : undefined;
+  broadcast(room, { type: 'race_started', lobbyId: li.lobby.lobbyId, raceStart: li.raceStartMs, citypack: clientPack });
   broadcast(room, { type: 'system_message', message: `Race started! ${li.lobby.players.length} drivers on the grid.` });
   broadcastLobby(room, li);
 
+  // Initialize player vehicles at checkpoint 0 position
+  const startPos = li.checkpoints[0]?.point || { lat: 41.4993, lon: -81.6944 };
+  for (const p of li.lobby.players) {
+    const offsetLat = (Math.random() - 0.5) * 0.0002;
+    const offsetLon = (Math.random() - 0.5) * 0.0002;
+    const vp = createVehiclePhysics(p.playerId, p.displayName, {
+      lat: startPos.lat + offsetLat,
+      lon: startPos.lon + offsetLon,
+    });
+    li.vehicles.set(p.playerId, vp);
+  }
+
+  // Spawn obstacles along the route
+  if (li.checkpoints.length > 1) {
+    const route = li.checkpoints.map(cp => cp.point);
+    li.obstacles = spawnRouteObstacles(route, li.roadNetwork, 8);
+  }
+
   // Start AI drivers
   startAITicks(room, li);
+
+  // Start physics tick loop
+  startPhysicsTicks(room, li);
 }
 
 function handleRaceCheckpointHit(ws: WebSocket, state: SocketState, roomId: string, lobbyId: string, checkpointId: string, seq: number): void {
@@ -416,6 +513,7 @@ function clearLobbyTimers(li: RaceLobbyInternal): void {
   if (li.countdownTimer) { clearTimeout(li.countdownTimer); li.countdownTimer = undefined; }
   if (li.raceStartTimer) { clearTimeout(li.raceStartTimer); li.raceStartTimer = undefined; }
   if (li.aiTickInterval) { clearInterval(li.aiTickInterval); li.aiTickInterval = undefined; }
+  if (li.physicsTickInterval) { clearInterval(li.physicsTickInterval); li.physicsTickInterval = undefined; }
 }
 
 function broadcastLobby(room: Room, li: RaceLobbyInternal): void {
@@ -489,6 +587,104 @@ function startAITicks(room: Room, li: RaceLobbyInternal): void {
   }, 100);
 }
 
+// ── Physics Tick Loop ──────────────────────────────────────────
+
+function startPhysicsTicks(room: Room, li: RaceLobbyInternal): void {
+  li.physicsTickInterval = setInterval(() => {
+    const now = Date.now();
+    const deltaMs = 100; // 10 Hz tick
+
+    // Remember who was crashed before this tick
+    const preCrashed = new Set<string>();
+    for (const v of Array.from(li.vehicles.values())) {
+      if (v.isCrashed) preCrashed.add(v.playerId);
+    }
+
+    // Phase 1: update all vehicles
+    for (const v of Array.from(li.vehicles.values())) {
+      const isAI = v.playerId.startsWith('ai_');
+      if (v.isCrashed) {
+        const result = tickVehiclePhysics(v, { throttle: 0, steering: 0, brake: true }, li.roadNetwork, li.obstacles, deltaMs);
+        Object.assign(v, result.vehicle);
+      } else if (isAI) {
+        const input: PhysicsInput = { throttle: 0.7, steering: Math.sin(now / 2000) * 0.3, brake: false };
+        const result = tickVehiclePhysics(v, input, li.roadNetwork, li.obstacles, deltaMs);
+        Object.assign(v, result.vehicle);
+      } else {
+        // Human: client drives locally. Server only checks road state and obstacles.
+        const nearest = nearestRoadPoint({ lat: v.lat, lon: v.lon }, li.roadNetwork);
+        v.onRoad = nearest.distance <= nearest.segment.widthMeters / 2;
+
+        for (const obs of li.obstacles) {
+          if (!obs.active) continue;
+          const dist = haversineMeters({ lat: v.lat, lon: v.lon }, obs.point);
+          if (dist <= obs.radius && v.speed > 1) {
+            v.isCrashed = true;
+            v.crashCause = 'obstacle';
+            v.crashTimerMs = 3000;
+            v.speed = Math.max(0, v.speed * 0.4);
+            break;
+          }
+        }
+      }
+    }
+
+    // Phase 2: broadcast updates + crash events (once per crash/recovery)
+    for (const v of Array.from(li.vehicles.values())) {
+      const wasCrashed = preCrashed.has(v.playerId);
+      if (!wasCrashed && v.isCrashed && !v.playerId.startsWith('ai_')) {
+        broadcast(room, {
+          type: 'race_crash_event',
+          lobbyId: li.lobby.lobbyId,
+          playerId: v.playerId,
+          displayName: v.displayName,
+          cause: v.crashCause,
+        });
+      }
+      if (wasCrashed && !v.isCrashed) {
+        broadcast(room, {
+          type: 'race_crash_event',
+          lobbyId: li.lobby.lobbyId,
+          playerId: v.playerId,
+          displayName: v.displayName,
+          cause: 'recovered',
+        });
+      }
+
+      const nearest = nearestRoadPoint({ lat: v.lat, lon: v.lon }, li.roadNetwork);
+      broadcast(room, {
+        type: 'race_physics_update',
+        lobbyId: li.lobby.lobbyId,
+        playerId: v.playerId,
+        tick: {
+          position: { lat: v.lat, lon: v.lon },
+          heading: v.heading,
+          speed: v.speed,
+          onRoad: v.onRoad,
+          isCrashed: v.isCrashed,
+          crashCause: v.crashCause,
+          distanceFromRoad: nearest.distance,
+        },
+      });
+    }
+  }, 100);
+}
+
+// ── Player Position Validation ─────────────────────────────────
+
+function validateHumanPosition(
+  playerId: string,
+  pos: GeoPoint,
+  lobby: RaceLobbyInternal,
+): { onRoad: boolean; nearest: { lat: number; lon: number } } {
+  const snap = nearestRoadPoint(pos, lobby.roadNetwork);
+  const onRoad = snap.distance <= snap.segment.widthMeters / 2;
+  return {
+    onRoad,
+    nearest: onRoad ? pos : snap.point,
+  };
+}
+
 // ── Room Management ──────────────────────────────────────────
 
 function joinRoom(ws: WebSocket, state: SocketState, roomId: string, title: string, mode: RaceGPSMode): void {
@@ -553,8 +749,20 @@ function roomToSnapshot(room: Room): RoomSnapshot {
 // ── Utilities ────────────────────────────────────────────────
 
 function generateLobbyCheckpoints(roomId: string, ids: string[]): Checkpoint[] {
-  // Use provided checkpoint IDs with default locations around a demo center
-  const center = { lat: 41.4993, lon: -81.6944 }; // Cleveland
+  // If city pack loaded, pick a circuit from real Akron roads
+  if (cityPack && defaultRoadNetwork.segments.length > 0) {
+    const roadIndex = Math.floor(Math.random() * cityPack.roads.length);
+    const circuit = extractCircuit(cityPack, roadIndex, 5);
+    return circuit.checkpoints.map((p, i) => ({
+      id: `cp_${i}`,
+      point: p,
+      radiusMeters: 10 + i * 0.5,
+      order: i,
+    }));
+  }
+
+  // Fallback: default Cleveland demo checkpoints
+  const center = { lat: 41.4993, lon: -81.6944 };
   const defaults = [
     { lat: 41.4993, lon: -81.6944 },
     { lat: 41.5003, lon: -81.6934 },
@@ -590,4 +798,5 @@ function sanitizeMode(value: unknown): RaceGPSMode {
   return ['cruise', 'race', 'challenge', 'hot_pursuit', 'explore'].includes(String(value)) ? value as RaceGPSMode : 'cruise';
 }
 
+loadCityPack();
 server.listen(PORT, () => console.log(`raceGPS backend running on http://localhost:${PORT}`));
