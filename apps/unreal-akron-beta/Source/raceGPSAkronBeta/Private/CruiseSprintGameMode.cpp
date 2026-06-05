@@ -10,6 +10,8 @@
 #include "CompassWidget.h"
 #include "DeveloperConsole.h"
 #include "GhostVehicle.h"
+#include "DayNightCycle.h"
+#include "TrafficSpawner.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"

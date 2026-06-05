@@ -6,6 +6,7 @@
 #include "Components/ArrowComponent.h"
 #include "VehicleTuningData.h"
 #include "VehicleAudioComponent.h"
+#include "AkronHUD.h"
 #include "CruiseSprintGameMode.h"
 
 AChaosVehiclePawn::AChaosVehiclePawn(const FObjectInitializer& ObjectInitializer)
@@ -176,6 +177,16 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
         MoveComp->SetSteeringInput(CurrentSteering * SteeringSensitivity);
         MoveComp->SetBrakeInput(CurrentBrake);
         MoveComp->SetHandbrakeInput(bHandbrake);
+    }
+
+    // Update HUD telemetry
+    if (APlayerController* PC = Cast<APlayerController>(GetController()))
+    {
+        if (AAkronHUD* HUD = Cast<AAkronHUD>(PC->GetHUD()))
+        {
+            HUD->SetSpeedKmh(GetSpeedKmh());
+            HUD->SetTelemetry(GetEngineRPM(), GetCurrentGear());
+        }
     }
 }
 

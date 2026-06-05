@@ -25,6 +25,9 @@ public:
     void SetSpeedKmh(float Speed);
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|HUD")
+    void SetTelemetry(float RPM, int32 Gear);
+
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|HUD")
     void SetCountdownValue(int32 Value);
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|HUD")
@@ -56,6 +59,8 @@ protected:
     int32 CurrentCheckpoint = 0;
     int32 TotalCheckpoints = 0;
     float SpeedKmh = 0.0f;
+    float EngineRPM = 0.0f;
+    int32 CurrentGear = 0;
     int32 CountdownValue = 0;
     bool bShowCountdown = false;
     bool bShowFinished = false;

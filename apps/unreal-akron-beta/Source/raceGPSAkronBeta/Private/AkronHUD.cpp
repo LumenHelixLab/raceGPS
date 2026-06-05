@@ -64,6 +64,13 @@ void AAkronHUD::DrawRaceInfo()
     FCanvasTextItem SpeedItem(FVector2D(X, Y), FText::FromString(SpeedStr), MainFont, TextColor);
     SpeedItem.Scale = FVector2D(Scale, Scale);
     Canvas->DrawItem(SpeedItem);
+
+    // RPM / Gear
+    Y += 40.0f * Scale;
+    FString TelemetryStr = FString::Printf(TEXT("RPM: %.0f  GEAR: %d"), EngineRPM, CurrentGear);
+    FCanvasTextItem TelemetryItem(FVector2D(X, Y), FText::FromString(TelemetryStr), MainFont, TextColor);
+    TelemetryItem.Scale = FVector2D(Scale, Scale);
+    Canvas->DrawItem(TelemetryItem);
 }
 
 void AAkronHUD::DrawCountdown()
@@ -168,6 +175,12 @@ void AAkronHUD::SetCheckpointProgress(int32 Current, int32 Total)
 void AAkronHUD::SetSpeedKmh(float Speed)
 {
     SpeedKmh = Speed;
+}
+
+void AAkronHUD::SetTelemetry(float RPM, int32 Gear)
+{
+    EngineRPM = RPM;
+    CurrentGear = Gear;
 }
 
 void AAkronHUD::SetCountdownValue(int32 Value)
