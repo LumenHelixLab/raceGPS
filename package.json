@@ -2,7 +2,7 @@
   "name": "racegps-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "raceGPS: Real World Driving \u2014 lightweight multiplayer real-world racing network.",
+  "description": "raceGPS: Real World Driving — lightweight multiplayer real-world racing network.",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -26,5 +26,10 @@
   "license": "Apache-2.0",
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^7.54.3",
+    "@babylonjs/loaders": "^7.54.3",
+    "pmtiles": "^4.4.1"
   }
 }

@@ -14,11 +14,23 @@ export interface CityPackRoad {
   points: CityPackPoint[];
 }
 
+export interface CityPackBuilding {
+  id: string;
+  rings: CityPackPoint[][];
+  height: number;
+  minHeight?: number;
+  levels?: number;
+  roofType?: 'flat' | 'gabled' | 'hipped' | 'pyramidal';
+  roofOrientation?: 'along' | 'across';
+  hasWindows?: boolean;
+}
+
 export interface CityPack {
   name: string;
   version: number;
   center: CityPackPoint;
   roads: CityPackRoad[];
+  buildings?: CityPackBuilding[];
 }
 
 // ── Physics Tick (server-authoritative) ─────────────────────────

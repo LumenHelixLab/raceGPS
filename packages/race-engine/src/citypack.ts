@@ -15,12 +15,24 @@ export interface CityPackRoad {
   numSegments: number;
 }
 
+export interface CityPackBuilding {
+  id: string;
+  rings: GeoPoint[][];
+  height: number;
+  minHeight?: number;
+  levels?: number;
+  roofType?: 'flat' | 'gabled' | 'hipped' | 'pyramidal';
+  roofOrientation?: 'along' | 'across';
+  hasWindows?: boolean;
+}
+
 export interface CityPack {
   name: string;
   version: number;
   center: GeoPoint;
   bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number };
   roads: CityPackRoad[];
+  buildings?: CityPackBuilding[];
   stats: {
     totalRoads: number;
     totalSegments: number;

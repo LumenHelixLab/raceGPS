@@ -76,6 +76,16 @@ function toClientCityPack(pack: CityPackFull): ClientCityPack {
       id: r.id, name: r.name, highway: r.highway,
       oneway: r.oneway, width: r.width, points: r.points,
     })),
+    buildings: pack.buildings?.map(b => ({
+      id: b.id,
+      rings: b.rings,
+      height: b.height,
+      minHeight: b.minHeight,
+      levels: b.levels,
+      roofType: b.roofType,
+      roofOrientation: b.roofOrientation,
+      hasWindows: b.hasWindows,
+    })),
   };
 }
 
@@ -103,6 +113,14 @@ app.use(cors({ origin: WEB_ORIGIN, credentials: true }));
 // ── HTTP Endpoints ───────────────────────────────────────────
 
 app.get('/health', (_req, res) => res.json({ ok: true, service: 'racegps-backend' }));
+
+app.get('/api/citypack', (_req, res) => {
+  if (cityPack) {
+    res.json(toClientCityPack(cityPack));
+  } else {
+    res.status(404).json({ error: 'no_citypack' });
+  }
+});
 
 app.post('/api/session', (req, res) => {
   const sid = nanoid();
