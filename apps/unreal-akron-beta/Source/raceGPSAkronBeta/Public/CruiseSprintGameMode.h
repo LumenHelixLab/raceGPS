@@ -42,11 +42,17 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|GameMode")
     void RestartRace();
 
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|GameMode")
+    void StartRaceForAllPlayers();
+
     UFUNCTION()
     void OnCheckpointReached(int32 CheckpointIndex);
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
     ECruiseSprintState GetRaceState() const { return CurrentState; }
+
+    virtual void PostLogin(APlayerController* NewPlayer) override;
+    virtual void Logout(AController* Exiting) override;
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
     float GetElapsedTime() const { return ElapsedTime; }

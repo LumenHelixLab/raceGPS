@@ -25,6 +25,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Menu")
     void OnSelectRouteClicked(const FString& RouteId);
 
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|LAN")
+    void OnHostLANClicked();
+
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|LAN")
+    void OnJoinLANClicked();
+
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
     UVehicleTuningData* GetSelectedVehicle() const;
 
@@ -58,6 +64,12 @@ public:
     UPROPERTY(meta = (BindWidget))
     class UTextBlock* VehicleInfoText;
 
+    UPROPERTY(meta = (BindWidget))
+    class UButton* HostLANButton;
+
+    UPROPERTY(meta = (BindWidget))
+    class UButton* JoinLANButton;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|Menu")
     FString GameLevelName = TEXT("AkronWorld");
 
@@ -66,4 +78,7 @@ public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|Menu")
     TArray<TObjectPtr<UVehicleTuningData>> AvailableVehicles;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|LAN")
+    TSubclassOf<class ULANBrowserWidget> LANBrowserClass;
 };

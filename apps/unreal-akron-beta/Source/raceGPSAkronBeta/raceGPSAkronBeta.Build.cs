@@ -25,7 +25,9 @@ public class raceGPSAkronBeta : ModuleRules
             "Projects",
             "RenderCore",
             "RHI",
-            "ProceduralMeshComponent"
+            "ProceduralMeshComponent",
+            "OnlineSubsystem",
+            "OnlineSubsystemUtils"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]

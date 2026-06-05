@@ -552,6 +552,62 @@ void ACruiseSprintGameMode::RestartRace()
     OnRaceStateChanged(CurrentState);
 }
 
+void ACruiseSprintGameMode::StartRaceForAllPlayers()
+{
+    // In multiplayer, host triggers this and it replicates to all clients
+    if (HasAuthority())
+    {
+        CurrentState = ECruiseSprintState::Countdown;
+        CountdownTimer = CountdownDuration;
+        ElapsedTime = 0.0f;
+        CurrentCheckpoint = 0;
+
+        if (ScoringSystem)
+        {
+            ScoringSystem->Reset();
+        }
+        if (ReplayManager)
+        {
+            ReplayManager->BeginRaceRecording();
+        }
+
+        // Spawn all players at their start positions
+        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            APlayerController* PC = It->Get();
+            if (PC && PC->GetPawn())
+            {
+                SpawnPlayerAtStart();
+            }
+        }
+
+        OnRaceStateChanged(CurrentState);
+        UE_LOG(LogTemp, Log, TEXT("[raceGPS] Multiplayer race started for all players"));
+    }
+}
+
+void ACruiseSprintGameMode::PostLogin(APlayerController* NewPlayer)
+{
+    Super::PostLogin(NewPlayer);
+
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] Player joined. Total players: %d"), GetWorld()->GetNumPlayerControllers());
+
+    // If race is already in progress, teleport new player to start
+    if (CurrentState == ECruiseSprintState::Racing || CurrentState == ECruiseSprintState::Countdown)
+    {
+        if (NewPlayer && NewPlayer->GetPawn())
+        {
+            SpawnPlayerAtStart();
+        }
+    }
+}
+
+void ACruiseSprintGameMode::Logout(AController* Exiting)
+{
+    Super::Logout(Exiting);
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] Player left. Total players: %d"), GetWorld()->GetNumPlayerControllers());
+}
+
 void ACruiseSprintGameMode::OnCheckpointReached(int32 CheckpointIndex)
 {
     if (CurrentState != ECruiseSprintState::Racing) return;

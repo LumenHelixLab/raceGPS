@@ -11,6 +11,7 @@
 #include "raceGPSGameInstance.h"
 #include "VehicleTuningData.h"
 #include "Version.h"
+#include "LANBrowserWidget.h"
 
 void UMainMenuWidget::NativeConstruct()
 {
@@ -27,6 +28,14 @@ void UMainMenuWidget::NativeConstruct()
     if (QuitButton)
     {
         QuitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnQuitClicked);
+    }
+    if (HostLANButton)
+    {
+        HostLANButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnHostLANClicked);
+    }
+    if (JoinLANButton)
+    {
+        JoinLANButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnJoinLANClicked);
     }
 
     // Populate route selector
@@ -135,6 +144,38 @@ void UMainMenuWidget::OnSelectRouteClicked(const FString& RouteId)
     if (GI)
     {
         GI->LastSelectedRoute = RouteId;
+    }
+}
+
+void UMainMenuWidget::OnHostLANClicked()
+{
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] Host LAN clicked"));
+    // Open LAN browser with host tab active
+    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    if (PC && LANBrowserClass)
+    {
+        ULANBrowserWidget* Browser = CreateWidget<ULANBrowserWidget>(PC, LANBrowserClass);
+        if (Browser)
+        {
+            Browser->AddToViewport(100);
+            // Trigger host immediately
+            Browser->OnHostClicked();
+        }
+    }
+}
+
+void UMainMenuWidget::OnJoinLANClicked()
+{
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] Join LAN clicked"));
+    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    if (PC && LANBrowserClass)
+    {
+        ULANBrowserWidget* Browser = CreateWidget<ULANBrowserWidget>(PC, LANBrowserClass);
+        if (Browser)
+        {
+            Browser->AddToViewport(100);
+            Browser->OnRefreshClicked();
+        }
     }
 }
 
