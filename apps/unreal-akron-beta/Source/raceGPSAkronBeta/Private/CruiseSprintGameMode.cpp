@@ -2,6 +2,7 @@
 #include "ChaosVehiclePawn.h"
 #include "AkronXodrImporter.h"
 #include "CheckpointGate.h"
+#include "RouteSplineActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -75,6 +76,35 @@ void ACruiseSprintGameMode::SpawnPlayerAtStart()
     }
 }
 
+void ACruiseSprintGameMode::SpawnRouteSpline()
+{
+    if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
+
+    const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
+    if (Route.Waypoints.Num() < 2) return;
+
+    // Convert raw lat/lon waypoints to world space
+    TArray<FVector> WorldWaypoints;
+    for (const FVector& Wp : Route.Waypoints)
+    {
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
+            -Wp.Z, Wp.X, WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 50.0f;
+        WorldWaypoints.Add(WorldLoc);
+    }
+
+    FActorSpawnParameters Params;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    ARouteSplineActor* RouteActor = GetWorld()->SpawnActor<ARouteSplineActor>(
+        ARouteSplineActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Params);
+
+    if (RouteActor)
+    {
+        RouteActor->RouteId = Route.RouteId;
+        RouteActor->BuildSplineFromWaypoints(WorldWaypoints);
+    }
+}
+
 void ACruiseSprintGameMode::SpawnCheckpoints()
 {
     if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
@@ -120,6 +150,7 @@ void ACruiseSprintGameMode::StartRace()
     CountdownTimer = CountdownDuration;
     ElapsedTime = 0.0f;
     CurrentCheckpoint = 0;
+    SpawnRouteSpline();
     OnRaceStateChanged(CurrentState);
 }
 

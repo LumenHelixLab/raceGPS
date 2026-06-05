@@ -116,6 +116,7 @@ protected:
 
     void LoadCityData();
     void SpawnPlayerAtStart();
+    void SpawnRouteSpline();
     void SpawnCheckpoints();
     void UpdateCountdown(float DeltaTime);
 };
