@@ -1,0 +1,8 @@
+#pragma once
+
+#define RACEGPS_VERSION_MAJOR 0
+#define RACEGPS_VERSION_MINOR 1
+#define RACEGPS_VERSION_PATCH 0
+#define RACEGPS_VERSION_STRING TEXT("0.1.0-beta")
+#define RACEGPS_BUILD_DATE TEXT("2026-06-05")
+#define RACEGPS_CITY_ID TEXT("akron-oh-beta-001")
