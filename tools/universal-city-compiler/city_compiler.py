@@ -117,13 +117,13 @@ def compile_city(city_query: str, output_dir: Path, radius_km: float = 5.0,
     heightmap = None
     try:
         heightmap = generate_heightmap_grid(bounds, resolution=32)
-        print(f"      Elevation range: {heightmap['min_elevation']}m → {heightmap['max_elevation']}m")
+        print(f"      Elevation range: {heightmap['min_elevation']}m -> {heightmap['max_elevation']}m")
     except Exception as e:
         print(f"      Elevation skipped: {e}")
 
     biome = classify_biome(origin_lat, origin_lon,
                            avg_elevation=heightmap["min_elevation"] if heightmap else 0.0)
-    print(f"      Biome: {biome['biome']} ({biome['temperature_c']}°C)")
+    print(f"      Biome: {biome['biome']} ({biome['temperature_c']} C)")
 
     # Step 10: Export bundle
     print("[10/10] Exporting citypack bundle...")

@@ -41,3 +41,6 @@ tools/akron-semantic-compiler/__pycache__/
 citypacks/*/akron_raw.osm
 citypacks/*/akron_buildings.json
 __pycache__/
+citypacks/*/
+generated/*/
+*.osm

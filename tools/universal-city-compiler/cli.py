@@ -24,7 +24,7 @@ def main() -> int:
                         help="OSM detail level")
     parser.add_argument("--routes", type=int, default=4, help="Routes per mode (default: 4)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
-    parser.add_argument("--output", type=Path, default=Path("../../citypacks"),
+    parser.add_argument("--output", type=Path, default=Path("citypacks"),
                         help="Output directory for citypacks")
     parser.add_argument("--batch", type=Path, default=None,
                         help="File with one city per line for batch compilation")
