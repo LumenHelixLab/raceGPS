@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.1.0",
+  "car_id": "rgps_akron_sedan_001",
+  "display_name": "Akron Pursuit Sedan",
+  "base_chassis": "rgps_chassis_4w_sedan",
+  "body_style": "sedan",
+  "kit": "pursuit",
+  "wheelbase_m": 2.78,
+  "track_width_m": 1.64,
+  "mass_kg": 1650,
+  "center_of_mass": [0.0, 0.0, -0.22],
+  "visual_parts": {
+    "front_bumper": "kit_pursuit_front_01",
+    "rear_bumper": "kit_pursuit_rear_01",
+    "side_skirts": "kit_pursuit_side_01",
+    "spoiler": "none",
+    "wheels": "pursuit_steelie_01",
+    "hood": "kit_pursuit_hood_01"
+  },
+  "materials": {
+    "body": {
+      "base_color": "#111827",
+      "metallic": 0.7,
+      "roughness": 0.24,
+      "clearcoat": 0.9
+    },
+    "glass": {
+      "tint": 0.5
+    },
+    "underglow": {
+      "enabled": true,
+      "color": "#00E5FF"
+    }
+  },
+  "decals": {
+    "race_number": "911",
+    "stripe": "none",
+    "logo": "racegps_side_small"
+  },
+  "physics_preset": "arcade_pursuit",
+  "validation": {
+    "requires_four_wheels": true,
+    "requires_named_bones": true,
+    "max_faces": 100000,
+    "export_format": "fbx"
+  }
+}

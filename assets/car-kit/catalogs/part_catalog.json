@@ -1,0 +1,517 @@
+{
+  "schema_version": "0.1.0",
+  "parts": {
+    "kit_stock_front_01": {
+      "part_id": "kit_stock_front_01",
+      "slot": "front_bumper",
+      "display_name": "Stock Front Bumper",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Stock/SM_Stock_Front_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 3200,
+      "material_slots": ["body_paint", "plastic_trim"],
+      "gameplay_tags": ["stock"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "FrontBumperSocket"
+      }
+    },
+    "kit_stock_rear_01": {
+      "part_id": "kit_stock_rear_01",
+      "slot": "rear_bumper",
+      "display_name": "Stock Rear Bumper",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Stock/SM_Stock_Rear_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2800,
+      "material_slots": ["body_paint", "plastic_trim"],
+      "gameplay_tags": ["stock"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "RearBumperSocket"
+      }
+    },
+    "kit_stock_side_01": {
+      "part_id": "kit_stock_side_01",
+      "slot": "side_skirts",
+      "display_name": "Stock Side Skirts",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Stock/SM_Stock_Side_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 1800,
+      "material_slots": ["body_paint"],
+      "gameplay_tags": ["stock"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "SideSkirtSocket"
+      }
+    },
+    "kit_stock_hood_01": {
+      "part_id": "kit_stock_hood_01",
+      "slot": "hood",
+      "display_name": "Stock Hood",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Stock/SM_Stock_Hood_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2400,
+      "material_slots": ["body_paint"],
+      "gameplay_tags": ["stock"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "HoodSocket"
+      }
+    },
+    "kit_street_front_01": {
+      "part_id": "kit_street_front_01",
+      "slot": "front_bumper",
+      "display_name": "Street Front Bumper",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Street/SM_Street_Front_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 4200,
+      "material_slots": ["body_paint", "plastic_trim", "carbon_fiber"],
+      "gameplay_tags": ["street"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "FrontBumperSocket"
+      }
+    },
+    "kit_street_rear_01": {
+      "part_id": "kit_street_rear_01",
+      "slot": "rear_bumper",
+      "display_name": "Street Rear Bumper",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Street/SM_Street_Rear_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 3800,
+      "material_slots": ["body_paint", "plastic_trim", "carbon_fiber"],
+      "gameplay_tags": ["street"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "RearBumperSocket"
+      }
+    },
+    "kit_street_side_01": {
+      "part_id": "kit_street_side_01",
+      "slot": "side_skirts",
+      "display_name": "Street Side Skirts",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Street/SM_Street_Side_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2200,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["street"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "SideSkirtSocket"
+      }
+    },
+    "kit_street_hood_01": {
+      "part_id": "kit_street_hood_01",
+      "slot": "hood",
+      "display_name": "Street Hood",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Street/SM_Street_Hood_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2800,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["street"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "HoodSocket"
+      }
+    },
+    "kit_sprint_front_01": {
+      "part_id": "kit_sprint_front_01",
+      "slot": "front_bumper",
+      "display_name": "Sprint Front Bumper",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Sprint/SM_Sprint_Front_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 4800,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["sprint"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "FrontBumperSocket"
+      }
+    },
+    "kit_sprint_rear_01": {
+      "part_id": "kit_sprint_rear_01",
+      "slot": "rear_bumper",
+      "display_name": "Sprint Rear Bumper",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Sprint/SM_Sprint_Rear_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 4400,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["sprint"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "RearBumperSocket"
+      }
+    },
+    "kit_sprint_side_01": {
+      "part_id": "kit_sprint_side_01",
+      "slot": "side_skirts",
+      "display_name": "Sprint Side Skirts",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Sprint/SM_Sprint_Side_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2600,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["sprint"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "SideSkirtSocket"
+      }
+    },
+    "kit_sprint_hood_01": {
+      "part_id": "kit_sprint_hood_01",
+      "slot": "hood",
+      "display_name": "Sprint Hood",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Sprint/SM_Sprint_Hood_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 3000,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["sprint"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "HoodSocket"
+      }
+    },
+    "kit_drift_front_01": {
+      "part_id": "kit_drift_front_01",
+      "slot": "front_bumper",
+      "display_name": "Drift Front Bumper",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Drift/SM_Drift_Front_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 4500,
+      "material_slots": ["body_paint", "plastic_trim"],
+      "gameplay_tags": ["drift"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "FrontBumperSocket"
+      }
+    },
+    "kit_drift_rear_01": {
+      "part_id": "kit_drift_rear_01",
+      "slot": "rear_bumper",
+      "display_name": "Drift Rear Bumper",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Drift/SM_Drift_Rear_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 4000,
+      "material_slots": ["body_paint", "plastic_trim"],
+      "gameplay_tags": ["drift"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "RearBumperSocket"
+      }
+    },
+    "kit_drift_side_01": {
+      "part_id": "kit_drift_side_01",
+      "slot": "side_skirts",
+      "display_name": "Drift Side Skirts",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Drift/SM_Drift_Side_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2000,
+      "material_slots": ["body_paint"],
+      "gameplay_tags": ["drift"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "SideSkirtSocket"
+      }
+    },
+    "kit_drift_hood_01": {
+      "part_id": "kit_drift_hood_01",
+      "slot": "hood",
+      "display_name": "Drift Hood",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Drift/SM_Drift_Hood_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2600,
+      "material_slots": ["body_paint"],
+      "gameplay_tags": ["drift"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "HoodSocket"
+      }
+    },
+    "kit_pursuit_front_01": {
+      "part_id": "kit_pursuit_front_01",
+      "slot": "front_bumper",
+      "display_name": "Pursuit Front Bumper",
+      "compatible_body_styles": ["sedan"],
+      "compatible_chassis": ["rgps_chassis_4w_sedan"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Pursuit/SM_Pursuit_Front_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 3800,
+      "material_slots": ["body_paint", "plastic_trim", "emissive_lights"],
+      "gameplay_tags": ["pursuit"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "FrontBumperSocket"
+      }
+    },
+    "kit_pursuit_rear_01": {
+      "part_id": "kit_pursuit_rear_01",
+      "slot": "rear_bumper",
+      "display_name": "Pursuit Rear Bumper",
+      "compatible_body_styles": ["sedan"],
+      "compatible_chassis": ["rgps_chassis_4w_sedan"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Pursuit/SM_Pursuit_Rear_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 3400,
+      "material_slots": ["body_paint", "plastic_trim"],
+      "gameplay_tags": ["pursuit"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "RearBumperSocket"
+      }
+    },
+    "kit_pursuit_side_01": {
+      "part_id": "kit_pursuit_side_01",
+      "slot": "side_skirts",
+      "display_name": "Pursuit Side Skirts",
+      "compatible_body_styles": ["sedan"],
+      "compatible_chassis": ["rgps_chassis_4w_sedan"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Pursuit/SM_Pursuit_Side_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 1900,
+      "material_slots": ["body_paint"],
+      "gameplay_tags": ["pursuit"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "SideSkirtSocket"
+      }
+    },
+    "kit_pursuit_hood_01": {
+      "part_id": "kit_pursuit_hood_01",
+      "slot": "hood",
+      "display_name": "Pursuit Hood",
+      "compatible_body_styles": ["sedan"],
+      "compatible_chassis": ["rgps_chassis_4w_sedan"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Pursuit/SM_Pursuit_Hood_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2500,
+      "material_slots": ["body_paint"],
+      "gameplay_tags": ["pursuit"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "HoodSocket"
+      }
+    },
+    "vented_01": {
+      "part_id": "vented_01",
+      "slot": "hood",
+      "display_name": "Vented Hood",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/BodyKits/Street/SM_Vented_Hood_01",
+      "lod_group": "vehicle_body",
+      "triangle_budget": 2900,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["street", "sprint"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "HoodSocket"
+      }
+    },
+    "none": {
+      "part_id": "none",
+      "slot": "spoiler",
+      "display_name": "None",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "",
+      "lod_group": "vehicle_accessory",
+      "triangle_budget": 0,
+      "material_slots": [],
+      "gameplay_tags": ["stock"],
+      "validation": {
+        "collision": "none",
+        "socket_required": ""
+      }
+    },
+    "ducktail_01": {
+      "part_id": "ducktail_01",
+      "slot": "spoiler",
+      "display_name": "Ducktail Spoiler",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Spoilers/SM_Ducktail_01",
+      "lod_group": "vehicle_accessory",
+      "triangle_budget": 2500,
+      "material_slots": ["body_paint"],
+      "gameplay_tags": ["street", "sprint"],
+      "validation": {
+        "collision": "none",
+        "socket_required": "SpoilerSocket"
+      }
+    },
+    "sprint_wing_01": {
+      "part_id": "sprint_wing_01",
+      "slot": "spoiler",
+      "display_name": "Sprint Wing",
+      "compatible_body_styles": ["coupe", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Spoilers/SM_Sprint_Wing_01",
+      "lod_group": "vehicle_accessory",
+      "triangle_budget": 4200,
+      "material_slots": ["body_paint", "carbon_fiber"],
+      "gameplay_tags": ["sprint", "drift"],
+      "validation": {
+        "collision": "none",
+        "socket_required": "SpoilerSocket"
+      }
+    },
+    "five_spoke_01": {
+      "part_id": "five_spoke_01",
+      "slot": "wheels",
+      "display_name": "Five Spoke",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Wheels/SM_Five_Spoke_01",
+      "lod_group": "vehicle_wheel",
+      "triangle_budget": 3600,
+      "material_slots": ["rim_paint", "tire_rubber"],
+      "gameplay_tags": ["stock", "street", "sprint"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "WheelSocket"
+      }
+    },
+    "mesh_street_01": {
+      "part_id": "mesh_street_01",
+      "slot": "wheels",
+      "display_name": "Mesh Street",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Wheels/SM_Mesh_Street_01",
+      "lod_group": "vehicle_wheel",
+      "triangle_budget": 4200,
+      "material_slots": ["rim_paint", "tire_rubber"],
+      "gameplay_tags": ["street", "sprint"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "WheelSocket"
+      }
+    },
+    "pursuit_steelie_01": {
+      "part_id": "pursuit_steelie_01",
+      "slot": "wheels",
+      "display_name": "Pursuit Steelie",
+      "compatible_body_styles": ["sedan"],
+      "compatible_chassis": ["rgps_chassis_4w_sedan"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Wheels/SM_Pursuit_Steelie_01",
+      "lod_group": "vehicle_wheel",
+      "triangle_budget": 2800,
+      "material_slots": ["rim_paint", "tire_rubber"],
+      "gameplay_tags": ["pursuit"],
+      "validation": {
+        "collision": "convex",
+        "socket_required": "WheelSocket"
+      }
+    },
+    "decal_none": {
+      "part_id": "decal_none",
+      "slot": "decals",
+      "display_name": "None",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "",
+      "lod_group": "vehicle_decal",
+      "triangle_budget": 0,
+      "material_slots": [],
+      "gameplay_tags": ["stock"],
+      "validation": {
+        "collision": "none",
+        "socket_required": ""
+      }
+    },
+    "dual_stripe_01": {
+      "part_id": "dual_stripe_01",
+      "slot": "decals",
+      "display_name": "Dual Stripe",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Decals/SM_Dual_Stripe_01",
+      "lod_group": "vehicle_decal",
+      "triangle_budget": 800,
+      "material_slots": ["decal_alpha"],
+      "gameplay_tags": ["street", "sprint"],
+      "validation": {
+        "collision": "none",
+        "socket_required": "DecalSocket"
+      }
+    },
+    "race_number_01": {
+      "part_id": "race_number_01",
+      "slot": "decals",
+      "display_name": "Race Number",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Decals/SM_Race_Number_01",
+      "lod_group": "vehicle_decal",
+      "triangle_budget": 600,
+      "material_slots": ["decal_alpha"],
+      "gameplay_tags": ["street", "sprint", "drift"],
+      "validation": {
+        "collision": "none",
+        "socket_required": "DecalSocket"
+      }
+    },
+    "racegps_side_mark_01": {
+      "part_id": "racegps_side_mark_01",
+      "slot": "decals",
+      "display_name": "raceGPS Side Mark",
+      "compatible_body_styles": ["coupe", "sedan", "hatchback"],
+      "compatible_chassis": ["rgps_chassis_4w_sport", "rgps_chassis_4w_sedan", "rgps_chassis_4w_hatch"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Decals/SM_RaceGPS_Side_Mark_01",
+      "lod_group": "vehicle_decal",
+      "triangle_budget": 400,
+      "material_slots": ["decal_alpha"],
+      "gameplay_tags": ["street", "sprint"],
+      "validation": {
+        "collision": "none",
+        "socket_required": "DecalSocket"
+      }
+    },
+    "pursuit_light_bar_01": {
+      "part_id": "pursuit_light_bar_01",
+      "slot": "light_bar",
+      "display_name": "Pursuit Light Bar",
+      "compatible_body_styles": ["sedan"],
+      "compatible_chassis": ["rgps_chassis_4w_sedan"],
+      "mesh_path": "/RaceGPS/Vehicles/Parts/Lights/SM_Pursuit_Light_Bar_01",
+      "lod_group": "vehicle_accessory",
+      "triangle_budget": 1200,
+      "material_slots": ["emissive_lights"],
+      "gameplay_tags": ["pursuit"],
+      "validation": {
+        "collision": "none",
+        "socket_required": "RoofSocket"
+      }
+    }
+  }
+}

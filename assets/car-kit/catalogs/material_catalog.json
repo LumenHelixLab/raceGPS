@@ -1,0 +1,99 @@
+{
+  "schema_version": "0.1.0",
+  "paint_presets": {
+    "midnight_black": {
+      "preset_id": "midnight_black",
+      "display_name": "Midnight Black",
+      "base_color": "#111827",
+      "metallic": 0.7,
+      "roughness": 0.24,
+      "clearcoat": 0.9
+    },
+    "signal_red": {
+      "preset_id": "signal_red",
+      "display_name": "Signal Red",
+      "base_color": "#DC2626",
+      "metallic": 0.65,
+      "roughness": 0.28,
+      "clearcoat": 0.85
+    },
+    "electric_blue": {
+      "preset_id": "electric_blue",
+      "display_name": "Electric Blue",
+      "base_color": "#2563EB",
+      "metallic": 0.75,
+      "roughness": 0.22,
+      "clearcoat": 0.92
+    },
+    "asphalt_grey": {
+      "preset_id": "asphalt_grey",
+      "display_name": "Asphalt Grey",
+      "base_color": "#4B5563",
+      "metallic": 0.6,
+      "roughness": 0.35,
+      "clearcoat": 0.8
+    },
+    "racegps_white": {
+      "preset_id": "racegps_white",
+      "display_name": "raceGPS White",
+      "base_color": "#F9FAFB",
+      "metallic": 0.3,
+      "roughness": 0.4,
+      "clearcoat": 0.88
+    }
+  },
+  "glass_tints": {
+    "clear": {
+      "preset_id": "clear",
+      "display_name": "Clear",
+      "tint": 0.0
+    },
+    "light": {
+      "preset_id": "light",
+      "display_name": "Light Tint",
+      "tint": 0.25
+    },
+    "medium": {
+      "preset_id": "medium",
+      "display_name": "Medium Tint",
+      "tint": 0.45
+    },
+    "dark": {
+      "preset_id": "dark",
+      "display_name": "Dark Tint",
+      "tint": 0.7
+    },
+    "limo": {
+      "preset_id": "limo",
+      "display_name": "Limo Tint",
+      "tint": 0.9
+    }
+  },
+  "underglow_colors": {
+    "cyan": {
+      "preset_id": "cyan",
+      "display_name": "Neon Cyan",
+      "color": "#00E5FF"
+    },
+    "magenta": {
+      "preset_id": "magenta",
+      "display_name": "Neon Magenta",
+      "color": "#FF00E5"
+    },
+    "lime": {
+      "preset_id": "lime",
+      "display_name": "Neon Lime",
+      "color": "#39FF14"
+    },
+    "amber": {
+      "preset_id": "amber",
+      "display_name": "Neon Amber",
+      "color": "#FFBF00"
+    },
+    "purple": {
+      "preset_id": "purple",
+      "display_name": "Neon Purple",
+      "color": "#9D00FF"
+    }
+  }
+}

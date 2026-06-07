@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1.0",
+  "car_id": "rgps_akron_hatch_001",
+  "display_name": "Akron Rally Hatch",
+  "base_chassis": "rgps_chassis_4w_hatch",
+  "body_style": "hatchback",
+  "kit": "sprint",
+  "wheelbase_m": 2.58,
+  "track_width_m": 1.6,
+  "mass_kg": 1350,
+  "center_of_mass": [
+    0.0,
+    0.0,
+    -0.16
+  ],
+  "visual_parts": {
+    "front_bumper": "kit_sprint_front_01",
+    "rear_bumper": "kit_sprint_rear_01",
+    "side_skirts": "kit_sprint_side_01",
+    "spoiler": "sprint_wing_01",
+    "wheels": "mesh_street_01",
+    "hood": "kit_sprint_hood_01"
+  },
+  "materials": {
+    "body": {
+      "base_color": "#DC2626",
+      "metallic": 0.65,
+      "roughness": 0.28,
+      "clearcoat": 0.85
+    },
+    "glass": {
+      "tint": 0.25
+    },
+    "underglow": {
+      "enabled": false,
+      "color": "#FF00E5"
+    }
+  },
+  "decals": {
+    "race_number": "7",
+    "stripe": "center_dual_01",
+    "logo": "racegps_side_small"
+  },
+  "physics_preset": "arcade_sprint",
+  "validation": {
+    "requires_four_wheels": true,
+    "requires_named_bones": true,
+    "max_faces": 100000,
+    "export_format": "fbx"
+  },
+  "_computed": {
+    "total_parts": 6,
+    "has_underglow": false,
+    "is_pursuit": false
+  }
+}

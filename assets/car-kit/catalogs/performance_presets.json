@@ -1,0 +1,70 @@
+{
+  "schema_version": "0.1.0",
+  "presets": {
+    "arcade_street": {
+      "preset_id": "arcade_street",
+      "display_name": "Street",
+      "mass_kg": 1480,
+      "max_speed_kph": 200,
+      "acceleration_curve": "street_01",
+      "steering_response": 0.72,
+      "drift_assist": 0.2,
+      "traction_assist": 0.7,
+      "brake_strength": 0.65,
+      "camera_profile": "street_chase",
+      "allowed_modes": ["cruise_sprint", "free_roam"]
+    },
+    "arcade_sprint": {
+      "preset_id": "arcade_sprint",
+      "display_name": "Sprint",
+      "mass_kg": 1420,
+      "max_speed_kph": 220,
+      "acceleration_curve": "sprint_01",
+      "steering_response": 0.82,
+      "drift_assist": 0.35,
+      "traction_assist": 0.55,
+      "brake_strength": 0.72,
+      "camera_profile": "race_chase_smooth",
+      "allowed_modes": ["cruise_sprint", "time_attack"]
+    },
+    "arcade_drift": {
+      "preset_id": "arcade_drift",
+      "display_name": "Drift",
+      "mass_kg": 1350,
+      "max_speed_kph": 195,
+      "acceleration_curve": "drift_01",
+      "steering_response": 0.9,
+      "drift_assist": 0.75,
+      "traction_assist": 0.25,
+      "brake_strength": 0.6,
+      "camera_profile": "drift_chase",
+      "allowed_modes": ["drift_zone", "cruise_sprint"]
+    },
+    "arcade_pursuit": {
+      "preset_id": "arcade_pursuit",
+      "display_name": "Pursuit",
+      "mass_kg": 1650,
+      "max_speed_kph": 230,
+      "acceleration_curve": "pursuit_01",
+      "steering_response": 0.68,
+      "drift_assist": 0.15,
+      "traction_assist": 0.8,
+      "brake_strength": 0.85,
+      "camera_profile": "pursuit_chase",
+      "allowed_modes": ["pursuit", "cruise_sprint"]
+    },
+    "arcade_heavy": {
+      "preset_id": "arcade_heavy",
+      "display_name": "Heavy Cruiser",
+      "mass_kg": 2100,
+      "max_speed_kph": 170,
+      "acceleration_curve": "heavy_01",
+      "steering_response": 0.55,
+      "drift_assist": 0.1,
+      "traction_assist": 0.85,
+      "brake_strength": 0.55,
+      "camera_profile": "heavy_chase",
+      "allowed_modes": ["free_roam", "cruise_sprint"]
+    }
+  }
+}
