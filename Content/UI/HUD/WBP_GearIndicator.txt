@@ -1,0 +1,50 @@
+Blueprint Widget Stub: WBP_GearIndicator
+========================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Large gear numeral display next to the speedometer. Shows current gear with
+shift flash effects.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (80×80px)
+  - Overlay
+    - Border_Background (optional, circular, 60% opacity black)
+    - TextBlock_Gear ("1", 64px, Mono, white, centered)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) int32 CurrentGear = 1
+- UPROPERTY(BlueprintReadWrite) int32 MaxGear = 6
+- UPROPERTY(BlueprintReadWrite) FLinearColor NormalColor = White
+- UPROPERTY(BlueprintReadWrite) FLinearColor UpshiftColor = Neon GPS Green
+- UPROPERTY(BlueprintReadWrite) FLinearColor DownshiftColor = White
+- UPROPERTY(BlueprintReadWrite) FLinearColor ReverseColor = Pursuit Red
+
+Event Graph Logic:
+------------------
+1. Event SetGear (int32 Gear):
+   a. int32 PreviousGear = CurrentGear.
+   b. CurrentGear = Gear.
+   c. If Gear == -1 (reverse):
+      - Set text "R".
+      - Set color to ReverseColor.
+   d. Else:
+      - Set text to FString::FromInt(Gear).
+      - If Gear > PreviousGear:
+         * Set color to UpshiftColor.
+         * Flash background (Neon GPS Green, 0.15s).
+         * Scale bounce 1.0→1.15→1.0 (0.15s).
+      - Else if Gear < PreviousGear:
+         * Set color to DownshiftColor.
+         * Flash background (white, 0.15s).
+         * Scale bounce 1.0→0.9→1.0 (0.15s).
+      - Else:
+         * Set color to NormalColor.
+
+Custom Events / Functions:
+--------------------------
+- FlashGear(): Plays upshift animation regardless of direction.

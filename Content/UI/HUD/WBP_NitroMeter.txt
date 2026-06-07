@@ -1,0 +1,56 @@
+Blueprint Widget Stub: WBP_NitroMeter
+=====================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Segmented nitro/boost meter positioned above the RPM gauge. 10 segments fill
+left-to-right. Drift score and clean driving refill segments.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (440×24px)
+  - HorizontalBox_Segments (gap 4px, centered)
+    - WBP_NitroSegment (×10, each 40×16px)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) int32 TotalSegments = 10
+- UPROPERTY(BlueprintReadWrite) int32 FilledSegments = 0
+- UPROPERTY(BlueprintReadWrite) bool bIsBoostActive = false
+- UPROPERTY(BlueprintReadWrite) float SegmentRechargeRate = 0.5f  // segments per second while drifting
+- UPROPERTY(BlueprintReadWrite) float BoostDrainRate = 5.0f       // segments per second while active
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Spawn TotalSegments instances of WBP_NitroSegment.
+   b. Add to HorizontalBox_Segments.
+   c. Set all segments to empty state.
+
+2. Event OnNitroPercentChanged (float Percent):
+   a. int32 TargetFilled = FMath::RoundToInt(Percent * TotalSegments / 100.0f).
+   b. For i = 0 to TotalSegments-1:
+      - If i < TargetFilled: Set segment to filled (Pursuit Red).
+      - Else: Set segment to empty (Surface/700 outline only).
+   c. If TargetFilled > FilledSegments:
+      - Play fill animation on newly filled segment (scale 1.0→1.2→1.0, 0.1s).
+   d. FilledSegments = TargetFilled.
+
+3. Event OnBoostActivated:
+   a. bIsBoostActive = true.
+   b. Start drain timer (every 0.1s, reduce FilledSegments by BoostDrainRate * 0.1).
+   c. Play boost active animation (glow pulse on all filled segments).
+   d. If FilledSegments reaches 0: Call OnBoostDeactivated.
+
+4. Event OnBoostDeactivated:
+   a. bIsBoostActive = false.
+   b. Stop drain timer.
+   c. Revert segment glow.
+
+Custom Events / Functions:
+--------------------------
+- AddSegments(int32 Count): Adds segments (clamped to TotalSegments).
+- DrainSegments(int32 Count): Removes segments.
+- IsFull(): Returns FilledSegments == TotalSegments.

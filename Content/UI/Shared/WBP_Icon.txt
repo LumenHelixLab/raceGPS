@@ -1,0 +1,68 @@
+Blueprint Widget Stub: WBP_Icon
+===============================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Reusable icon widget. Displays a tinted texture with hover/focus states.
+Supports standalone icon buttons or inline icons inside other widgets.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (configurable, default 24×24px)
+  - Image_Icon (texture, tinted)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) UTexture2D* IconTexture
+- UPROPERTY(BlueprintReadWrite) FLinearColor NormalTint = White (#F5F5F5)
+- UPROPERTY(BlueprintReadWrite) FLinearColor HoverTint = Neon GPS Green (#00FF85)
+- UPROPERTY(BlueprintReadWrite) FLinearColor DisabledTint = Surface/400 (#7A7A7A)
+- UPROPERTY(BlueprintReadWrite) float NormalOpacity = 1.0f
+- UPROPERTY(BlueprintReadWrite) float HoverOpacity = 1.0f
+- UPROPERTY(BlueprintReadWrite) FVector2D IconSize = (24, 24)
+- UPROPERTY(BlueprintReadWrite) bool bIsInteractive = true
+- UPROPERTY(BlueprintReadWrite) bool bIsDisabled = false
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set Image_Icon texture from IconTexture.
+   b. Set SizeBox dimensions from IconSize.
+   c. Set tint color to NormalTint.
+   d. Set opacity to NormalOpacity.
+
+2. Event OnMouseEnter:
+   a. If !bIsInteractive or bIsDisabled, return.
+   b. Animate tint to HoverTint (0.15s).
+   c. Animate opacity to HoverOpacity (0.15s).
+   d. Scale to 1.1 (0.15s, optional).
+
+3. Event OnMouseLeave:
+   a. Animate tint to NormalTint (0.15s).
+   b. Animate opacity to NormalOpacity (0.15s).
+   c. Scale to 1.0 (0.15s).
+
+4. Event OnMouseButtonDown:
+   a. If !bIsInteractive or bIsDisabled, return.
+   b. Scale to 0.9 (0.05s).
+   c. Play subtle click sound.
+
+5. Event OnMouseButtonUp:
+   a. Scale to 1.0 (0.1s).
+   b. Execute OnClicked.
+
+6. Event OnDisabledChanged:
+   a. If bIsDisabled:
+      - Set tint to DisabledTint.
+      - Set opacity to 0.5.
+   b. Else:
+      - Revert to NormalTint.
+      - Revert to NormalOpacity.
+
+Custom Events / Functions:
+--------------------------
+- SetIcon(UTexture2D*): Changes texture.
+- SetTint(FLinearColor): Changes normal tint.
+- SetSize(FVector2D): Updates dimensions.

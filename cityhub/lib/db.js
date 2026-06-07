@@ -150,7 +150,7 @@ function seedDemoData() {
     .run(c2, u2, lastWeek, 620);
 
   db.prepare('INSERT INTO events (name, city_id, start_date, end_date, is_current) VALUES (?, ?, ?, ?, 1)')
-    .run('Akron Takeover', c1, now, new Date(Date.now() + 7 * 86400000).toISOString(), 1);
+    .run('Akron Takeover', c1, now, new Date(Date.now() + 7 * 86400000).toISOString());
 }
 
 module.exports = {

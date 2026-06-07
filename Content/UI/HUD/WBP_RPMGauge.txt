@@ -1,0 +1,58 @@
+Blueprint Widget Stub: WBP_RPMGauge
+===================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Horizontal RPM bar with color-coded zones and redline flash. Positioned below
+the speedometer in the bottom-center HUD stack.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (400×20px)
+  - Overlay
+    - Border_TrackBg (Surface/800, 400×12px, rounded caps)
+    - ProgressBar_RPM (fills left-to-right, 8px height, rounded)
+    - Image_ShiftIndicator (small triangle at optimal shift RPM)
+    - TextBlock_RedlineLabel ("REDLINE", 10px, Caption, visible only in redzone)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float CurrentRPM = 0.0f
+- UPROPERTY(BlueprintReadWrite) float MaxRPM = 8000.0f
+- UPROPERTY(BlueprintReadWrite) float RedlineRPM = 7200.0f
+- UPROPERTY(BlueprintReadWrite) float OptimalShiftRPM = 6500.0f
+- UPROPERTY(BlueprintReadWrite) FLinearColor ColorLow = Electric Route Blue
+- UPROPERTY(BlueprintReadWrite) FLinearColor ColorMid = Neon GPS Green
+- UPROPERTY(BlueprintReadWrite) FLinearColor ColorHigh = Pursuit Red
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set ProgressBar percent = 0.
+   b. Position shift indicator at OptimalShiftRPM / MaxRPM percent.
+
+2. Event SetRPM (float RPM):
+   a. CurrentRPM = FMath::Clamp(RPM, 0.0f, MaxRPM).
+   b. percent = CurrentRPM / MaxRPM.
+   c. Set ProgressBar percent (immediate, no animation for responsiveness).
+   d. Update fill color:
+      - percent < 0.7: ColorLow
+      - 0.7 <= percent < 0.9: ColorMid
+      - >= 0.9: ColorHigh
+   e. If CurrentRPM >= RedlineRPM:
+      - Start redline flash loop (2Hz, toggle opacity 100%/50%).
+      - Show RedlineLabel.
+   f. Else:
+      - Stop flash.
+      - Hide RedlineLabel.
+
+3. Event OnGearShifted (int32 Gear):
+   a. Brief flash of entire bar (white, 0.1s).
+   b. Reset RPM to current engine RPM.
+
+Custom Events / Functions:
+--------------------------
+- SetMaxRPM(float): Adjusts scale for different engines.
+- FlashRedline(): One-shot redline warning flash.

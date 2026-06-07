@@ -1,0 +1,70 @@
+Blueprint Widget Stub: WBP_DriftScore
+=====================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Drift score counter and multiplier badge positioned bottom-left of the HUD.
+Includes a combo bar that drains when drifting stops.
+
+Widget Hierarchy:
+-----------------
+- VerticalBox (Root, gap 8px)
+  - HorizontalBox_MultiplierRow (gap 8px)
+    - Border_MultiplierBadge (Pursuit Red bg, pill shape)
+      - TextBlock_Multiplier ("×2.5", 28px, Mono, white)
+    - TextBlock_DriftLabel ("DRIFT", 14px, Caption, white)
+  - TextBlock_Score ("0", 36px, Mono, white)
+  - ProgressBar_ComboBar (4px height, Neon GPS Green fill, Surface/800 bg)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float CurrentScore = 0.0f
+- UPROPERTY(BlueprintReadWrite) float DisplayedScore = 0.0f
+- UPROPERTY(BlueprintReadWrite) float Multiplier = 1.0f
+- UPROPERTY(BlueprintReadWrite) bool bIsDrifting = false
+- UPROPERTY(BlueprintReadWrite) float ComboDrainDelay = 2.0f
+- UPROPERTY(BlueprintReadWrite) float ComboDrainSpeed = 0.5f  // per second
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set Score to 0.
+   b. Set Multiplier to 1.0.
+   c. Hide ComboBar (opacity 0).
+
+2. Event UpdateScore (float TotalScore, float NewMultiplier, bool bDrifting):
+   a. If TotalScore > CurrentScore:
+      - Start score count-up: DisplayedScore → TotalScore over 0.3s.
+      - Play scale bounce on score text (1.0→1.05→1.0, 0.1s).
+   b. CurrentScore = TotalScore.
+   c. If NewMultiplier != Multiplier:
+      - Animate multiplier badge scale 1.0→1.2→1.0 (0.2s, Elastic).
+      - Flash badge color brighter.
+   d. Multiplier = NewMultiplier.
+   e. bIsDrifting = bDrifting.
+   f. If bIsDrifting:
+      - Show ComboBar (fade in 0.2s).
+      - Set ComboBar percent to 1.0.
+      - Stop drain timer.
+   g. Else:
+      - Start ComboDrainDelay timer.
+
+3. Event OnComboDrainDelayExpired:
+   a. Start drain timer (every 0.1s).
+   b. Reduce ComboBar percent by ComboDrainSpeed * 0.1.
+   c. If ComboBar percent <= 0:
+      - Hide ComboBar (fade out 0.3s).
+      - Reset Multiplier to 1.0.
+      - Stop drain timer.
+
+4. Event Tick (for score count-up):
+   a. If DisplayedScore < CurrentScore:
+      - Lerp DisplayedScore toward CurrentScore.
+      - Update text with comma formatting.
+
+Custom Events / Functions:
+--------------------------
+- ResetScore(): Clears score and multiplier.
+- FlashScore(): Triggers large bounce animation (for milestone).

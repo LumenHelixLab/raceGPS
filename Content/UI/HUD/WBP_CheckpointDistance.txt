@@ -1,0 +1,45 @@
+Blueprint Widget Stub: WBP_CheckpointDistance
+=============================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Displays distance to the next checkpoint with a downward chevron icon. Fades
+out when very close and pulses when within 100m.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (200×48px)
+  - HorizontalBox (centered, gap 8px)
+    - Image_Chevron (down arrow, 20×20px, white)
+    - TextBlock_Distance ("324 m", 32px, Mono, white)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float DistanceMeters = 0.0f
+- UPROPERTY(BlueprintReadWrite) float PulseThreshold = 100.0f
+- UPROPERTY(BlueprintReadWrite) float FadeThreshold = 50.0f
+- UPROPERTY(BlueprintReadWrite) float PulseFrequency = 1.0f  // Hz
+
+Event Graph Logic:
+------------------
+1. Event SetDistance (float Meters):
+   a. DistanceMeters = FMath::Max(0.0f, Meters).
+   b. Format text: if >= 1000, show "1.2 km"; else show "324 m".
+   c. If DistanceMeters < FadeThreshold:
+      - Fade out widget (opacity 0, 0.3s).
+   d. Else:
+      - Fade in widget (opacity 1, 0.3s).
+   e. If DistanceMeters < PulseThreshold:
+      - Start pulse animation (scale 1.0→1.1→1.0, loop, PulseFrequency).
+   f. Else:
+      - Stop pulse.
+
+2. Event PulseAndUpdate (float NewDistance):
+   a. Play flash animation (white background flash 0.1s).
+   b. Call SetDistance(NewDistance).
+
+Custom Events / Functions:
+--------------------------
+- HideImmediately(): Sets opacity to 0 instantly.

@@ -1,0 +1,45 @@
+Blueprint Widget Stub: WBP_WeatherIndicator
+===========================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Small icon + label showing current weather/time-of-day state. Positioned below
+the minimap.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (120×48px)
+  - HorizontalBox (centered, gap 8px)
+    - Image_WeatherIcon (28×28px, tinted)
+    - TextBlock_WeatherLabel ("CLEAR", 14px, uppercase, white)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) EWeatherState WeatherState = Clear
+- UPROPERTY(BlueprintReadWrite) TMap<EWeatherState, UTexture2D*> WeatherIcons
+- UPROPERTY(BlueprintReadWrite) TMap<EWeatherState, FLinearColor> WeatherColors
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Populate WeatherIcons map (Sun, Moon, Cloud, Rain).
+   b. Populate WeatherColors map (Day=white, Night=Electric Route Blue, Rain=muted gray).
+
+2. Event SetWeather (EWeatherState NewState):
+   a. WeatherState = NewState.
+   b. Set Image_WeatherIcon from map.
+   c. Set TextBlock_WeatherLabel from enum name.
+   d. Set colors from WeatherColors.
+   e. Play fade transition (0.2s).
+
+3. Event OnDayNightChanged (bool bIsNight):
+   a. If bIsNight and WeatherState == Clear:
+      - SetWeather(Night).
+   b. Else if !bIsNight and WeatherState == Night:
+      - SetWeather(Clear).
+
+Custom Events / Functions:
+--------------------------
+- RefreshFromGameState(): Reads current weather from GameState.
