@@ -1,0 +1,492 @@
+{
+  "version": "1.0.0",
+  "project": "raceGPS",
+  "format_standard": {
+    "sample_rate_hz": 48000,
+    "bit_depth": 24,
+    "channels": "stereo_or_mono",
+    "container": "WAV",
+    "runtime_compress": "Ogg Vorbis 256 kbps for music/ambient; uncompressed WAV for one-shots < 2 s"
+  },
+  "sources": [
+    {
+      "name": "Sonniss GameAudioGDC Archive",
+      "url": "https://sonniss.com/gameaudiogdc/",
+      "license": "Royalty-Free (commercial use, no attribution required)",
+      "license_url": "https://sonniss.com/gameaudiogdc/",
+      "notes": "Annual GDC giveaway. ~160 GB total across 2015–2026 bundles. AI/ML training prohibited."
+    },
+    {
+      "name": "Kenney UI Audio",
+      "url": "https://www.kenney.nl/assets/ui-audio",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "50 interface sounds. Pre-converted to WAV in Godot packs."
+    },
+    {
+      "name": "Kenney Interface Sounds",
+      "url": "https://www.kenney.nl/assets/interface-sounds",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "100 interface sounds including clicks, snaps, confirm, back."
+    },
+    {
+      "name": "Kenney Impact Sounds",
+      "url": "https://www.kenney.nl/assets/impact-sounds",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "130 impact sounds. Useful for curb hits, collisions."
+    },
+    {
+      "name": "Kenney Music Jingles",
+      "url": "https://www.kenney.nl/assets/music-jingles",
+      "license": "CC0 1.0 Universal",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "85 music jingles. Good for win/lose stingers and menu themes."
+    },
+    {
+      "name": "Freesound.org — Vehicle Engine Sounds",
+      "url": "https://freesound.org/search/?q=racing+car+engine&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0 1.0 Universal (per sound)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "Filter by CC0. Search keywords: racecar, engine, idle, acceleration. Requires login to download."
+    },
+    {
+      "name": "Freesound.org — Tire / Skid Sounds",
+      "url": "https://freesound.org/search/?q=tire+skid&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0 1.0 Universal (per sound)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "Filter by CC0. Search keywords: skid, squeal, drift, rubber."
+    },
+    {
+      "name": "Freesound.org — Weather & Rain",
+      "url": "https://freesound.org/search/?q=rain+thunder&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0 1.0 Universal (per sound)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "Large selection of rain intensities and thunder cracks."
+    },
+    {
+      "name": "Signature Sounds — Rain and Thunder SFX Pack",
+      "url": "https://signaturesounds.org/rain-and-thunder-sfx-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "1.3 GB zipped. Gentle drizzle to heavy downpour + distant/explosive thunder. WAV format."
+    },
+    {
+      "name": "Signature Sounds — Roadside Recordings",
+      "url": "https://signaturesounds.org/roadside-recordings-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "588 MB. Traffic hum, tire drone, car engines, passing trucks. Great for city/highway ambience."
+    },
+    {
+      "name": "Signature Sounds — London Ambience",
+      "url": "https://signaturesounds.org/london-ambience-recordings-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "notes": "178 MB. City traffic, Underground rumble, bus swoosh. Good for urban race environments."
+    },
+    {
+      "name": "OpenGameArt — Vehicle Sound Packs",
+      "url": "https://opengameart.org/art-search?keys=vehicle+sound+engine",
+      "license": "Varies (filter CC0)",
+      "license_url": "https://opengameart.org/licenses",
+      "notes": "Filter by CC0 tag. Includes synthesized and recorded engine loops."
+    },
+    {
+      "name": "OpenGameArt — UI & Interface Sounds",
+      "url": "https://opengameart.org/art-search?keys=ui+interface+sound",
+      "license": "Varies (filter CC0)",
+      "license_url": "https://opengameart.org/licenses",
+      "notes": "Filter by CC0 tag. Beeps, clicks, confirmations."
+    },
+    {
+      "name": "BBC Sound Effects Library",
+      "url": "https://sound-effects.bbcrewind.co.uk/",
+      "license": "BBC RemArc License (personal, educational, research — commercial requires clearance)",
+      "license_url": "https://sound-effects.bbcrewind.co.uk/licensing",
+      "notes": "16,000+ historical recordings. Verify commercial rights before use. Not CC0. Listed for reference only."
+    }
+  ],
+  "recommended_packs": [
+    {
+      "pack_name": "Sonniss GDC 2024 Game Audio Bundle",
+      "download_page": "https://sonniss.com/gameaudiogdc/",
+      "size_gb": 27.5,
+      "highlights_for_racegps": [
+        "Car engine recordings (Kawasaki, Honda motorcycles, vintage Mustang brake squeals)",
+        "Environmental ambiences (city, highway, tunnel)",
+        "UI glitches and digital beeps",
+        "Metal impacts and mechanical rumbles"
+      ]
+    },
+    {
+      "pack_name": "Sonniss GDC 2023 Game Audio Bundle",
+      "download_page": "https://sonniss.com/gameaudiogdc/",
+      "size_gb": 44,
+      "highlights_for_racegps": [
+        "Field recordings suitable for tyre/road texture layers",
+        "Large vehicle pass-bys",
+        "Atmospheric wind and weather beds"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "A001",
+      "name": "Engine Idle Loop",
+      "category": "vehicle",
+      "subcategory": "engine",
+      "suggested_source": "Sonniss GDC bundle (car engine recordings) or Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=car+engine+idle&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0 or Sonniss Royalty-Free",
+      "use_case": "Player and AI vehicle idle state",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "loop_points": { "start_sample": 0, "end_sample": -1, "note": "Trim to stable RPM section; ensure zero-crossing at loop boundaries" },
+      "naming": "S_Engine_Idle_01.wav"
+    },
+    {
+      "id": "A002",
+      "name": "Engine Acceleration Loop",
+      "category": "vehicle",
+      "subcategory": "engine",
+      "suggested_source": "Sonniss GDC bundle",
+      "source_url": "https://sonniss.com/gameaudiogdc/",
+      "license": "Sonniss Royalty-Free",
+      "use_case": "Throttle-on engine layer, pitch-modulated in UE5",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "loop_points": { "start_sample": 0, "end_sample": -1, "note": "Use constant-RPM recording; avoid RPM ramp in source file" },
+      "naming": "S_Engine_Accel_01.wav"
+    },
+    {
+      "id": "A003",
+      "name": "Turbo Spool / Blow-off",
+      "category": "vehicle",
+      "subcategory": "turbo",
+      "suggested_source": "Freesound CC0 or Sonniss",
+      "source_url": "https://freesound.org/search/?q=turbo+blow+off&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0 or Sonniss Royalty-Free",
+      "use_case": "Turbo pressure release on throttle lift",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_Turbo_Blowoff_01.wav"
+    },
+    {
+      "id": "A004",
+      "name": "Gear Shift Mechanical",
+      "category": "vehicle",
+      "subcategory": "transmission",
+      "suggested_source": "Sonniss GDC or Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=gear+shift+mechanical&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0 or Sonniss Royalty-Free",
+      "use_case": "Gear change one-shot event",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_Gear_Shift_01.wav"
+    },
+    {
+      "id": "A005",
+      "name": "Rev Limiter Bounce",
+      "category": "vehicle",
+      "subcategory": "engine",
+      "suggested_source": "Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=rev+limiter+engine&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0",
+      "use_case": "Redline RPM stutter effect",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "loop_points": { "start_sample": 0, "end_sample": -1, "note": "Short 0.1–0.2 s loop for rapid gate effect" },
+      "naming": "S_Engine_RevLimit_01.wav"
+    },
+    {
+      "id": "A006",
+      "name": "Tire Skid Asphalt",
+      "category": "tire",
+      "subcategory": "skid",
+      "suggested_source": "Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=tire+skid+asphalt&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0",
+      "use_case": "Long skid on dry asphalt",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "loop_points": { "start_sample": 0, "end_sample": -1, "note": "Crossfade loop to avoid phasing" },
+      "naming": "S_Tire_Skid_Asphalt_01.wav"
+    },
+    {
+      "id": "A007",
+      "name": "Tire Skid Wet",
+      "category": "tire",
+      "subcategory": "skid",
+      "suggested_source": "Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=tire+skid+wet&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0",
+      "use_case": "Skid on wet pavement during rain",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Tire_Skid_Wet_01.wav"
+    },
+    {
+      "id": "A008",
+      "name": "Tire Gravel Spray",
+      "category": "tire",
+      "subcategory": "gravel",
+      "suggested_source": "Sonniss GDC or Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=gravel+spray+car&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0 or Sonniss Royalty-Free",
+      "use_case": "Loose surface driving and drifting",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Tire_Gravel_01.wav"
+    },
+    {
+      "id": "A009",
+      "name": "Curb Hit",
+      "category": "tire",
+      "subcategory": "impact",
+      "suggested_source": "Kenney Impact Sounds or Sonniss",
+      "source_url": "https://www.kenney.nl/assets/impact-sounds",
+      "license": "CC0 (Kenney) or Sonniss Royalty-Free",
+      "use_case": "Suspension compression impact with curb",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_Tire_CurbHit_01.wav"
+    },
+    {
+      "id": "A010",
+      "name": "City Ambience Day",
+      "category": "environment",
+      "subcategory": "ambience",
+      "suggested_source": "Signature Sounds London Ambience or Sonniss",
+      "source_url": "https://signaturesounds.org/london-ambience-recordings-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "use_case": "3D ambient box for city districts",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "loop_points": { "start_sample": 0, "end_sample": -1, "note": "Select 30–60 s seamless section" },
+      "naming": "S_Ambience_City_Day_01.wav"
+    },
+    {
+      "id": "A011",
+      "name": "Highway Traffic Drone",
+      "category": "environment",
+      "subcategory": "ambience",
+      "suggested_source": "Signature Sounds Roadside Recordings",
+      "source_url": "https://signaturesounds.org/roadside-recordings-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "use_case": "Highway and overpass ambient bed",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Ambience_Highway_01.wav"
+    },
+    {
+      "id": "A012",
+      "name": "Birds Morning",
+      "category": "environment",
+      "subcategory": "nature",
+      "suggested_source": "Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=morning+birds&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0",
+      "use_case": "Daytime nature layer in park/suburban tracks",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Ambience_Birds_Day_01.wav"
+    },
+    {
+      "id": "A013",
+      "name": "UI Click",
+      "category": "ui",
+      "subcategory": "click",
+      "suggested_source": "Kenney UI Audio",
+      "source_url": "https://www.kenney.nl/assets/ui-audio",
+      "license": "CC0",
+      "use_case": "Menu button press",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_UI_Click_01.wav"
+    },
+    {
+      "id": "A014",
+      "name": "UI Hover",
+      "category": "ui",
+      "subcategory": "hover",
+      "suggested_source": "Kenney Interface Sounds",
+      "source_url": "https://www.kenney.nl/assets/interface-sounds",
+      "license": "CC0",
+      "use_case": "Menu focus change",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_UI_Hover_01.wav"
+    },
+    {
+      "id": "A015",
+      "name": "UI Select",
+      "category": "ui",
+      "subcategory": "select",
+      "suggested_source": "Kenney UI Audio",
+      "source_url": "https://www.kenney.nl/assets/ui-audio",
+      "license": "CC0",
+      "use_case": "Confirm / accept action",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_UI_Select_01.wav"
+    },
+    {
+      "id": "A016",
+      "name": "UI Back",
+      "category": "ui",
+      "subcategory": "back",
+      "suggested_source": "Kenney Interface Sounds",
+      "source_url": "https://www.kenney.nl/assets/interface-sounds",
+      "license": "CC0",
+      "use_case": "Cancel / back navigation",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_UI_Back_01.wav"
+    },
+    {
+      "id": "A017",
+      "name": "Countdown Beep",
+      "category": "ui",
+      "subcategory": "countdown",
+      "suggested_source": "Kenney Interface Sounds or synthesize",
+      "source_url": "https://www.kenney.nl/assets/interface-sounds",
+      "license": "CC0",
+      "use_case": "3-2-1 race start beeps",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_UI_Count_Beep_01.wav"
+    },
+    {
+      "id": "A018",
+      "name": "Checkpoint Pass",
+      "category": "ui",
+      "subcategory": "checkpoint",
+      "suggested_source": "Kenney Music Jingles or synthesize",
+      "source_url": "https://www.kenney.nl/assets/music-jingles",
+      "license": "CC0",
+      "use_case": "Split time / checkpoint positive feedback",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_UI_Check_01.wav"
+    },
+    {
+      "id": "A019",
+      "name": "Menu Theme",
+      "category": "music",
+      "subcategory": "menu",
+      "suggested_source": "OpenGameArt CC0 music or original",
+      "source_url": "https://opengameart.org/art-search?keys=racing+music&field_art_type_tid%5B%5D=12",
+      "license": "CC0 (verify per track)",
+      "use_case": "Main menu background music",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Music_Menu_01.ogg"
+    },
+    {
+      "id": "A020",
+      "name": "Race Theme",
+      "category": "music",
+      "subcategory": "race",
+      "suggested_source": "OpenGameArt CC0 music or original",
+      "source_url": "https://opengameart.org/art-search?keys=electronic+action+music&field_art_type_tid%5B%5D=12",
+      "license": "CC0 (verify per track)",
+      "use_case": "In-race background music",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Music_Race_01.ogg"
+    },
+    {
+      "id": "A021",
+      "name": "Win Stinger",
+      "category": "music",
+      "subcategory": "stinger",
+      "suggested_source": "Kenney Music Jingles",
+      "source_url": "https://www.kenney.nl/assets/music-jingles",
+      "license": "CC0",
+      "use_case": "Race completion positive stinger",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_Music_Win_01.wav"
+    },
+    {
+      "id": "A022",
+      "name": "Ghost Engine",
+      "category": "ghost",
+      "subcategory": "engine",
+      "suggested_source": "Reuse player engine asset with high-pass filter in UE5",
+      "source_url": "",
+      "license": "Same as source engine asset",
+      "use_case": "Ghost replay vehicle audio",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Ghost_Engine_01.wav"
+    },
+    {
+      "id": "A023",
+      "name": "Rain Light",
+      "category": "weather",
+      "subcategory": "rain",
+      "suggested_source": "Signature Sounds Rain Pack or Freesound CC0",
+      "source_url": "https://signaturesounds.org/rain-and-thunder-sfx-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "use_case": "Light rain ambience",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Weather_Rain_Light_01.wav"
+    },
+    {
+      "id": "A024",
+      "name": "Rain Heavy",
+      "category": "weather",
+      "subcategory": "rain",
+      "suggested_source": "Signature Sounds Rain Pack",
+      "source_url": "https://signaturesounds.org/rain-and-thunder-sfx-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "use_case": "Heavy rain + thunder ambience",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Weather_Rain_Heavy_01.wav"
+    },
+    {
+      "id": "A025",
+      "name": "Thunder Crack",
+      "category": "weather",
+      "subcategory": "thunder",
+      "suggested_source": "Signature Sounds Rain Pack",
+      "source_url": "https://signaturesounds.org/rain-and-thunder-sfx-sample-pack-cc0-free-to-download",
+      "license": "CC0",
+      "use_case": "Lightning strike one-shot",
+      "format": "WAV 48kHz/24bit",
+      "loop": false,
+      "naming": "S_Weather_Thunder_01.wav"
+    },
+    {
+      "id": "A026",
+      "name": "Wind Snow",
+      "category": "weather",
+      "subcategory": "wind",
+      "suggested_source": "Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=wind+snow+howl&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0",
+      "use_case": "Winter / snow race condition",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Weather_Wind_Snow_01.wav"
+    },
+    {
+      "id": "A027",
+      "name": "Rain on Windshield",
+      "category": "weather",
+      "subcategory": "rain",
+      "suggested_source": "Freesound CC0",
+      "source_url": "https://freesound.org/search/?q=rain+windshield+car+interior&f=license%3A%22Creative+Commons+0%22",
+      "license": "CC0",
+      "use_case": "Interior cabin rain during cockpit camera",
+      "format": "WAV 48kHz/24bit",
+      "loop": true,
+      "naming": "S_Weather_Rain_Cabin_01.wav"
+    }
+  ]
+}
