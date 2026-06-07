@@ -1,0 +1,91 @@
+Blueprint Widget Stub: WBP_Garage
+=================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Root widget for the Garage screen. Split-screen layout: left 60% shows a 3D
+vehicle preview (render target), right 40% shows customization panel with tabs,
+part selectors, performance stats, and save controls.
+
+Widget Hierarchy:
+-----------------
+- CanvasPanel (Root)
+  - Border_Background (full screen, showroom gradient)
+  - HorizontalBox_SplitLayout
+    - SizeBox_Viewport (Width Override 60%, fills height)
+      - Image_VehicleViewport (displays RT_VehiclePreview render target)
+      - Overlay_ViewportControls
+        - TextBlock_HelpText ("Drag to rotate • Scroll to zoom", bottom-center, Caption)
+        - WBP_ButtonIcon (Reset Camera, bottom-right)
+    - Border_Panel (Width Override 40%, Surface/800, left border 1px)
+      - VerticalBox_CustomizationPanel (padding 24px, gap 16px)
+        - TextBlock_Title ("GARAGE", Heading/L, white)
+        - WBP_PartSelector (tab bar + part grid)
+        - WBP_PerformancePresetSelector (combo box)
+        - WBP_PerformanceStats (6 stat bars)
+        - HorizontalBox_BuildNameRow (gap 8px)
+          - EditableTextBox_BuildName (max 24 chars, placeholder "Build Name...")
+          - WBP_ButtonPrimary ("SAVE BUILD")
+        - TextBlock_TierLabel ("TIER: GOLD", 14px, Caution Amber)
+        - WBP_ButtonSecondary ("BACK TO MENU", bottom)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) UTextureRenderTarget2D* VehicleRenderTarget
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<APawn> VehiclePreviewClass
+- UPROPERTY(BlueprintReadWrite) FString CurrentBuildName
+- UPROPERTY(BlueprintReadWrite) FVehicleBuildData CurrentBuildData
+- UPROPERTY(BlueprintReadWrite) float CameraOrbitSpeed = 1.0f
+- UPROPERTY(BlueprintReadWrite) float CameraZoomSpeed = 1.0f
+- UPROPERTY(BlueprintReadWrite) float IdleAutoRotateDelay = 5.0f
+- UPROPERTY(BlueprintReadWrite) float IdleAutoRotateSpeed = 2.0f
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Spawn VehiclePreviewClass into a hidden sub-level or streaming level.
+   b. Set up SceneCapture2D component targeting VehicleRenderTarget.
+   c. Bind mouse drag / wheel events to viewport image.
+   d. Initialize PartSelector with current build data.
+   e. Animate panel slide-in from right (0.3s, Ease-Out).
+
+2. Event OnMouseDragViewport (FVector2D Delta):
+   a. If LMB held: rotate SceneCapture around vehicle (Yaw += Delta.X * CameraOrbitSpeed).
+   b. Clamp Pitch between -10° and 60°.
+   c. Reset IdleAutoRotateDelay timer.
+
+3. Event OnMouseWheelViewport (float Delta):
+   a. Adjust SceneCapture FOV between 40° and 90°.
+   b. Reset IdleAutoRotateDelay timer.
+
+4. Event OnResetCameraClicked:
+   a. Lerp camera to default position (FOV 60°, Yaw 0°, Pitch 15°) over 0.5s.
+
+5. Event Tick:
+   a. If no input for IdleAutoRotateDelay seconds, auto-rotate yaw (IdleAutoRotateSpeed deg/sec).
+
+6. Event OnPartChanged (EPartCategory Category, FPartData NewPart):
+   a. Update CurrentBuildData.
+   b. Call ApplyVisualChangesToVehicle(Category, NewPart).
+   c. Trigger WBP_PerformanceStats::RefreshStats with new values.
+   d. Update TierLabel based on total build value.
+
+7. Event OnSaveBuildClicked:
+   a. Validate BuildName (alphanumeric + spaces, not empty).
+   b. Serialize CurrentBuildData to JSON.
+   c. Write to Saved/builds/<BuildName>.json.
+   d. Show toast: "Build Saved" (Success Green, 2s).
+   e. Play save sound.
+
+8. Event OnBackClicked:
+   a. Fade out screen (0.2s).
+   b. Destroy vehicle preview pawn.
+   c. Return to Main Menu.
+
+Custom Events / Functions:
+--------------------------
+- ApplyVisualChangesToVehicle(EPartCategory, FPartData): Updates materials, meshes, decals.
+- CalculateTier(): Returns ETier based on total build cost/complexity.
+- CaptureVehicleThumbnail(): Saves RT snapshot for use in End Screen.

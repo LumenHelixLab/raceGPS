@@ -1,0 +1,56 @@
+Blueprint Widget Stub: WBP_PerformanceStats
+===========================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Displays six performance stat bars for the current vehicle build in the Garage.
+Bars smoothly animate to new values when parts are changed.
+
+Widget Hierarchy:
+-----------------
+- VerticalBox (Root, gap 12px)
+  - HorizontalBox_StatRow (repeated 6 times)
+    - SizeBox_Icon (32×32px)
+      - Image_StatIcon (from icon set)
+    - SizeBox_Label (100px width)
+      - TextBlock_StatName (14px, Body/S, white)
+    - SizeBox_Bar (fills remaining width)
+      - Overlay_BarContainer
+        - ProgressBar_StatBar (8px height, rounded caps, category color)
+        - TextBlock_StatValue (right-aligned, 14px, Mono)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float TopSpeed = 0.0f       // 0-300
+- UPROPERTY(BlueprintReadWrite) float Acceleration = 0.0f   // 0-100
+- UPROPERTY(BlueprintReadWrite) float Handling = 0.0f       // 0-100
+- UPROPERTY(BlueprintReadWrite) float Drift = 0.0f          // 0-100
+- UPROPERTY(BlueprintReadWrite) float Grip = 0.0f           // 0-100
+- UPROPERTY(BlueprintReadWrite) float Weight = 1500.0f      // 800-2000
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Initialize all ProgressBar values to 0.
+   b. Animate bars filling to current values (0.5s, Ease-Out, staggered 0.05s).
+
+2. Event RefreshStats (FVehicleStats NewStats):
+   a. For each stat:
+      - Store target value.
+      - Play Widget Animation "BarLerp_<StatName>" (0.4s, Ease-Out).
+      - ProgressBar percent = target / max.
+      - TextBlock value updates every tick of animation.
+   b. If stat increased from previous, flash bar color brighter (0.2s).
+   c. If stat decreased, flash bar color darker briefly.
+
+3. Event OnPresetSelected (FVehicleStats PresetStats):
+   a. Call RefreshStats(PresetStats).
+   b. All bars animate simultaneously (no stagger) for faster feedback.
+
+Custom Events / Functions:
+--------------------------
+- SetStatValues(FVehicleStats): Direct setter without animation.
+- GetColorForStat(EStatType): Returns mapped color (Speed=Blue, Accel=Green, etc.).
+- FormatStatValue(EStatType, float): Returns formatted string with units.

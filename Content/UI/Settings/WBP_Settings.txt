@@ -1,0 +1,96 @@
+Blueprint Widget Stub: WBP_Settings
+===================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Tabbed settings interface. Left vertical tab list (200px) switches the right
+content panel. Supports Graphics, Audio, Controls, and Display categories.
+Handles apply/revert logic and restart warnings.
+
+Widget Hierarchy:
+-----------------
+- CanvasPanel (Root)
+  - Border_Background (full screen, Surface/900 at 95% opacity)
+  - HorizontalBox_Layout (padding 48px, gap 0px)
+    - Border_TabList (200px width, Surface/800, right border 1px)
+      - VerticalBox_Tabs (gap 4px, padding 16px)
+        - WBP_SettingsTab ("GRAPHICS", active)
+        - WBP_SettingsTab ("AUDIO")
+        - WBP_SettingsTab ("CONTROLS")
+        - WBP_SettingsTab ("DISPLAY")
+      - Spacer (fills space)
+      - WBP_ButtonSecondary ("RESET ALL", bottom)
+      - WBP_ButtonPrimary ("APPLY", bottom)
+      - WBP_ButtonGhost ("BACK / CLOSE", bottom)
+    - Border_ContentPanel (fills remaining width, Surface/900)
+      - ScrollBox_SettingsContent (padding 32px)
+        - WBP_GraphicsSettings (default visible)
+        - WBP_AudioSettings (hidden)
+        - WBP_ControlsSettings (hidden)
+        - WBP_DisplaySettings (hidden)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) ESettingsCategory ActiveCategory
+- UPROPERTY(BlueprintReadWrite) bool bHasUnsavedChanges = false
+- UPROPERTY(BlueprintReadWrite) bool bRequiresRestart = false
+- UPROPERTY(BlueprintReadWrite) TMap<FString, FString> PendingChanges
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> ConfirmDialogClass
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> RemapOverlayClass
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Load current settings from GameUserSettings and custom INIs.
+   b. Populate all sub-widgets with current values.
+   c. Animate panel slide-in from right (0.3s, Ease-Out).
+
+2. Event OnTabClicked (ESettingsCategory Category):
+   a. If Category == ActiveCategory, return.
+   b. Fade out current content panel (0.1s).
+   c. Switch visibility to new category widget.
+   d. Fade in new content panel (0.2s).
+   e. Update tab active/inactive styles.
+
+3. Event OnSettingChanged (FString SettingName, FString NewValue):
+   a. Store in PendingChanges.
+   b. bHasUnsavedChanges = true.
+   c. Check if SettingName requires restart (maintain a static list).
+   d. If requires restart, bRequiresRestart = true.
+   e. Update Apply button style (pulse if unsaved).
+
+4. Event OnApplyClicked:
+   a. For each PendingChanges entry:
+      - Apply to GameUserSettings or Input.ini.
+   b. Call GameUserSettings->ApplySettings(true).
+   c. Save config.
+   d. Clear PendingChanges.
+   e. bHasUnsavedChanges = false.
+   f. If bRequiresRestart:
+      - Show restart warning dialog.
+      - Offer "Restart Now" or "Restart Later".
+   g. Play confirm sound.
+
+5. Event OnResetAllClicked:
+   a. Show confirmation dialog.
+   b. On confirm: reset all settings to defaults.
+   c. Refresh all sub-widgets.
+   d. Call OnApplyClicked implicitly.
+
+6. Event OnBackClicked:
+   a. If bHasUnsavedChanges:
+      - Show "Unsaved Changes" dialog.
+      - Options: "Apply & Exit", "Discard & Exit", "Cancel".
+   b. Else: Close settings widget.
+
+7. Event OnKeyDown (FKeyEvent):
+   a. If Esc pressed: call OnBackClicked.
+
+Custom Events / Functions:
+--------------------------
+- LoadSettings(): Reads all settings into memory.
+- ApplySettings(): Writes pending changes to disk.
+- RevertSettings(): Discards pending changes, reverts UI.
+- ShowRestartDialog(): Modal explaining restart requirement.

@@ -1,0 +1,103 @@
+Blueprint Widget Stub: WBP_EndScreen
+====================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Post-race results screen displayed after crossing the finish line. Three-column
+layout showing final time, medals, drift score, vehicle build, ghost comparison,
+XP progress, and navigation actions.
+
+Widget Hierarchy:
+-----------------
+- CanvasPanel (Root)
+  - Image_BackgroundScreenshot (blurred finish-line screenshot, full screen)
+  - Border_DarkOverlay (Surface/900 at 70% opacity)
+  - HorizontalBox_ThreeColumn (padding 48px, gap 32px, fills screen)
+    - VerticalBox_LeftColumn (width 30%, gap 24px)
+      - TextBlock_FinalTimeLabel ("FINAL TIME", Heading/S, white)
+      - TextBlock_FinalTime ("02:14.892", Display/XL, Mono, white)
+      - Image_MedalIcon (Gold/Silver/Bronze, 96×96px, pulse on appear)
+      - TextBlock_BestLap ("Best Lap: 00:42.103", 32px, Electric Route Blue)
+      - Spacer
+      - TextBlock_DriftScoreLabel ("DRIFT SCORE", Heading/S, white)
+      - TextBlock_DriftScoreTotal ("128,450", 48px, Mono, Pursuit Red)
+      - HorizontalBox_CollisionRow
+        - TextBlock_CollisionLabel ("Collisions: ", Body/M)
+        - TextBlock_CollisionCount ("2", Body/M, Pursuit Red)
+    - VerticalBox_CenterColumn (width 40%, gap 24px)
+      - WBP_VehicleBuildDisplay (thumbnail, name, tier, mini stats)
+      - Border_GhostComparison (Elevated Card style)
+        - TextBlock_GhostDelta ("Ghost Δ -1.24s", 28px, color based on sign)
+        - Image_GhostSparkline (200×40px, checkpoint delta graph)
+        - TextBlock_GhostLabel ("vs Your Best", 14px, Caption)
+    - VerticalBox_RightColumn (width 30%, gap 24px)
+      - TextBlock_LevelLabel ("LEVEL 12", Heading/M, white)
+      - ProgressBar_XPBar (fills from pre-race to new value)
+      - TextBlock_XPGained ("+325 XP", 24px, Neon GPS Green)
+      - VerticalBox_XPBreakdown (gap 4px, Caption style)
+      - Spacer
+      - WBP_ButtonPrimary ("NEXT RACE")
+      - WBP_ButtonSecondary ("GARAGE")
+      - WBP_ButtonSecondary ("SHARE SCREENSHOT")
+      - WBP_ButtonGhost ("MAIN MENU")
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float FinalTime = 0.0f
+- UPROPERTY(BlueprintReadWrite) float BestLapTime = 0.0f
+- UPROPERTY(BlueprintReadWrite) float DriftScore = 0.0f
+- UPROPERTY(BlueprintReadWrite) int32 CollisionCount = 0
+- UPROPERTY(BlueprintReadWrite) EMedal EarnedMedal
+- UPROPERTY(BlueprintReadWrite) FVehicleBuildData VehicleBuild
+- UPROPERTY(BlueprintReadWrite) float GhostDelta = 0.0f
+- UPROPERTY(BlueprintReadWrite) int32 PlayerLevel
+- UPROPERTY(BlueprintReadWrite) float PreRaceXP
+- UPROPERTY(BlueprintReadWrite) float PostRaceXP
+- UPROPERTY(BlueprintReadWrite) float XPToNextLevel
+- UPROPERTY(BlueprintReadWrite) TArray<FXPSource> XPSources
+- UPROPERTY(BlueprintReadWrite) UTexture2D* FinishLineScreenshot
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set GameMode paused (or restrict input to UIOnly).
+   b. Capture FinishLineScreenshot via FScreenshotRequest or SceneCapture.
+   c. Set background image with heavy blur material.
+   d. Populate all exposed variables from RaceManager.
+   e. Animate entry sequence:
+      - Column 1: fade in + slide up (0.3s, 0.0s delay).
+      - Column 2: fade in + slide up (0.3s, 0.1s delay).
+      - Column 3: fade in + slide up (0.3s, 0.2s delay).
+   f. Animate FinalTime count-up from 0 (1.5s, Ease-Out).
+   g. Animate DriftScore count-up from 0 (1.5s, Ease-Out, 0.3s delay).
+   h. Show medal icon with elastic pop (0.5s, 0.5s delay).
+   i. Animate XP bar fill (1.0s, Ease-Out, 0.8s delay).
+   j. If level up detected, show "LEVEL UP!" banner (slide-in 0.6s, 1.2s delay).
+
+2. Event OnNextRaceClicked:
+   a. Play click sound.
+   b. Get next route from ProgressionManager.
+   c. Transition to LoadingScreen → Race.
+
+3. Event OnGarageClicked:
+   a. Play click sound.
+   b. Open Level "Garage" (or push Garage widget).
+
+4. Event OnShareScreenshotClicked:
+   a. Play click sound.
+   b. Save FinishLineScreenshot to Saved/Screenshots/EndScreen_<timestamp>.png.
+   c. Copy file path to clipboard.
+   d. Show toast: "Screenshot saved to Screenshots folder."
+
+5. Event OnMainMenuClicked:
+   a. Play click sound.
+   b. Fade out (0.3s).
+   c. Open Level "MainMenu".
+
+Custom Events / Functions:
+--------------------------
+- PopulateResults(FRaceResultsData): One-shot data population.
+- GenerateGhostSparkline(TArray<float> CheckPointDeltas): Builds texture/graph.
+- PlayLevelUpAnimation(): Plays level-up banner and sound.

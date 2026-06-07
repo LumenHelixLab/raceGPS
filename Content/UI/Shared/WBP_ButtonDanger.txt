@@ -1,0 +1,57 @@
+Blueprint Widget Stub: WBP_ButtonDanger
+=======================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Destructive action button. Pursuit Red background with white text. Used for
+Quit, Delete, Restart (with confirmation), and other irreversible actions.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (320×56px, min 48×48px)
+  - Border_ButtonBg (Pursuit Red fill, border radius 4px)
+    - HorizontalBox_Content (centered, gap 8px, padding 0px 16px)
+      - Image_Icon (optional, 20×20px, white)
+      - TextBlock_Label ("BUTTON", 16px, Rajdhani SemiBold, ALL CAPS, white)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite, meta=(Multiline=false)) FText ButtonText
+- UPROPERTY(BlueprintReadWrite) UTexture2D* IconTexture
+- UPROPERTY(BlueprintReadWrite) bool bShowIcon = false
+- UPROPERTY(BlueprintReadWrite) bool bIsDisabled = false
+- UPROPERTY(BlueprintReadWrite) FLinearColor NormalColor = Pursuit Red (#FF2A2A)
+- UPROPERTY(BlueprintReadWrite) FLinearColor HoverColor = #FF5555
+- UPROPERTY(BlueprintReadWrite) FLinearColor PressedColor = #CC0000
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set TextBlock_Label from ButtonText.
+   b. Set Border_ButtonBg color to NormalColor.
+
+2. Event OnMouseEnter:
+   a. If bIsDisabled, return.
+   b. Animate color to HoverColor (0.15s).
+   c. Scale to 1.02 (0.15s).
+
+3. Event OnMouseLeave:
+   a. Animate color to NormalColor (0.15s).
+   b. Scale to 1.0 (0.15s).
+
+4. Event OnMouseButtonDown:
+   a. Animate color to PressedColor (0.05s).
+   b. Scale to 0.98 (0.05s).
+   c. Play warning sound.
+
+5. Event OnMouseButtonUp:
+   a. Animate color to HoverColor (0.1s).
+   b. Scale to 1.02 (0.1s).
+   c. Execute OnClicked.
+
+Custom Events / Functions:
+--------------------------
+- SetText(FText): Updates label.
+- SetDisabled(bool): Updates state.

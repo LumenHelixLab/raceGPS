@@ -1,0 +1,63 @@
+Blueprint Widget Stub: WBP_LapTimer
+===================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Displays current lap time, best lap, and checkpoint delta. Positioned at the
+top-center of the HUD.
+
+Widget Hierarchy:
+-----------------
+- VerticalBox (centered, gap 4px)
+  - HorizontalBox_DeltaRow (centered, visible only after first checkpoint)
+    - TextBlock_DeltaSign ("+", 20px, Mono)
+    - TextBlock_DeltaValue ("0.00", 20px, Mono)
+  - TextBlock_CurrentLap ("00:00.000", 48px, Mono, Neon GPS Green)
+  - TextBlock_BestLap ("PB 00:00.000", 24px, Mono, Electric Route Blue)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float CurrentLapTime = 0.0f
+- UPROPERTY(BlueprintReadWrite) float BestLapTime = 0.0f
+- UPROPERTY(BlueprintReadWrite) float LastCheckpointDelta = 0.0f
+- UPROPERTY(BlueprintReadWrite) bool bIsDeltaPositive = false
+- UPROPERTY(BlueprintReadWrite) bool bShowDelta = false
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set CurrentLapTime to 0.
+   b. Format and display BestLapTime from save data (or "--:--.---" if none).
+
+2. Event OnRaceStarted:
+   a. Start timer (set bIsTiming = true).
+
+3. Event Tick:
+   a. If bIsTiming:
+      - CurrentLapTime += DeltaTime.
+      - Update CurrentLap text every frame (format MM:SS.mmm).
+
+4. Event OnCheckpointPassed (int32 Index, float GhostTimeAtCheckpoint):
+   a. If GhostTimeAtCheckpoint > 0:
+      - Calculate delta = CurrentLapTime - GhostTimeAtCheckpoint.
+      - bIsDeltaPositive = delta >= 0.
+      - LastCheckpointDelta = FMath::Abs(delta).
+      - bShowDelta = true.
+      - Delta color: green if negative (faster), red if positive (slower).
+      - Trigger delta pop animation (scale 1.0→1.2→1.0, 0.2s).
+   b. Else: bShowDelta = false.
+
+5. Event OnRaceFinished:
+   a. bIsTiming = false.
+   b. If CurrentLapTime < BestLapTime (or BestLapTime == 0):
+      - BestLapTime = CurrentLapTime.
+      - Flash BestLap text (Neon GPS Green glow, 1.0s).
+      - Save new best lap to disk.
+
+Custom Events / Functions:
+--------------------------
+- FormatTime(float): Returns "MM:SS.mmm" string.
+- ResetTimer(): Clears current lap time.
+- FlashNewBest(): Plays best-lap celebration animation.

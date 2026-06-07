@@ -1,0 +1,62 @@
+Blueprint Widget Stub: WBP_PlayerProfile
+========================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Compact player profile badge displayed in the top-right corner of the Main Menu
+(and optionally other screens). Shows avatar, name, level, and total distance.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (400×80px)
+  - Border_Background (HUD Panel style)
+    - HorizontalBox_Root (padding 8px, gap 12px)
+      - Overlay_Avatar (64×64px)
+        - Image_AvatarFrame (circular mask, 2px Neon GPS Green ring)
+        - Image_AvatarIcon (default silhouette or custom texture)
+      - VerticalBox_Info
+        - TextBlock_PlayerName (16px, Rajdhani, white, max 16 chars)
+        - HorizontalBox_LevelRow (gap 8px)
+          - TextBlock_LevelLabel ("LVL", 10px, Caption)
+          - TextBlock_LevelValue ("12", 18px, Mono, Neon GPS Green)
+        - ProgressBar_XP (4px height, thin, Electric Route Blue fill)
+      - VerticalBox_Stats (right-aligned)
+        - TextBlock_DistanceLabel ("TOTAL DIST", 10px, Caption)
+        - TextBlock_DistanceValue ("1,240 km", 16px, Mono, white)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) FString PlayerName
+- UPROPERTY(BlueprintReadWrite) int32 PlayerLevel
+- UPROPERTY(BlueprintReadWrite) float CurrentXP
+- UPROPERTY(BlueprintReadWrite) float XPToNextLevel
+- UPROPERTY(BlueprintReadWrite) float TotalDistanceKm
+- UPROPERTY(BlueprintReadWrite) UTexture2D* AvatarTexture
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Bind to GameInstance OnProfileUpdated delegate.
+   b. Refresh display from current save slot data.
+
+2. Event RefreshDisplay:
+   a. Set PlayerName text (truncate with ellipsis if >16 chars).
+   b. Set Level text.
+   c. Set XP bar percent = CurrentXP / XPToNextLevel.
+   d. Animate XP bar fill (0.5s, Ease-Out) if value changed.
+   e. Format TotalDistanceKm with comma separators.
+   f. Set Avatar image (if null, use default silhouette texture).
+
+3. Event OnProfileUpdated (bound delegate):
+   a. Update exposed variables from save game.
+   b. Call RefreshDisplay.
+
+4. Event OnAvatarClicked (optional):
+   a. Open avatar selection dialog (future feature).
+
+Custom Events / Functions:
+--------------------------
+- SetProfileData(FPlayerProfileData Data): One-shot setter with auto-refresh.
+- PlayLevelUpAnimation(): Triggers scale bounce + color flash on level value.

@@ -1,0 +1,84 @@
+Blueprint Widget Stub: WBP_NeonHUD
+==================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Root HUD widget active during the Racing state. Aggregates all in-race HUD
+sub-widgets. Handles HUD visibility states, safe zones, and race event bindings.
+
+Widget Hierarchy:
+-----------------
+- CanvasPanel (Root, HitTestInvisible overall, specific children Interactive)
+  - WBP_Minimap (anchored top-right, 48px margin)
+  - WBP_WeatherIndicator (below minimap, 16px gap)
+  - WBP_LapTimer (anchored top-center)
+  - WBP_PositionIndicator (anchored top-left, 48px margin)
+  - WBP_CheckpointDistance (anchored top-center, 120px from top)
+  - VerticalBox_BottomCenter (anchored bottom-center, 32px margin)
+    - WBP_NitroMeter (above)
+    - WBP_RPMGauge (above)
+    - WBP_Speedometer (center)
+    - WBP_GearIndicator (right of speedometer, 24px gap)
+  - WBP_DriftScore (anchored bottom-left, aligned with speedometer)
+  - WBP_CountdownOverlay (full screen, visible only during countdown)
+  - WBP_TutorialOverlay (full screen, visible only during first-race tutorial)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float HUDScale = 1.0f
+- UPROPERTY(BlueprintReadWrite) float SafeZonePercent = 0.05f
+- UPROPERTY(BlueprintReadWrite) bool bShowMinimap = true
+- UPROPERTY(BlueprintReadWrite) bool bShowGhost = true
+- UPROPERTY(BlueprintReadWrite) bool bShowDriftScore = true
+- UPROPERTY(BlueprintReadWrite) bool bShowCheckpointDistance = true
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> CountdownClass
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> TutorialClass
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Bind to RaceManager OnRaceStateChanged.
+   b. Bind to VehiclePawn OnSpeedChanged, OnGearChanged, OnRPMChanged.
+   c. Bind to CheckpointManager OnCheckpointPassed.
+   d. Bind to DriftSystem OnDriftScoreChanged.
+   e. Apply HUDScale to all child SizeBox widgets.
+   f. Apply SafeZonePercent to canvas margins.
+
+2. Event OnRaceStateChanged (ERaceState NewState):
+   a. Loading: Hide all widgets, show loading spinner.
+   b. Countdown: Show CountdownOverlay (3..2..1..GO).
+   c. Racing: Fade in all HUD elements (0.3s), start timers.
+   d. Finished: Freeze HUD values, trigger EndScreen transition.
+
+3. Event OnSpeedChanged (float SpeedKmh):
+   a. Forward to WBP_Speedometer::SetSpeed(SpeedKmh).
+
+4. Event OnGearChanged (int32 Gear):
+   a. Forward to WBP_GearIndicator::SetGear(Gear).
+
+5. Event OnRPMChanged (float RPM, float MaxRPM, float RedlineRPM):
+   a. Forward to WBP_RPMGauge::SetRPM(RPM, MaxRPM, RedlineRPM).
+
+6. Event OnCheckpointPassed (int32 CheckpointIndex, float DistanceToNext):
+   a. Trigger WBP_CheckpointDistance::PulseAndUpdate(DistanceToNext).
+   b. Update WBP_LapTimer::CheckpointDelta.
+   c. Flash minimap next checkpoint (pulse animation).
+
+7. Event OnDriftScoreChanged (float TotalScore, float Multiplier, bool bIsDrifting):
+   a. Forward to WBP_DriftScore::UpdateScore(TotalScore, Multiplier, bIsDrifting).
+
+8. Event OnNitroChanged (float NitroPercent):
+   a. Forward to WBP_NitroMeter::SetPercent(NitroPercent).
+
+9. Event Tick:
+   a. Update minimap player position/rotation (every frame for smoothness).
+   b. Update checkpoint distance if within 500m (every frame).
+
+Custom Events / Functions:
+--------------------------
+- ShowHUD(): Fades in all elements.
+- HideHUD(): Fades out all elements.
+- SetHUDOpacity(float Opacity): Sets overall canvas opacity.
+- FlashHUD(EHUDFlashType Type): Triggers full-HUD flash (collision = red, boost = green).

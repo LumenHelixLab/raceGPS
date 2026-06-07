@@ -1,0 +1,57 @@
+Blueprint Widget Stub: WBP_Speedometer
+======================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Combined analog + digital speedometer. Analog needle rotates over a 270° arc.
+Digital readout shows integer km/h. Color shifts based on speed percentage.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (280×280px)
+  - Overlay (centered)
+    - Image_ArcBackground (270° ring, Surface/800, 240px diameter)
+    - Image_ArcFill (progress ring mask, dynamic)
+    - Image_Needle (rotates around center, pivot at bottom-center)
+    - TextBlock_DigitalSpeed ("000", 72px, Mono, center)
+    - TextBlock_UnitLabel ("km/h", 14px, Caption, below digital)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float CurrentSpeed = 0.0f
+- UPROPERTY(BlueprintReadWrite) float MaxSpeed = 300.0f
+- UPROPERTY(BlueprintReadWrite) float ArcStartAngle = 135.0f
+- UPROPERTY(BlueprintReadWrite) float ArcEndAngle = -135.0f
+- UPROPERTY(BlueprintReadWrite) FLinearColor ColorLow = White
+- UPROPERTY(BlueprintReadWrite) FLinearColor ColorMid = Neon GPS Green
+- UPROPERTY(BlueprintReadWrite) FLinearColor ColorHigh = Pursuit Red
+- UPROPERTY(BlueprintReadWrite) float ColorMidThreshold = 0.8f
+- UPROPERTY(BlueprintReadWrite) float ColorHighThreshold = 0.9f
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set needle rotation to ArcStartAngle.
+   b. Set digital speed to 0.
+
+2. Event SetSpeed (float SpeedKmh):
+   a. CurrentSpeed = FMath::Clamp(SpeedKmh, 0.0f, MaxSpeed).
+   b. Calculate percent = CurrentSpeed / MaxSpeed.
+   c. Target angle = Lerp(ArcStartAngle, ArcEndAngle, percent).
+   d. Animate needle rotation (0.05s, Snap easing) for responsiveness.
+   e. Update digital text every frame (no animation, immediate).
+   f. Update text color based on thresholds:
+      - percent < 0.8: White
+      - 0.8 <= percent < 0.9: Neon GPS Green
+      - >= 0.9: Pursuit Red
+   g. If percent >= 0.95, trigger subtle screen shake on parent HUD.
+
+3. Event Tick (optional, for needle smoothing):
+   a. Lerp current needle rotation toward target angle (high responsiveness).
+
+Custom Events / Functions:
+--------------------------
+- SetMaxSpeed(float): Adjusts scale (e.g., for different vehicle classes).
+- FlashBorder(): Brief white border flash on speed milestone (100/200/300 km/h).

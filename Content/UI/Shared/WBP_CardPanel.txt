@@ -1,0 +1,56 @@
+Blueprint Widget Stub: WBP_CardPanel
+====================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Reusable card/panel container with standard styling. Supports Standard,
+Elevated, and HUD variants. Can hold any child content via Named Slot.
+
+Widget Hierarchy:
+-----------------
+- Border_Root (bg + border + radius + shadow)
+  - ContentSlot (Named Slot: "Content", padding 24px)
+    - Default: Empty (assign child widgets in parent)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) ECardStyle CardStyle = Standard
+- UPROPERTY(BlueprintReadWrite) FLinearColor CustomBackgroundColor
+- UPROPERTY(BlueprintReadWrite) FLinearColor CustomBorderColor
+- UPROPERTY(BlueprintReadWrite) float BorderRadius = 8.0f
+- UPROPERTY(BlueprintReadWrite) float Padding = 24.0f
+- UPROPERTY(BlueprintReadWrite) bool bUseShadow = true
+- UPROPERTY(BlueprintReadWrite) bool bIsInteractive = false
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Apply style based on CardStyle enum:
+      - Standard: bg Surface/800 at 95%, border Surface/700, shadow enabled.
+      - Elevated: bg Surface/700 at 95%, border Surface/600, larger shadow.
+      - HUD: bg Black at 60%, border Surface/600 at 40%, blur backdrop, smaller padding.
+   b. If CustomBackgroundColor is set (not default), override bg color.
+   c. If CustomBorderColor is set, override border color.
+   d. Set Border_Root padding to Padding value.
+   e. Set shadow visibility based on bUseShadow.
+
+2. Event OnMouseEnter (only if bIsInteractive):
+   a. Animate border color brighter (Surface/600 → Surface/400, 0.2s).
+   b. Animate translate Y -2px (0.2s).
+
+3. Event OnMouseLeave (only if bIsInteractive):
+   a. Revert border color (0.2s).
+   b. Revert translate Y (0.2s).
+
+4. Event OnMouseButtonDown (only if bIsInteractive):
+   a. Scale to 0.99 (0.05s).
+   b. Execute OnClicked.
+
+Custom Events / Functions:
+--------------------------
+- SetStyle(ECardStyle): Re-applies style dynamically.
+- SetBackgroundColor(FLinearColor): Overrides bg.
+- SetBorderColor(FLinearColor): Overrides border.
+- SetPadding(float): Updates internal padding.

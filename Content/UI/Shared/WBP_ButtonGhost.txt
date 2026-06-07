@@ -1,0 +1,54 @@
+Blueprint Widget Stub: WBP_ButtonGhost
+======================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Transparent ghost button with subtle border. Used in pause menus, credits, and
+low-priority actions where minimal visual weight is desired.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (360×56px, min 48×48px)
+  - Border_ButtonBg (transparent fill, 1px white at 40% opacity, border radius 4px)
+    - HorizontalBox_Content (centered, gap 8px, padding 0px 16px)
+      - Image_Icon (optional, 20×20px, white)
+      - TextBlock_Label ("BUTTON", 16px, Rajdhani SemiBold, ALL CAPS, white)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite, meta=(Multiline=false)) FText ButtonText
+- UPROPERTY(BlueprintReadWrite) UTexture2D* IconTexture
+- UPROPERTY(BlueprintReadWrite) bool bShowIcon = false
+- UPROPERTY(BlueprintReadWrite) bool bIsDisabled = false
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set TextBlock_Label from ButtonText.
+   b. Set Image_Icon visibility.
+   c. Set bg opacity to 0%, border opacity to 40%.
+
+2. Event OnMouseEnter:
+   a. If bIsDisabled, return.
+   b. Animate bg opacity to 10% (0.2s).
+   c. Animate border opacity to 80% (0.2s).
+
+3. Event OnMouseLeave:
+   a. Animate bg opacity to 0% (0.2s).
+   b. Animate border opacity to 40% (0.2s).
+
+4. Event OnMouseButtonDown:
+   a. If bIsDisabled, return.
+   b. Animate bg opacity to 20% (0.05s).
+   c. Play press sound.
+
+5. Event OnMouseButtonUp:
+   a. Animate bg opacity to 10% (0.1s).
+   b. Execute OnClicked.
+
+Custom Events / Functions:
+--------------------------
+- SetText(FText): Updates label.
+- SetDisabled(bool): Updates state.

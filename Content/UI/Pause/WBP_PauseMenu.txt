@@ -1,0 +1,85 @@
+Blueprint Widget Stub: WBP_PauseMenu
+====================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Full-screen pause overlay with dim background and centered vertical button stack.
+Displays current lap time snapshot and provides resume, restart, settings, and
+quit options.
+
+Widget Hierarchy:
+-----------------
+- CanvasPanel (Root)
+  - Border_DimOverlay (full screen, Surface/900 at 85% opacity)
+  - VerticalBox_CenterContent (centered, gap 16px)
+    - TextBlock_PausedTitle ("PAUSED", Heading/L, white, letter-spacing 8px)
+    - Spacer (16px)
+    - TextBlock_LapSnapshot ("Current: 01:23.456", 32px, Mono, 70% opacity)
+    - Spacer (32px)
+    - WBP_ButtonGhost ("RESUME")
+    - WBP_ButtonGhost ("RESTART")
+    - WBP_ButtonGhost ("SETTINGS")
+    - WBP_ButtonDanger ("QUIT TO MENU")
+  - TextBlock_Hint ("Press P or Esc to resume", bottom-center, 14px, Caption)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) float CurrentLapSnapshot = 0.0f
+- UPROPERTY(BlueprintReadWrite) bool bSettingsOpen = false
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> SettingsWidgetClass
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> ConfirmDialogClass
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Capture CurrentLapSnapshot from RaceManager.
+   b. Set GameMode to paused (UGameplayStatics::SetGamePaused).
+   c. Set input mode to UIOnly.
+   d. Show mouse cursor.
+   e. Animate overlay fade-in (0.2s, Ease-Out).
+   f. Animate buttons staggered fade-in (0.05s delay each).
+
+2. Event OnResumeClicked:
+   a. Play click sound.
+   b. Animate overlay fade-out (0.2s).
+   c. On complete: Remove from viewport.
+   d. Set GameMode to unpaused.
+   e. Set input mode to GameOnly.
+   f. Hide mouse cursor.
+
+3. Event OnRestartClicked:
+   a. Play click sound.
+   b. Show confirmation dialog:
+      - Title: "Restart Race?"
+      - Message: "Current progress will be lost."
+      - Confirm: Reload current level (OpenLevel with same map name).
+      - Cancel: Close dialog.
+
+4. Event OnSettingsClicked:
+   a. Play click sound.
+   b. bSettingsOpen = true.
+   c. Spawn SettingsWidgetClass and add to viewport (overlay on top of pause).
+   d. Dim pause menu to 30% opacity while settings open.
+
+5. Event OnSettingsClosed:
+   a. bSettingsOpen = false.
+   b. Restore pause menu opacity to 100%.
+
+6. Event OnQuitToMenuClicked:
+   a. Play click sound.
+   b. Show confirmation dialog:
+      - Title: "Quit to Main Menu?"
+      - Message: "Current race progress will not be saved."
+      - Confirm: Open Level "MainMenu".
+      - Cancel: Close dialog.
+
+7. Event OnKeyDown (FKeyEvent):
+   a. If key is P or Esc and bSettingsOpen == false:
+      - Call OnResumeClicked.
+
+Custom Events / Functions:
+--------------------------
+- ShowPauseMenu(): Adds to viewport and triggers pause logic.
+- HidePauseMenu(): Removes from viewport and unpauses.

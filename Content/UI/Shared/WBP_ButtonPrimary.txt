@@ -1,0 +1,72 @@
+Blueprint Widget Stub: WBP_ButtonPrimary
+========================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Reusable primary action button. Neon GPS Green background, dark text. Used for
+the main call-to-action on any screen (Play, Save, Next Race, Apply).
+
+Widget Hierarchy:
+-----------------
+- SizeBox (320×56px, min 48×48px touch target)
+  - Border_ButtonBg (background fill, border radius 4px)
+    - HorizontalBox_Content (centered, gap 8px, padding 0px 16px)
+      - Image_Icon (optional, 20×20px, left)
+      - TextBlock_Label ("BUTTON", 16px, Rajdhani SemiBold, ALL CAPS)
+      - Spacer (if icon only on left)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite, meta=(Multiline=false)) FText ButtonText
+- UPROPERTY(BlueprintReadWrite) UTexture2D* IconTexture
+- UPROPERTY(BlueprintReadWrite) bool bShowIcon = false
+- UPROPERTY(BlueprintReadWrite) bool bIsDisabled = false
+- UPROPERTY(BlueprintReadWrite) FLinearColor NormalColor = Neon GPS Green (#00FF85)
+- UPROPERTY(BlueprintReadWrite) FLinearColor HoverColor = #33FFA0
+- UPROPERTY(BlueprintReadWrite) FLinearColor PressedColor = #00CC6A
+- UPROPERTY(BlueprintReadWrite) FLinearColor DisabledColor = Surface/700 (#2E2E2E)
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Set TextBlock_Label from ButtonText.
+   b. Set Image_Icon from IconTexture (visibility = bShowIcon ? Visible : Collapsed).
+   c. Set Border_ButtonBg color to NormalColor.
+   d. Set IsEnabled = !bIsDisabled.
+
+2. Event OnMouseEnter:
+   a. If bIsDisabled, return.
+   b. Animate Border_ButtonBg color to HoverColor (0.15s, Ease-Out).
+   c. Animate ScaleBox scale to 1.02 (0.15s, Ease-Out).
+   d. Play hover sound (subtle, low volume).
+
+3. Event OnMouseLeave:
+   a. Animate color back to NormalColor (0.15s, Ease-Out).
+   b. Animate scale back to 1.0 (0.15s, Ease-Out).
+
+4. Event OnMouseButtonDown (LMB):
+   a. If bIsDisabled, return.
+   b. Animate color to PressedColor (0.05s).
+   c. Animate scale to 0.98 (0.05s).
+   d. Play press sound.
+
+5. Event OnMouseButtonUp (LMB):
+   a. Animate color to HoverColor (0.1s).
+   b. Animate scale to 1.02 (0.1s).
+   c. Execute OnClicked delegate.
+
+6. Event OnFocusReceived:
+   a. Animate Border_ButtonBg color to HoverColor.
+   b. Add 2px white outline (or Neon GPS Green glow).
+
+7. Event OnFocusLost:
+   a. Remove outline/glow.
+   b. Animate color to NormalColor.
+
+Custom Events / Functions:
+--------------------------
+- SetText(FText): Updates button label.
+- SetDisabled(bool): Updates enabled state and visual style.
+- SimulateClick(): Triggers click animation and delegate programmatically.

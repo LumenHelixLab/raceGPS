@@ -1,0 +1,23 @@
+{
+  "name": "racegps-cityhub",
+  "version": "1.0.0",
+  "description": "CityHub Server — lightweight backend for raceGPS viral citypack system",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["racegps", "citypack", "ue5", "racing"],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {}
+}

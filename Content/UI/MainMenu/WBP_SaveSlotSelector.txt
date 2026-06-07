@@ -1,0 +1,61 @@
+Blueprint Widget Stub: WBP_SaveSlotSelector
+===========================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Modal overlay presented after clicking PLAY on the Main Menu. Displays three
+save slot cards with player data, or "New Game" placeholders for empty slots.
+
+Widget Hierarchy:
+-----------------
+- CanvasPanel (Root)
+  - Border_DimOverlay (full screen, Surface/900 at 85% opacity)
+  - Border_ModalBackground (centered, 1200×500px, Elevated Card style)
+    - TextBlock_Title ("SELECT SAVE", Heading/M, white)
+    - HorizontalBox_SlotRow (gap 24px, centered)
+      - WBP_SaveSlotCard (Slot 01)
+      - WBP_SaveSlotCard (Slot 02)
+      - WBP_SaveSlotCard (Slot 03)
+    - WBP_ButtonGhost ("BACK", bottom-center)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) int32 MaxSlots = 3
+- UPROPERTY(BlueprintReadWrite) TArray<FSaveSlotData> SlotDataArray
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> SaveSlotCardClass
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Load SlotDataArray from SaveGame subsystem (USaveGameManager::LoadAllSlots).
+   b. For each slot index 0..MaxSlots-1:
+      - Spawn SaveSlotCardClass.
+      - If slot exists: populate with SlotData (name, level, distance, avatar).
+      - If empty: show "New Game" state (ghost text, plus icon).
+   c. Animate modal in: scale 0.9→1.0 + opacity 0→1 (0.3s, Elastic).
+
+2. Event OnSlotSelected (int32 SlotIndex):
+   a. If slot is empty:
+      - Prompt for player name (WBP_TextInputDialog).
+      - On confirm: create new save slot, write to disk.
+   b. If slot exists:
+      - Set CurrentSaveSlotIndex in GameInstance.
+      - Load player profile into memory.
+      - Transition to Route Selection screen.
+
+3. Event OnSlotDeleteRequested (int32 SlotIndex):
+   a. Require Shift key held + click (or long-press on gamepad).
+   b. Show confirmation dialog.
+   c. On confirm: delete SaveGame object, refresh SlotDataArray, rebuild cards.
+
+4. Event OnBackClicked:
+   a. Animate modal out (scale 1.0→0.9 + fade, 0.2s).
+   b. Remove from viewport.
+   c. Resume background video brightness.
+
+Custom Events / Functions:
+--------------------------
+- RefreshSlots(): Reloads save data and rebuilds card widgets.
+- CreateNewSlot(int32 SlotIndex, FString PlayerName): Initializes new save game.

@@ -1,0 +1,78 @@
+Blueprint Widget Stub: WBP_MainMenu
+==================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Root widget for the Main Menu title screen. Displays the animated background,
+logo, tagline, vertical menu button stack, and optional player profile.
+
+Widget Hierarchy:
+-----------------
+- CanvasPanel (Root)
+  - Border_Background (fills canvas, hit-test invisible)
+    - Image_VideoBg (MediaPlayer texture bound to Akron timelapse loop)
+    - Border_Vignette (radial gradient overlay, 80% black)
+  - Overlay_CenterContent
+    - VerticalBox_LogoArea
+      - TextBlock_Logo ("raceGPS", Rajdhani SemiBold, 72px, Neon GPS Green glow)
+      - TextBlock_Tagline ("Drive the real world.", Inter Regular, 18px, Electric Route Blue)
+    - VerticalBox_MenuButtons (gap 16px, centered)
+      - WBP_ButtonPrimary ("PLAY")
+      - WBP_ButtonSecondary ("GARAGE")
+      - WBP_ButtonSecondary ("SETTINGS")
+      - WBP_ButtonGhost ("CREDITS")
+      - WBP_ButtonDanger ("QUIT")
+  - WBP_PlayerProfile (anchored top-right, 48px margin)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) UMediaPlayer* BackgroundMediaPlayer
+- UPROPERTY(BlueprintReadWrite) float LogoPulseSpeed = 2.0f
+- UPROPERTY(BlueprintReadWrite) FLinearColor LogoGlowColor = Neon GPS Green
+- UPROPERTY(BlueprintReadWrite) TArray<FMainMenuOptionData> MenuOptions
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Play MediaPlayer on loop (Akron timelapse video).
+   b. Bind button OnClicked delegates dynamically from MenuOptions array.
+   c. Animate logo glow opacity 0.5→1.0 loop (Widget Animation, 2s).
+   d. Fade in entire UI (opacity 0→1, 0.5s, Ease-Out).
+
+2. Event OnPlayClicked:
+   a. Play click sound (UI Confirm).
+   b. Add WBP_SaveSlotSelector to viewport (modal overlay).
+   c. Pause background video or dim to 30% brightness.
+
+3. Event OnGarageClicked:
+   a. Play click sound.
+   b. Trigger screen transition (fade to black 0.2s).
+   c. On fade complete: Open Level "Garage" or Add WBP_Garage to viewport.
+
+4. Event OnSettingsClicked:
+   a. Play click sound.
+   b. Add WBP_Settings to viewport (retains MainMenu underneath).
+
+5. Event OnCreditsClicked:
+   a. Play click sound.
+   b. Play credits scroll animation (vertical auto-scroll, 60s loop).
+   c. Any input dismisses credits.
+
+6. Event OnQuitClicked:
+   a. Play click sound.
+   b. Show confirmation dialog (WBP_ConfirmDialog):
+      - Title: "Quit to Desktop?"
+      - Message: "Unsaved progress will be lost."
+      - Confirm action: Console Command "quit".
+      - Cancel action: Remove dialog.
+
+7. Event Tick (optional):
+   a. Update background video brightness based on time-of-day override (if set).
+
+Custom Events / Functions:
+--------------------------
+- SetupMenuOptions(): Populates MenuOptions array and creates buttons.
+- FadeIn(): Plays fade-in animation.
+- FadeOut(): Plays fade-out animation, returns Event Dispatch OnFadeComplete.

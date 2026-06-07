@@ -1,0 +1,70 @@
+Blueprint Widget Stub: WBP_Minimap
+==================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Circular minimap displaying top-down road mesh, route ribbon, player/ghost/
+traffic pips, and checkpoint markers. Rendered via SceneCapture2D to a
+RenderTarget2D.
+
+Widget Hierarchy:
+-----------------
+- SizeBox (200×200px, circular mask via material)
+  - Overlay
+    - Image_MinimapRender (displays RT_Minimap, circular masked)
+    - Image_BorderRing (2px Surface/600, circular)
+    - Image_PlayerPip (Neon GPS Green triangle, 16×16px, center-anchored)
+    - Overlay_CheckpointPips (container for dynamic checkpoint icons)
+    - Overlay_GhostPip (Pursuit Red diamond, 60% opacity)
+    - Overlay_TrafficPips (small gray dots)
+    - Image_DirectionIndicator (top of circle, white arrow, optional)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) UTextureRenderTarget2D* MinimapRenderTarget
+- UPROPERTY(BlueprintReadWrite) AActor* PlayerActor
+- UPROPERTY(BlueprintReadWrite) AActor* GhostActor
+- UPROPERTY(BlueprintReadWrite) TArray<AActor*> CheckpointActors
+- UPROPERTY(BlueprintReadWrite) float ZoomSpeedScale = 1.0f
+- UPROPERTY(BlueprintReadWrite) float MinZoom = 800.0f    // ortho width in cm
+- UPROPERTY(BlueprintReadWrite) float MaxZoom = 2400.0f
+- UPROPERTY(BlueprintReadWrite) float ZoomLerpSpeed = 5.0f
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. Create dynamic material instance for circular mask.
+   b. Set up SceneCapture2D (orthographic, top-down, looking down -Z).
+   c. Assign MinimapRenderTarget to Image_MinimapRender.
+   d. Initialize checkpoint pip widgets.
+
+2. Event Tick:
+   a. If PlayerActor valid:
+      - Update SceneCapture location to PlayerActor location (X, Y only, fixed Z).
+      - Calculate target zoom based on player speed (faster = wider zoom).
+      - Lerp current ortho width toward target (ZoomLerpSpeed * DeltaTime).
+      - Update SceneCapture ortho width.
+   b. Update PlayerPip rotation to match PlayerActor yaw.
+   c. Update GhostPip position relative to player (local UV space).
+   d. Update checkpoint pips:
+      - Next checkpoint: white diamond, pulsing scale.
+      - Passed checkpoints: faded out or removed.
+   e. Update traffic pips (cull if >250m from player).
+   f. MinimapRenderTarget update frequency: 10Hz (controlled by timer, not Tick).
+
+3. Event OnCheckpointPassed (int32 Index):
+   a. Fade out passed checkpoint pip (0.3s).
+   b. Highlight next checkpoint pip (pulse animation starts).
+
+4. Event OnRaceFinished:
+   a. Stop SceneCapture updates.
+   b. Freeze final minimap state.
+
+Custom Events / Functions:
+--------------------------
+- SetPlayerActor(AActor*): Binds player reference.
+- SetGhostActor(AActor*): Binds ghost reference.
+- SetRouteActors(TArray<AActor*>): Sets checkpoint array.
+- ForceUpdate(): Immediately captures one frame.

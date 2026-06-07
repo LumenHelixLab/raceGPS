@@ -1,0 +1,71 @@
+Blueprint Widget Stub: WBP_PartSelector
+=======================================
+
+Parent Class: UUserWidget
+
+Description:
+------------
+Tabbed part selector for the Garage. Six category tabs switch the content of a
+scrollable grid showing available parts for the selected category.
+
+Widget Hierarchy:
+-----------------
+- VerticalBox (Root, gap 12px)
+  - HorizontalBox_TabBar (gap 0px, fills width)
+    - WBP_PartTab (Body Kit, active by default)
+    - WBP_PartTab (Paint)
+    - WBP_PartTab (Wheels)
+    - WBP_PartTab (Aero)
+    - WBP_PartTab (Lighting)
+    - WBP_PartTab (Decals)
+  - ScrollBox_PartGrid (fills remaining space, padding 8px)
+    - UniformGridPanel (3 columns, gap 12px)
+      - WBP_PartCard (repeated for each part in category)
+
+Exposed Variables:
+------------------
+- UPROPERTY(BlueprintReadWrite) TArray<FPartCategoryData> PartCategories
+- UPROPERTY(BlueprintReadWrite) EPartCategory ActiveCategory
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> PartTabClass
+- UPROPERTY(BlueprintReadWrite) TSubclassOf<UUserWidget> PartCardClass
+- UPROPERTY(BlueprintReadWrite) int32 GridColumns = 3
+
+Event Graph Logic:
+------------------
+1. Event Construct:
+   a. For each PartCategories entry, spawn PartTabClass and add to TabBar.
+   b. Set first tab as ActiveCategory.
+   c. PopulatePartGrid(ActiveCategory).
+
+2. Event OnTabClicked (EPartCategory Category):
+   a. If Category == ActiveCategory, do nothing.
+   b. Set previous tab to inactive style.
+   c. Set new tab to active style (Neon GPS Green bottom border).
+   d. ActiveCategory = Category.
+   e. Clear ScrollBox_PartGrid.
+   f. PopulatePartGrid(Category) with fade-in (0.2s).
+
+3. PopulatePartGrid (EPartCategory Category):
+   a. Get parts list from VehicleDataTable filtered by Category.
+   b. For each part:
+      - Spawn PartCardClass.
+      - Set thumbnail, name, cost, unlock status.
+      - Bind OnPartSelected delegate.
+      - Add to UniformGridPanel.
+   c. If category is "Paint" or "Lighting", show color picker overlay instead of grid.
+   d. If category is "Decals", show layer editor (future).
+
+4. Event OnPartSelected (FPartData Part):
+   a. If part is locked, show unlock requirements (level/cost).
+   b. If part is unlocked, mark as selected (green border on card).
+   c. Dispatch OnPartChanged event to parent WBP_Garage.
+   d. Play select sound.
+
+5. Event OnPartHovered (FPartData Part):
+   a. Show tooltip with part description and stat deltas (+/-).
+   b. Highlight card scale 1.05x (0.1s).
+
+Custom Events / Functions:
+--------------------------
+- RefreshUnlockStatus(): Re-evaluates locks based on player level/currency.
+- SetActiveCategory(EPartCategory): Programmatic tab switch.
