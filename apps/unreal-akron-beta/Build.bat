@@ -15,6 +15,30 @@ echo ==========================================
 echo raceGPS Akron Beta Build
 echo ==========================================
 
+REM Pre-build: Level spec staleness check
+set LEVEL_SPEC=%PROJECT_DIR%..\..\generated\AkronWorld_LevelSpec.json
+set UMAP=%PROJECT_DIR%Content\Maps\AkronWorld.umap
+set PLACEHOLDER=%PROJECT_DIR%Content\Maps\AkronWorld.umap.placeholder
+
+if not exist "%UMAP%" (
+    if exist "%PLACEHOLDER%" (
+        echo WARN: AkronWorld.umap is a placeholder. Level has not been created in the Editor yet.
+    ) else (
+        echo WARN: AkronWorld.umap not found.
+    )
+    echo        See Level Setup Guide: apps/unreal-akron-beta/README.md#level-setup-guide
+    echo.
+) else if exist "%LEVEL_SPEC%" (
+    for /f "usebackq delims=" %%a in (`powershell -NoProfile -Command "(Get-Item '%UMAP%').LastWriteTime -gt (Get-Item '%LEVEL_SPEC%').LastWriteTime"`) do (
+        if "%%a"=="False" (
+            echo WARN: AkronWorld.umap is older than the generated level spec.
+            echo        Re-import the level spec in UE5 Editor before packaging.
+            echo        See Level Setup Guide: apps/unreal-akron-beta/README.md#level-setup-guide
+            echo.
+        )
+    )
+)
+
 REM Find UE5 engine
 if exist "C:\Program Files\Epic Games\UE_5.5\Engine\Build\BatchFiles\Build.bat" (
     set UE5_BUILD="C:\Program Files\Epic Games\UE_5.5\Engine\Build\BatchFiles\Build.bat"

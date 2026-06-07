@@ -295,6 +295,117 @@ All coordinates in the JSON are **WGS84 (lat, lon)**. The `AkronXodrImporter` co
 
 ---
 
+## Level Setup Guide
+
+`AkronWorld.umap` is a placeholder binary that must be finalized inside the Unreal Editor. The pipeline below makes this trivial and reproducible.
+
+### Prerequisites
+
+- Unreal Engine 5.5 Editor (with **Python Editor Script Plugin** enabled)
+- Generated level spec (`generated/AkronWorld_LevelSpec.json`)
+
+### Step 1: Generate the Level Spec
+
+From the project root:
+
+```powershell
+cd D:\projects\racegps
+python tools/generate-level-spec.py
+```
+
+This reads the semantic manifest, routes, spawn points, and POIs and produces `generated/AkronWorld_LevelSpec.json` with all actor locations in UE5 world space.
+
+### Step 2: Open the Level in UE5 Editor
+
+1. Launch the project:
+   ```powershell
+   .\apps\unreal-akron-beta\raceGPSAkronBeta.uproject
+   ```
+2. In the Editor, open **Content/Maps/AkronWorld**
+3. If the map is empty (first time), add:
+   - A **DirectionalLight** (for the sun)
+   - A **SkyAtmosphere**
+   - A **PlayerStart** (the import script will replace its position)
+
+### Step 3: Import Actors via Python
+
+Enable the **Python Editor Script Plugin** (Edit → Plugins → Scripting).
+
+Open the **Python console** (Window → Developer Tools → Python):
+
+```python
+exec(open(r"D:\projects\racegps\tools\ue5-import-level-spec.py").read())
+```
+
+The script will:
+- Place `PlayerStart` actors at each spawn point
+- Create `SplineComponent` actors for every route
+- Place checkpoint gate actors (`BP_CheckpointGate` if available, otherwise plain `Actor`)
+- Rotate the directional light for the configured time-of-day
+- Add reflection captures near landmark POIs
+- Spawn traffic volume triggers along route paths
+
+If you prefer to preview the commands outside the Editor:
+
+```powershell
+python tools/ue5-import-level-spec.py
+```
+
+This prints the full `unreal.EditorLevelLibrary` command sequence without executing it.
+
+### Step 4: Build Lighting & Save
+
+1. **Build Lighting** — Build → Build Lighting Only (Production quality recommended for packaging)
+2. **Save the map** — File → Save Current → `Content/Maps/AkronWorld.umap`
+3. Delete `Content/Maps/AkronWorld.umap.placeholder` (optional)
+
+### Step 5: Package the Build
+
+```powershell
+cd apps\unreal-akron-beta
+.\Build.bat
+```
+
+The batch script will warn you if the map has not been saved since the last level-spec generation.
+
+---
+
+## Adding a New City
+
+The semantic compiler is city-agnostic. To add a new city:
+
+1. **Define bounds** in `tools/akron-semantic-compiler/compile_akron.py` (copy and rename the script):
+   ```python
+   NEW_CITY_BOUNDS = {
+       "west": -122.5,
+       "south": 37.7,
+       "east": -122.3,
+       "north": 37.9,
+   }
+   ```
+
+2. **Run the compiler**:
+   ```powershell
+   cd tools/akron-semantic-compiler
+   python compile_akron.py
+   ```
+   Output lands in `citypacks/<city-id>/`.
+
+3. **Generate the level spec**:
+   ```powershell
+   cd ../..
+   python tools/generate-level-spec.py
+   ```
+   *Note:* Update `generate-level-spec.py` to point to the new `citypacks/<city-id>/` directory and output a matching `generated/<City>World_LevelSpec.json`.
+
+4. **Create a new UE5 map** (`Content/Maps/<City>World.umap`) and run the UE5 import script against the new spec.
+
+5. **Add the citypack to `Build.bat`** so it is copied during packaging.
+
+For full compiler documentation, see `tools/akron-semantic-compiler/README.md`.
+
+---
+
 ## License
 
 MIT — Copyright LumenHelix Solutions
