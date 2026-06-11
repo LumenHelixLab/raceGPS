@@ -31,6 +31,8 @@ void ARuntimeCityLoader::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool ARuntimeCityLoader::LoadCitypack(const FString& Path)
 {
+    // Legacy experimental loader: retained for sandbox/runtime experiments,
+    // but AkronWorld + CruiseSprintGameMode is the primary world assembly path.
     FString JsonString;
     if (!FFileHelper::LoadFileToString(JsonString, *Path))
     {

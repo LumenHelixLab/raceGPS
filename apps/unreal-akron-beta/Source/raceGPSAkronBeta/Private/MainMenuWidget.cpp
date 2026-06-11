@@ -20,6 +20,7 @@ void UMainMenuWidget::NativeConstruct()
     if (PlayButton)
     {
         PlayButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnPlayClicked);
+        PlayButton->SetToolTipText(FText::FromString(BuildLaunchButtonText()));
     }
     if (SettingsButton)
     {
@@ -38,6 +39,13 @@ void UMainMenuWidget::NativeConstruct()
         JoinLANButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnJoinLANClicked);
     }
 
+    UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
+
+    if (TitleText)
+    {
+        TitleText->SetText(FText::FromString(TEXT("raceGPS — Midnight Club on real roads")));
+    }
+
     // Populate route selector
     if (RouteSelector)
     {
@@ -47,11 +55,11 @@ void UMainMenuWidget::NativeConstruct()
             RouteSelector->AddOption(Route);
         }
 
-        UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
         FString DefaultRoute = (GI && !GI->LastSelectedRoute.IsEmpty())
             ? GI->LastSelectedRoute
             : (AvailableRoutes.Num() > 0 ? AvailableRoutes[0] : TEXT(""));
         RouteSelector->SetSelectedOption(DefaultRoute);
+        RouteSelector->OnSelectionChanged.AddDynamic(this, &UMainMenuWidget::OnRouteSelectionChanged);
     }
 
     // Populate vehicle selector
@@ -66,11 +74,14 @@ void UMainMenuWidget::NativeConstruct()
             }
         }
 
-        UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
         FString DefaultVehicle = TEXT("");
         if (GI && GI->LastSelectedVehicleTuning)
         {
             DefaultVehicle = GI->LastSelectedVehicleTuning->DisplayName;
+        }
+        else if (GI && !GI->LastSelectedVehicle.IsEmpty())
+        {
+            DefaultVehicle = GI->LastSelectedVehicle;
         }
         else if (AvailableVehicles.Num() > 0)
         {
@@ -82,13 +93,28 @@ void UMainMenuWidget::NativeConstruct()
         VehicleSelector->OnSelectionChanged.AddDynamic(this, &UMainMenuWidget::OnVehicleSelectionChanged);
     }
 
+    if (HandlingSelector)
+    {
+        HandlingSelector->ClearOptions();
+        for (const FString& HandlingMode : AvailableHandlingModes)
+        {
+            HandlingSelector->AddOption(HandlingMode);
+        }
+
+        FString DefaultHandling = (GI && !GI->LastSelectedHandlingMode.IsEmpty())
+            ? GI->LastSelectedHandlingMode
+            : (AvailableHandlingModes.Num() > 0 ? AvailableHandlingModes[0] : TEXT("Arcade"));
+        HandlingSelector->SetSelectedOption(DefaultHandling);
+        HandlingSelector->OnSelectionChanged.AddDynamic(this, &UMainMenuWidget::OnHandlingSelectionChanged);
+    }
+
     if (VersionText)
     {
         FString GameVer = FString(RACEGPS_VERSION_STRING);
         FString CityVer = TEXT("unknown");
         FString CityName = TEXT("Akron");
 
-        FString ManifestPath = FPaths::ProjectDir() / TEXT("citypacks/akron-oh-beta-001/akron_semantic_manifest.json");
+        FString ManifestPath = FPaths::ProjectDir() / TEXT("../../citypacks/akron-oh-beta-001/akron_semantic_manifest.json");
         FString Content;
         if (FFileHelper::LoadFileToString(Content, *ManifestPath))
         {
@@ -101,26 +127,55 @@ void UMainMenuWidget::NativeConstruct()
             }
         }
 
-        FString VersionStr = FString::Printf(TEXT("Game %s | %s %s"), *GameVer, *CityName, *CityVer);
+        FString VersionStr = BuildVersionLine();
         VersionText->SetText(FText::FromString(VersionStr));
     }
+
+    UpdateVehicleInfo();
 }
 
 void UMainMenuWidget::OnPlayClicked()
 {
     UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
+    if (!RouteSelector)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Cannot start play: route selector widget is missing"));
+        return;
+    }
+
+    const FString SelectedRoute = RouteSelector->GetSelectedOption();
+    if (RouteSelector->GetSelectedOption().IsEmpty())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Cannot start play: no route selected"));
+        return;
+    }
+
+    UVehicleTuningData* SelectedVehicle = GetSelectedVehicle();
+    if (!SelectedVehicle)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Cannot start play: no vehicle preset selected"));
+        return;
+    }
+
+    if (!HandlingSelector)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Cannot start play: handling selector widget is missing"));
+        return;
+    }
+
+    const FString SelectedHandlingMode = HandlingSelector->GetSelectedOption();
+    if (SelectedHandlingMode.IsEmpty())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Cannot start play: no handling mode selected"));
+        return;
+    }
+
     if (GI)
     {
-        if (RouteSelector)
-        {
-            GI->LastSelectedRoute = RouteSelector->GetSelectedOption();
-        }
-
-        UVehicleTuningData* SelectedVehicle = GetSelectedVehicle();
-        if (SelectedVehicle)
-        {
-            GI->LastSelectedVehicleTuning = SelectedVehicle;
-        }
+        GI->LastSelectedRoute = SelectedRoute;
+        GI->LastSelectedVehicleTuning = SelectedVehicle;
+        GI->LastSelectedVehicle = SelectedVehicle->DisplayName;
+        GI->LastSelectedHandlingMode = GetSelectedHandlingMode();
 
         GI->SaveSettings();
     }
@@ -195,6 +250,82 @@ UVehicleTuningData* UMainMenuWidget::GetSelectedVehicle() const
     return nullptr;
 }
 
+FString UMainMenuWidget::GetSelectedHandlingMode() const
+{
+    if (!HandlingSelector)
+        return TEXT("Arcade");
+
+    const FString SelectedMode = HandlingSelector->GetSelectedOption();
+    return SelectedMode.IsEmpty() ? TEXT("Arcade") : SelectedMode;
+}
+
+FString UMainMenuWidget::BuildVehicleClassLabel(const UVehicleTuningData* Vehicle) const
+{
+    if (!Vehicle)
+    {
+        return TEXT("Street Machine");
+    }
+
+    switch (Vehicle->VehicleClass)
+    {
+    case EVehicleClass::Sedan: return TEXT("Sedan");
+    case EVehicleClass::Sports: return TEXT("Sports");
+    case EVehicleClass::Truck: return TEXT("Truck");
+    case EVehicleClass::Hatchback: return TEXT("Hatchback");
+    case EVehicleClass::SUV: return TEXT("SUV");
+    default: return TEXT("Street Machine");
+    }
+}
+
+FString UMainMenuWidget::BuildDriveSummaryText() const
+{
+    const UVehicleTuningData* Vehicle = GetSelectedVehicle();
+    const FString VehicleName = Vehicle ? Vehicle->DisplayName : TEXT("Sedan");
+    const FString VehicleClass = BuildVehicleClassLabel(Vehicle);
+    const FString HandlingMode = GetSelectedHandlingMode();
+    const FString RouteName = RouteSelector ? RouteSelector->GetSelectedOption() : TEXT("Akron Sprint");
+
+    return FString::Printf(
+        TEXT("Tonight's run: %s on %s | %s setup | Route: %s"),
+        *VehicleName,
+        *VehicleClass,
+        *HandlingMode,
+        RouteName.IsEmpty() ? TEXT("Akron Sprint") : *RouteName
+    );
+}
+
+FString UMainMenuWidget::BuildLaunchButtonText() const
+{
+    const FString RouteName = RouteSelector ? RouteSelector->GetSelectedOption() : TEXT("");
+    if (RouteName.IsEmpty())
+    {
+        return TEXT("Choose a route to Drive Akron");
+    }
+    return FString::Printf(TEXT("Drive Akron — %s"), *RouteName);
+}
+
+FString UMainMenuWidget::BuildVersionLine() const
+{
+    FString GameVer = FString(RACEGPS_VERSION_STRING);
+    FString CityVer = TEXT("unknown");
+    FString CityName = TEXT("Akron");
+
+    FString ManifestPath = FPaths::ProjectDir() / TEXT("citypacks/akron-oh-beta-001/akron_semantic_manifest.json");
+    FString Content;
+    if (FFileHelper::LoadFileToString(Content, *ManifestPath))
+    {
+        TSharedPtr<FJsonObject> Root;
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Content);
+        if (FJsonSerializer::Deserialize(Reader, Root))
+        {
+            Root->TryGetStringField(TEXT("version"), CityVer);
+            Root->TryGetStringField(TEXT("display_name"), CityName);
+        }
+    }
+
+    return FString::Printf(TEXT("Build %s • Citypack %s %s • Smooth arcade GPS racing"), *GameVer, *CityName, *CityVer);
+}
+
 void UMainMenuWidget::UpdateVehicleInfo()
 {
     UVehicleTuningData* Selected = GetSelectedVehicle();
@@ -202,17 +333,59 @@ void UMainMenuWidget::UpdateVehicleInfo()
         return;
 
     FString Info = FString::Printf(
-        TEXT("%s\n%s\nMass: %.0f kg | Top Speed: %.0f km/h | Gears: %d"),
+        TEXT("%s • %s\n%s\nMass: %.0f kg | Speed Bias: %.0f km/h | Gears: %d\n%s"),
         *Selected->DisplayName,
+        *BuildVehicleClassLabel(Selected),
         *Selected->Description,
         Selected->VehicleMass,
         Selected->MaxEngineRPM * 0.04f, // Rough km/h estimate
-        Selected->Transmission.GearRatios.Num()
+        Selected->Transmission.GearRatios.Num(),
+        *BuildDriveSummaryText()
     );
     VehicleInfoText->SetText(FText::FromString(Info));
+
+    if (HandlingInfoText)
+    {
+        const FString HandlingMode = GetSelectedHandlingMode();
+        FString HandlingDescription = TEXT("Balanced all-round assist tuning.");
+        if (HandlingMode == TEXT("Drift"))
+        {
+            HandlingDescription = TEXT("Aggressive oversteer, high handbrake bite, low assists.");
+        }
+        else if (HandlingMode == TEXT("Simulation"))
+        {
+            HandlingDescription = TEXT("Realistic transfer, restrained slip, stronger assists.");
+        }
+        HandlingInfoText->SetText(FText::FromString(FString::Printf(TEXT("Handling: %s\n%s\n%s"), *HandlingMode, *HandlingDescription, *BuildLaunchButtonText())));
+    }
 }
 
 void UMainMenuWidget::OnVehicleSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
     UpdateVehicleInfo();
+
+    if (PlayButton)
+    {
+        PlayButton->SetToolTipText(FText::FromString(BuildLaunchButtonText()));
+    }
+}
+
+void UMainMenuWidget::OnRouteSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+    UpdateVehicleInfo();
+
+    if (PlayButton)
+    {
+        PlayButton->SetToolTipText(FText::FromString(BuildLaunchButtonText()));
+    }
+}
+
+void UMainMenuWidget::OnHandlingSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+    UpdateVehicleInfo();
+
+    if (PlayButton)
+    {
+        PlayButton->SetToolTipText(FText::FromString(BuildLaunchButtonText()));
+    }
 }

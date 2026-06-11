@@ -34,11 +34,32 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
     UVehicleTuningData* GetSelectedVehicle() const;
 
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
+    FString GetSelectedHandlingMode() const;
+
     UFUNCTION()
     void UpdateVehicleInfo();
 
     UFUNCTION()
     void OnVehicleSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnRouteSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnHandlingSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|UX")
+    FString BuildDriveSummaryText() const;
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|UX")
+    FString BuildLaunchButtonText() const;
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|UX")
+    FString BuildVersionLine() const;
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|UX")
+    FString BuildVehicleClassLabel(const UVehicleTuningData* Vehicle) const;
 
     UPROPERTY(meta = (BindWidget))
     class UButton* PlayButton;
@@ -62,7 +83,13 @@ public:
     class UComboBoxString* VehicleSelector;
 
     UPROPERTY(meta = (BindWidget))
+    class UComboBoxString* HandlingSelector;
+
+    UPROPERTY(meta = (BindWidget))
     class UTextBlock* VehicleInfoText;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* HandlingInfoText;
 
     UPROPERTY(meta = (BindWidget))
     class UButton* HostLANButton;
@@ -78,6 +105,9 @@ public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|Menu")
     TArray<TObjectPtr<UVehicleTuningData>> AvailableVehicles;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|Menu")
+    TArray<FString> AvailableHandlingModes = { TEXT("Arcade"), TEXT("Drift"), TEXT("Simulation") };
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|LAN")
     TSubclassOf<class ULANBrowserWidget> LANBrowserClass;

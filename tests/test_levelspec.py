@@ -39,6 +39,7 @@ def geo_to_world(lat: float, lon: float, origin_lat: float, origin_lon: float) -
 @pytest.fixture(scope="module")
 def level_spec():
     """Ensure generate-level-spec.py has run and return the parsed spec."""
+    before_mtime = SPEC_PATH.stat().st_mtime if SPEC_PATH.exists() else None
     result = subprocess.run(
         [sys.executable, str(PROJECT_ROOT / "tools" / "generate-level-spec.py")],
         capture_output=True,
@@ -46,6 +47,13 @@ def level_spec():
     )
     assert result.returncode == 0, f"generate-level-spec.py failed:\n{result.stderr}"
     assert SPEC_PATH.exists(), f"Level spec not generated at {SPEC_PATH}"
+    assert str(SPEC_PATH) in result.stdout, (
+        f"generator stdout did not reference canonical spec path {SPEC_PATH}:\n{result.stdout}"
+    )
+    after_mtime = SPEC_PATH.stat().st_mtime
+    assert before_mtime is None or after_mtime > before_mtime, (
+        f"canonical spec file was not refreshed: before={before_mtime}, after={after_mtime}"
+    )
     return json.loads(SPEC_PATH.read_text())
 
 

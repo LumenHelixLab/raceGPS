@@ -183,10 +183,48 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
     auto* MoveComp = GetVehicleMovementComponent();
     if (MoveComp)
     {
-        MoveComp->SetThrottleInput(CurrentThrottle * ThrottleSensitivity);
-        MoveComp->SetSteeringInput(CurrentSteering * SteeringSensitivity);
+        float FinalThrottle = CurrentThrottle * ThrottleSensitivity;
+        float FinalSteering = CurrentSteering * SteeringSensitivity;
+
+        // Drift assist: apply counter-steer when handbrake is active and sliding
+        if (bHandbrake && TuningData)
+        {
+            float DriftAngle = CalculateDriftAngle();
+            if (FMath::Abs(DriftAngle) > 5.0f)
+            {
+                float CounterSteer = -FMath::Sign(DriftAngle) * TuningData->CounterSteerGain * FMath::Clamp(FMath::Abs(DriftAngle) / TuningData->DriftAngleMax, 0.0f, 1.0f);
+                FinalSteering = FMath::Lerp(FinalSteering, CounterSteer, 0.3f);
+            }
+
+            // Increase handbrake torque for drift factor
+            MoveComp->HandbrakeTorque = TuningData->HandbrakeTorque * TuningData->HandbrakeDriftFactor;
+        }
+        else if (TuningData)
+        {
+            MoveComp->HandbrakeTorque = TuningData->HandbrakeTorque;
+        }
+
+        // Traction control: reduce throttle when wheel slip is high
+        if (TuningData && TuningData->TractionControl > 0.0f)
+        {
+            float SlipRatio = CalculateWheelSlipRatio();
+            if (SlipRatio > 0.25f)
+            {
+                float TCTarget = FMath::Lerp(1.0f, 0.7f, TuningData->TractionControl);
+                FinalThrottle *= FMath::Lerp(TCTarget, 1.0f, FMath::Clamp((SlipRatio - 0.25f) / 0.25f, 0.0f, 1.0f));
+            }
+        }
+
+        MoveComp->SetThrottleInput(FinalThrottle);
+        MoveComp->SetSteeringInput(FinalSteering);
         MoveComp->SetBrakeInput(CurrentBrake);
         MoveComp->SetHandbrakeInput(bHandbrake);
+    }
+
+    // Update audio with brake state
+    if (AudioComponent)
+    {
+        AudioComponent->SetBrakeInput(CurrentBrake);
     }
 
     // Update HUD telemetry
@@ -196,6 +234,10 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
         {
             HUD->SetSpeedKmh(GetSpeedKmh());
             HUD->SetTelemetry(GetEngineRPM(), GetCurrentGear());
+            if (TuningData)
+            {
+                HUD->SetDriftAngle(CalculateDriftAngle());
+            }
         }
     }
 }
@@ -284,6 +326,60 @@ int32 AChaosVehiclePawn::GetCurrentGear() const
 {
     auto* MoveComp = GetVehicleMovementComponent();
     return MoveComp ? MoveComp->GetCurrentGear() : 0;
+}
+
+float AChaosVehiclePawn::CalculateDriftAngle() const
+{
+    FVector Velocity = GetVelocity();
+    FVector Forward = GetActorForwardVector();
+    Forward.Z = 0.0f;
+    Forward.Normalize();
+    Velocity.Z = 0.0f;
+
+    float ForwardSpeed = FVector::DotProduct(Velocity, Forward);
+    float TotalSpeed = Velocity.Size();
+
+    if (TotalSpeed < 1.0f)
+        return 0.0f;
+
+    float CosAngle = ForwardSpeed / TotalSpeed;
+    float AngleRad = FMath::Acos(FMath::Clamp(CosAngle, -1.0f, 1.0f));
+    float AngleDeg = FMath::RadiansToDegrees(AngleRad);
+
+    // Determine direction (left or right drift)
+    FVector Right = GetActorRightVector();
+    Right.Z = 0.0f;
+    Right.Normalize();
+    float LateralSpeed = FVector::DotProduct(Velocity, Right);
+
+    return FMath::Sign(LateralSpeed) * AngleDeg;
+}
+
+float AChaosVehiclePawn::CalculateWheelSlipRatio() const
+{
+    auto* MoveComp = GetVehicleMovementComponent();
+    if (!MoveComp)
+        return 0.0f;
+
+    float MaxSlip = 0.0f;
+    for (const FChaosWheelSetup& WheelSetup : MoveComp->WheelSetups)
+    {
+        if (WheelSetup.VehicleSim)
+        {
+            // Approximate slip from angular vs linear velocity
+            float WheelRadius = WheelSetup.WheelRadius;
+            float AngularSpeed = FMath::Abs(WheelSetup.VehicleSim->GetRotationSpeed());
+            float LinearSpeed = GetSpeedKmh() / 3.6f; // m/s
+            float TheoreticalSpeed = AngularSpeed * WheelRadius;
+
+            if (TheoreticalSpeed > 1.0f)
+            {
+                float Slip = FMath::Abs(TheoreticalSpeed - LinearSpeed) / TheoreticalSpeed;
+                MaxSlip = FMath::Max(MaxSlip, Slip);
+            }
+        }
+    }
+    return MaxSlip;
 }
 
 void AChaosVehiclePawn::OnVehicleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,

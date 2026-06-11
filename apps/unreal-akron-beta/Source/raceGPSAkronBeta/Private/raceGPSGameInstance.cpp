@@ -30,6 +30,7 @@ void UraceGPSGameInstance::SaveSettings()
     Root->SetNumberField(TEXT("SteeringSensitivity"), SteeringSensitivity);
     Root->SetStringField(TEXT("LastSelectedRoute"), LastSelectedRoute);
     Root->SetStringField(TEXT("LastSelectedVehicle"), LastSelectedVehicle);
+    Root->SetStringField(TEXT("LastSelectedHandlingMode"), LastSelectedHandlingMode);
 
     TSharedPtr<FJsonObject> BestTimesObj = MakeShared<FJsonObject>();
     for (const auto& Pair : BestTimes)
@@ -64,6 +65,7 @@ void UraceGPSGameInstance::LoadSettings()
     if (Root->TryGetNumberField(TEXT("SteeringSensitivity"), Val)) SteeringSensitivity = static_cast<float>(Val);
     Root->TryGetStringField(TEXT("LastSelectedRoute"), LastSelectedRoute);
     Root->TryGetStringField(TEXT("LastSelectedVehicle"), LastSelectedVehicle);
+    Root->TryGetStringField(TEXT("LastSelectedHandlingMode"), LastSelectedHandlingMode);
 
     TSharedPtr<FJsonObject> BestTimesObj;
     if (Root->TryGetObjectField(TEXT("BestTimes"), BestTimesObj))

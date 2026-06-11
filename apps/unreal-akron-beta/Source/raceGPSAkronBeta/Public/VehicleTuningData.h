@@ -166,4 +166,19 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Steering")
     float AckermannAccuracy = 1.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Drift")
+    float DriftAngleMax = 35.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Drift")
+    float CounterSteerGain = 0.6f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Drift")
+    float HandbrakeDriftFactor = 1.5f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Drift")
+    float TractionControl = 0.3f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Drift")
+    float StabilityControl = 0.4f;
 };

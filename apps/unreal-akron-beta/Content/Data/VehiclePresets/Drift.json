@@ -1,0 +1,93 @@
+{
+  "PresetName": "Drift",
+  "Description": "Aggressive oversteer setup. High handbrake torque, wide rear tires, minimal assists. For sideways masters.",
+  "VehicleMass": 1400.0,
+  "DragCoefficient": 0.30,
+  "ChassisWidth": 178.0,
+  "ChassisHeight": 130.0,
+  "MaxEngineRPM": 8500.0,
+  "IdleRPM": 900.0,
+  "BrakeTorque": 1600.0,
+  "HandbrakeTorque": 4500.0,
+  "DownForceCoefficient": 0.08,
+  "DownForceOffset": 0.0,
+  "SteeringCurve": 0.65,
+  "AckermannAccuracy": 0.85,
+  "DriftAngleMax": 60.0,
+  "CounterSteerGain": 1.1,
+  "HandbrakeDriftFactor": 2.2,
+  "TractionControl": 0.0,
+  "StabilityControl": 0.0,
+  "Transmission": {
+    "FinalDriveRatio": 3.8,
+    "GearRatios": [3.8, 2.3, 1.6, 1.2, 0.95],
+    "ReverseGearRatio": -3.5,
+    "UpShiftRPM": 7800.0,
+    "DownShiftRPM": 3500.0,
+    "ChangeUpTime": 0.18,
+    "ChangeDownTime": 0.18
+  },
+  "Differential": {
+    "DifferentialType": "LimitedSlip_Rear",
+    "FrontRearSplit": 0.0,
+    "FrontLeftRightSplit": 0.5,
+    "RearLeftRightSplit": 0.8,
+    "CentreBias": 2.0,
+    "FrontBias": 1.0,
+    "RearBias": 2.5
+  },
+  "Wheels": [
+    {
+      "Radius": 33.0,
+      "Width": 18.0,
+      "Mass": 20.0,
+      "SteerAngle": 35.0,
+      "bDrive": false,
+      "bHandbrake": false,
+      "SuspensionStiffness": 600.0,
+      "SuspensionDamping": 35.0,
+      "MaxRaise": 6.0,
+      "MaxDrop": 6.0,
+      "SuspensionForceOffset": 0.0
+    },
+    {
+      "Radius": 33.0,
+      "Width": 18.0,
+      "Mass": 20.0,
+      "SteerAngle": 35.0,
+      "bDrive": false,
+      "bHandbrake": false,
+      "SuspensionStiffness": 600.0,
+      "SuspensionDamping": 35.0,
+      "MaxRaise": 6.0,
+      "MaxDrop": 6.0,
+      "SuspensionForceOffset": 0.0
+    },
+    {
+      "Radius": 38.0,
+      "Width": 28.0,
+      "Mass": 26.0,
+      "SteerAngle": 0.0,
+      "bDrive": true,
+      "bHandbrake": true,
+      "SuspensionStiffness": 420.0,
+      "SuspensionDamping": 22.0,
+      "MaxRaise": 10.0,
+      "MaxDrop": 10.0,
+      "SuspensionForceOffset": 0.0
+    },
+    {
+      "Radius": 38.0,
+      "Width": 28.0,
+      "Mass": 26.0,
+      "SteerAngle": 0.0,
+      "bDrive": true,
+      "bHandbrake": true,
+      "SuspensionStiffness": 420.0,
+      "SuspensionDamping": 22.0,
+      "MaxRaise": 10.0,
+      "MaxDrop": 10.0,
+      "SuspensionForceOffset": 0.0
+    }
+  ]
+}

@@ -51,11 +51,15 @@ void UVehicleAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
     float SpeedKmh = Vehicle->GetSpeedKmh();
     float RPM = Vehicle->GetEngineRPM();
-    float Slip = FMath::Abs(SpeedKmh - LastSpeedKmh) / FMath::Max(1.0f, DeltaTime);
+
+    // Calculate actual tire slip from drift angle and speed change
+    float DriftAngle = FMath::Abs(Vehicle->CalculateDriftAngle());
+    float SpeedDelta = FMath::Abs(SpeedKmh - LastSpeedKmh) / FMath::Max(1.0f, DeltaTime);
+    float Slip = FMath::Clamp((DriftAngle / 45.0f) + (SpeedDelta / 100.0f), 0.0f, 1.0f);
 
     UpdateEngineSound(SpeedKmh, RPM);
     UpdateScreechSound(SpeedKmh, Slip);
-    // Brake input not directly accessible here; would need to expose from pawn
+    UpdateBrakeSound(CurrentBrakeInput, SpeedKmh);
 
     LastSpeedKmh = SpeedKmh;
 }
@@ -126,4 +130,9 @@ void UVehicleAudioComponent::OnCollision(float ImpactSpeedKmh)
 void UVehicleAudioComponent::SetMasterVolume(float Volume)
 {
     CurrentVolume = FMath::Clamp(Volume, 0.0f, 1.0f);
+}
+
+void UVehicleAudioComponent::SetBrakeInput(float BrakeInput)
+{
+    CurrentBrakeInput = FMath::Clamp(BrakeInput, 0.0f, 1.0f);
 }

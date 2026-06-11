@@ -29,6 +29,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+#include "Dom/JsonObject.h"
+#include "Serialization/JsonSerializer.h"
 #include "Components/SplineComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/PlayerStart.h"
@@ -80,6 +84,7 @@ void ACruiseSprintGameMode::StartPlay()
     }
 
     CreateDefaultVehiclePresets();
+    LoadHandlingModePresets();
 
     // Restore selected vehicle from game instance
     if (UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance()))
@@ -104,6 +109,12 @@ void ACruiseSprintGameMode::StartPlay()
                 SelectedVehicleTuning = VehiclePresets[0];
             }
         }
+
+        const FString HandlingMode = GI->LastSelectedHandlingMode.IsEmpty()
+            ? TEXT("Arcade")
+            : GI->LastSelectedHandlingMode;
+        SelectedVehicleTuning = BuildMergedVehicleTuning(SelectedVehicleTuning, HandlingMode);
+        GI->LastSelectedVehicleTuning = SelectedVehicleTuning;
     }
 
     LoadCityData();
@@ -652,6 +663,8 @@ void ACruiseSprintGameMode::OnRaceStateChanged(ECruiseSprintState NewState)
 
 void ACruiseSprintGameMode::CreateDefaultVehiclePresets()
 {
+    VehiclePresets.Empty();
+
     auto CreatePreset = [&](const FString& Name, const FString& Desc, EVehicleClass VClass,
                             float Mass, float MaxRPM, float Drag, int32 Gears,
                             float BrakeTorque, float HandbrakeTorque,
@@ -766,6 +779,201 @@ void ACruiseSprintGameMode::CreateDefaultVehiclePresets()
     ));
 
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] Created %d vehicle presets"), VehiclePresets.Num());
+}
+
+void ACruiseSprintGameMode::LoadHandlingModePresets()
+{
+    HandlingModePresets.Empty();
+
+    const FString PresetDir = FPaths::ProjectDir() / TEXT("Content/Data/VehiclePresets");
+    const TArray<FString> PresetFiles = {
+        TEXT("Arcade.json"),
+        TEXT("Drift.json"),
+        TEXT("Simulation.json")
+    };
+
+    for (const FString& FileName : PresetFiles)
+    {
+        FString Content;
+        const FString FullPath = PresetDir / FileName;
+        if (!FFileHelper::LoadFileToString(Content, *FullPath))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Failed to load handling preset: %s"), *FullPath);
+            continue;
+        }
+
+        TSharedPtr<FJsonObject> Root;
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Content);
+        if (!FJsonSerializer::Deserialize(Reader, Root) || !Root.IsValid())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Failed to parse handling preset: %s"), *FullPath);
+            continue;
+        }
+
+        UVehicleTuningData* Preset = NewObject<UVehicleTuningData>(this);
+        Preset->DisplayName = Root->GetStringField(TEXT("PresetName"));
+        Root->TryGetStringField(TEXT("Description"), Preset->Description);
+
+        double Num = 0.0;
+        if (Root->TryGetNumberField(TEXT("VehicleMass"), Num)) Preset->VehicleMass = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("DragCoefficient"), Num)) Preset->DragCoefficient = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("ChassisWidth"), Num)) Preset->ChassisWidth = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("ChassisHeight"), Num)) Preset->ChassisHeight = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("MaxEngineRPM"), Num)) Preset->MaxEngineRPM = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("IdleRPM"), Num)) Preset->IdleRPM = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("BrakeTorque"), Num)) Preset->BrakeTorque = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("HandbrakeTorque"), Num)) Preset->HandbrakeTorque = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("DownForceCoefficient"), Num)) Preset->DownForceCoefficient = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("DownForceOffset"), Num)) Preset->DownForceOffset = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("SteeringCurve"), Num)) Preset->SteeringCurve = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("AckermannAccuracy"), Num)) Preset->AckermannAccuracy = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("DriftAngleMax"), Num)) Preset->DriftAngleMax = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("CounterSteerGain"), Num)) Preset->CounterSteerGain = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("HandbrakeDriftFactor"), Num)) Preset->HandbrakeDriftFactor = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("TractionControl"), Num)) Preset->TractionControl = static_cast<float>(Num);
+        if (Root->TryGetNumberField(TEXT("StabilityControl"), Num)) Preset->StabilityControl = static_cast<float>(Num);
+
+        const TSharedPtr<FJsonObject>* Transmission = nullptr;
+        if (Root->TryGetObjectField(TEXT("Transmission"), Transmission) && Transmission)
+        {
+            if ((*Transmission)->TryGetNumberField(TEXT("FinalDriveRatio"), Num)) Preset->Transmission.FinalDriveRatio = static_cast<float>(Num);
+            if ((*Transmission)->TryGetNumberField(TEXT("ReverseGearRatio"), Num)) Preset->Transmission.ReverseGearRatio = static_cast<float>(Num);
+            if ((*Transmission)->TryGetNumberField(TEXT("UpShiftRPM"), Num)) Preset->Transmission.UpShiftRPM = static_cast<float>(Num);
+            if ((*Transmission)->TryGetNumberField(TEXT("DownShiftRPM"), Num)) Preset->Transmission.DownShiftRPM = static_cast<float>(Num);
+            if ((*Transmission)->TryGetNumberField(TEXT("ChangeUpTime"), Num)) Preset->Transmission.ChangeUpTime = static_cast<float>(Num);
+            if ((*Transmission)->TryGetNumberField(TEXT("ChangeDownTime"), Num)) Preset->Transmission.ChangeDownTime = static_cast<float>(Num);
+            const TArray<TSharedPtr<FJsonValue>>* GearRatios = nullptr;
+            if ((*Transmission)->TryGetArrayField(TEXT("GearRatios"), GearRatios) && GearRatios)
+            {
+                Preset->Transmission.GearRatios.Empty();
+                for (const TSharedPtr<FJsonValue>& Ratio : *GearRatios)
+                {
+                    double GearValue = 0.0;
+                    if (Ratio->TryGetNumber(GearValue))
+                    {
+                        Preset->Transmission.GearRatios.Add(static_cast<float>(GearValue));
+                    }
+                }
+            }
+        }
+
+        const TArray<TSharedPtr<FJsonValue>>* Wheels = nullptr;
+        if (Root->TryGetArrayField(TEXT("Wheels"), Wheels) && Wheels)
+        {
+            Preset->Wheels.Empty();
+            for (const TSharedPtr<FJsonValue>& WheelValue : *Wheels)
+            {
+                const TSharedPtr<FJsonObject>* WheelObj = nullptr;
+                if (!WheelValue->TryGetObject(WheelObj) || !WheelObj)
+                {
+                    continue;
+                }
+                FWheelTuning Wheel;
+                if ((*WheelObj)->TryGetNumberField(TEXT("Radius"), Num)) Wheel.Radius = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("Width"), Num)) Wheel.Width = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("Mass"), Num)) Wheel.Mass = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("SteerAngle"), Num)) Wheel.SteerAngle = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("SuspensionStiffness"), Num)) Wheel.SuspensionStiffness = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("SuspensionDamping"), Num)) Wheel.SuspensionDamping = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("MaxRaise"), Num)) Wheel.MaxRaise = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("MaxDrop"), Num)) Wheel.MaxDrop = static_cast<float>(Num);
+                if ((*WheelObj)->TryGetNumberField(TEXT("SuspensionForceOffset"), Num)) Wheel.SuspensionForceOffset = static_cast<float>(Num);
+                (*WheelObj)->TryGetBoolField(TEXT("bDrive"), Wheel.bDrive);
+                (*WheelObj)->TryGetBoolField(TEXT("bHandbrake"), Wheel.bHandbrake);
+                Preset->Wheels.Add(Wheel);
+            }
+        }
+
+        HandlingModePresets.Add(Preset->DisplayName, Preset);
+    }
+}
+
+TObjectPtr<UVehicleTuningData> ACruiseSprintGameMode::BuildMergedVehicleTuning(UVehicleTuningData* BaseVehiclePreset, const FString& HandlingMode)
+{
+    UVehicleTuningData* BasePreset = BaseVehiclePreset;
+    if (!BasePreset && VehiclePresets.Num() > 0)
+    {
+        BasePreset = VehiclePresets[0];
+    }
+    if (!BasePreset)
+    {
+        return nullptr;
+    }
+
+    UVehicleTuningData** HandlingPresetPtr = HandlingModePresets.Find(HandlingMode);
+    UVehicleTuningData* HandlingPreset = HandlingPresetPtr ? *HandlingPresetPtr : nullptr;
+    if (!HandlingPreset)
+    {
+        return BasePreset;
+    }
+
+    const float BehaviorBlend = HandlingMode == TEXT("Simulation") ? 0.35f
+        : (HandlingMode == TEXT("Drift") ? 0.85f : 0.6f);
+
+    UVehicleTuningData* Merged = NewObject<UVehicleTuningData>(this);
+    *Merged = *BasePreset;
+    Merged->DisplayName = FString::Printf(TEXT("%s / %s"), *BasePreset->DisplayName, *HandlingMode);
+    Merged->Description = FString::Printf(TEXT("%s | %s"), *BasePreset->Description, *HandlingPreset->Description);
+
+    auto BlendValue = [](float BaseValue, float HandlingValue, float Blend)
+    {
+        return FMath::Lerp(BaseValue, HandlingValue, Blend);
+    };
+
+    // Keep the vehicle archetype identity intact.
+    Merged->VehicleClass = BasePreset->VehicleClass;
+    Merged->VehicleMass = BasePreset->VehicleMass;
+    Merged->DragCoefficient = BlendValue(BasePreset->DragCoefficient, HandlingPreset->DragCoefficient, BehaviorBlend * 0.35f);
+    Merged->ChassisWidth = BasePreset->ChassisWidth;
+    Merged->ChassisHeight = BasePreset->ChassisHeight;
+    Merged->MaxEngineRPM = BlendValue(BasePreset->MaxEngineRPM, HandlingPreset->MaxEngineRPM, BehaviorBlend * 0.4f);
+    Merged->IdleRPM = BlendValue(BasePreset->IdleRPM, HandlingPreset->IdleRPM, BehaviorBlend * 0.25f);
+    Merged->BrakeTorque = BlendValue(BasePreset->BrakeTorque, HandlingPreset->BrakeTorque, BehaviorBlend);
+    Merged->HandbrakeTorque = BlendValue(BasePreset->HandbrakeTorque, HandlingPreset->HandbrakeTorque, BehaviorBlend);
+    Merged->DownForceCoefficient = BlendValue(BasePreset->DownForceCoefficient, HandlingPreset->DownForceCoefficient, BehaviorBlend * 0.6f);
+    Merged->DownForceOffset = BlendValue(BasePreset->DownForceOffset, HandlingPreset->DownForceOffset, BehaviorBlend * 0.5f);
+    Merged->SteeringCurve = BlendValue(BasePreset->SteeringCurve, HandlingPreset->SteeringCurve, BehaviorBlend);
+    Merged->AckermannAccuracy = BlendValue(BasePreset->AckermannAccuracy, HandlingPreset->AckermannAccuracy, BehaviorBlend * 0.7f);
+    Merged->DriftAngleMax = BlendValue(BasePreset->DriftAngleMax, HandlingPreset->DriftAngleMax, BehaviorBlend);
+    Merged->CounterSteerGain = BlendValue(BasePreset->CounterSteerGain, HandlingPreset->CounterSteerGain, BehaviorBlend);
+    Merged->HandbrakeDriftFactor = BlendValue(BasePreset->HandbrakeDriftFactor, HandlingPreset->HandbrakeDriftFactor, BehaviorBlend);
+    Merged->TractionControl = BlendValue(BasePreset->TractionControl, HandlingPreset->TractionControl, BehaviorBlend);
+    Merged->StabilityControl = BlendValue(BasePreset->StabilityControl, HandlingPreset->StabilityControl, BehaviorBlend);
+
+    // Blend transmission behavior, but keep gear count / base progression stable.
+    Merged->Transmission = BasePreset->Transmission;
+    Merged->Transmission.FinalDriveRatio = FMath::Lerp(BasePreset->Transmission.FinalDriveRatio, HandlingPreset->Transmission.FinalDriveRatio, BehaviorBlend * 0.5f);
+    Merged->Transmission.ReverseGearRatio = FMath::Lerp(BasePreset->Transmission.ReverseGearRatio, HandlingPreset->Transmission.ReverseGearRatio, BehaviorBlend * 0.5f);
+    Merged->Transmission.UpShiftRPM = FMath::Lerp(BasePreset->Transmission.UpShiftRPM, HandlingPreset->Transmission.UpShiftRPM, BehaviorBlend * 0.6f);
+    Merged->Transmission.DownShiftRPM = FMath::Lerp(BasePreset->Transmission.DownShiftRPM, HandlingPreset->Transmission.DownShiftRPM, BehaviorBlend * 0.6f);
+    Merged->Transmission.ChangeUpTime = FMath::Lerp(BasePreset->Transmission.ChangeUpTime, HandlingPreset->Transmission.ChangeUpTime, BehaviorBlend * 0.75f);
+    Merged->Transmission.ChangeDownTime = FMath::Lerp(BasePreset->Transmission.ChangeDownTime, HandlingPreset->Transmission.ChangeDownTime, BehaviorBlend * 0.75f);
+
+    // Blend differential behavior selectively instead of replacing the whole driveline identity.
+    Merged->Differential = BasePreset->Differential;
+    Merged->Differential.FrontRearSplit = FMath::Lerp(BasePreset->Differential.FrontRearSplit, HandlingPreset->Differential.FrontRearSplit, BehaviorBlend * 0.65f);
+    Merged->Differential.FrontLeftRightSplit = FMath::Lerp(BasePreset->Differential.FrontLeftRightSplit, HandlingPreset->Differential.FrontLeftRightSplit, BehaviorBlend * 0.65f);
+    Merged->Differential.RearLeftRightSplit = FMath::Lerp(BasePreset->Differential.RearLeftRightSplit, HandlingPreset->Differential.RearLeftRightSplit, BehaviorBlend * 0.65f);
+    Merged->Differential.CentreBias = FMath::Lerp(BasePreset->Differential.CentreBias, HandlingPreset->Differential.CentreBias, BehaviorBlend * 0.65f);
+    Merged->Differential.FrontBias = FMath::Lerp(BasePreset->Differential.FrontBias, HandlingPreset->Differential.FrontBias, BehaviorBlend * 0.65f);
+    Merged->Differential.RearBias = FMath::Lerp(BasePreset->Differential.RearBias, HandlingPreset->Differential.RearBias, BehaviorBlend * 0.65f);
+
+    // Preserve wheel layout and archetype stance; only tune suspension/steering feel per wheel.
+    Merged->Wheels = BasePreset->Wheels;
+    const int32 WheelCount = FMath::Min(Merged->Wheels.Num(), HandlingPreset->Wheels.Num());
+    for (int32 WheelIndex = 0; WheelIndex < WheelCount; ++WheelIndex)
+    {
+        FWheelTuning& BaseWheel = Merged->Wheels[WheelIndex];
+        const FWheelTuning& HandlingWheel = HandlingPreset->Wheels[WheelIndex];
+        BaseWheel.SteerAngle = BlendValue(BaseWheel.SteerAngle, HandlingWheel.SteerAngle, BehaviorBlend);
+        BaseWheel.SuspensionStiffness = BlendValue(BaseWheel.SuspensionStiffness, HandlingWheel.SuspensionStiffness, BehaviorBlend * 0.7f);
+        BaseWheel.SuspensionDamping = BlendValue(BaseWheel.SuspensionDamping, HandlingWheel.SuspensionDamping, BehaviorBlend * 0.7f);
+        BaseWheel.MaxRaise = BlendValue(BaseWheel.MaxRaise, HandlingWheel.MaxRaise, BehaviorBlend * 0.5f);
+        BaseWheel.MaxDrop = BlendValue(BaseWheel.MaxDrop, HandlingWheel.MaxDrop, BehaviorBlend * 0.5f);
+        BaseWheel.SuspensionForceOffset = BlendValue(BaseWheel.SuspensionForceOffset, HandlingWheel.SuspensionForceOffset, BehaviorBlend * 0.5f);
+    }
+
+    return Merged;
 }
 
 void ACruiseSprintGameMode::ApplyVehicleTuningToPlayer()

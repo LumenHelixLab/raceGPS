@@ -16,12 +16,12 @@
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
 !include "x64.nsh"
+!include "WinVer.nsh"
+!include "nsDialogs.nsh"
 
 ; Variables
 Var DirectXVer
 Var VCRuntimesOK
-Var GpuVRAM
-Var RecommendedCitypack
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -30,7 +30,7 @@ Var RecommendedCitypack
 
 ; Pages
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\..\..\LICENSE"
+!insertmacro MUI_PAGE_LICENSE "..\LICENSE"
 Page custom PreflightPage PreflightLeave
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
@@ -46,7 +46,7 @@ Page custom FinishPage
 
 ; Installer sections
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "raceGPS-${PRODUCT_VERSION}-setup.exe"
+OutFile "raceGPS-v${PRODUCT_VERSION}-Win64-Setup.exe"
 InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -69,21 +69,15 @@ Function PreflightPage
     ; Title
     ${NSD_CreateLabel} 0 0 100% 20u "Pre-Flight Checklist"
     Pop $0
-    SendMessage $0 ${WM_SETFONT} $mui_BoldFont 0
-
     ; Check OS
     ${NSD_CreateLabel} 0 30u 100% 12u ""
     Pop $R0
-    ${If} ${IsWin10}
-    ${OrIf} ${IsWin11}
-        ${NSD_CreateIcon} 0 30u 16u 16u
-        Pop $R1
-        SetCtlColors $R1 0x00AA00 transparent
+    ReadRegStr $R1 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" "CurrentMajorVersionNumber"
+    ${If} $R1 >= 10
+        SetCtlColors $R0 0x00AA00 transparent
         ${NSD_SetText} $R0 "✓ Windows 10/11 detected"
     ${Else}
-        ${NSD_CreateIcon} 0 30u 16u 16u
-        Pop $R1
-        SetCtlColors $R1 0xFF0000 transparent
+        SetCtlColors $R0 0xFF0000 transparent
         ${NSD_SetText} $R0 "✗ Windows 10/11 required. Upgrade to continue."
         EnableWindow $mui.Button.Next 0
     ${EndIf}
@@ -109,7 +103,7 @@ Function PreflightPage
     ${If} $R5 == ""
         StrCpy $R5 "$PROGRAMFILES64"
     ${EndIf}
-    GetDiskFreeSpaceEx "$R5" $0 $1 $2
+    System::Call 'kernel32::GetDiskFreeSpaceEx(w "$R5", *l .r0, *l .r1, *l .r2) i .r3'
     System::Int64Op $1 / 1048576
     Pop $R6
     ${If} $R6 >= ${MIN_DISK_MB}
@@ -156,9 +150,9 @@ FunctionEnd
 Section "Game Files" SEC_GAME
     SectionIn RO
     SetOutPath "$INSTDIR"
-    File /r "..\..\..\apps\unreal-akron-beta\Build\Windows\*.*"
+    File /nonfatal /r "..\Build\Windows\*.*"
     SetOutPath "$INSTDIR\citypacks"
-    File /r "..\..\..\citypacks\akron-oh-beta-001\*.*"
+    File /r "..\citypacks\*.*"
 SectionEnd
 
 Section "Akron Citypack (Default)" SEC_CITYPACK
@@ -232,7 +226,6 @@ Function FinishPage
 
     ${NSD_CreateLabel} 0 0 100% 20u "Installation Complete!"
     Pop $0
-    SendMessage $0 ${WM_SETFONT} $mui_BoldFont 0
 
     ${NSD_CreateLabel} 0 30u 100% 60u "raceGPS has been installed successfully. On first launch, the game will run a quick hardware check and guide you through controller setup, graphics settings, and your first race."
     Pop $1

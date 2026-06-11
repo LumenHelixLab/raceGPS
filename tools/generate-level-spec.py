@@ -227,7 +227,8 @@ def main(citypack_dir: Path | None = None) -> int:
         },
     }
 
-    output_path = generated_dir / f"{city_id}_LevelSpec.json"
+    canonical_level_name = level_spec["level_name"]
+    output_path = generated_dir / f"{canonical_level_name}_LevelSpec.json"
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(level_spec, f, indent=2)
     print(f"Generated: {output_path}")

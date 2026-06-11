@@ -63,6 +63,24 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Onboarding")
     void FinishAndSave();
 
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    FString GetStepSubtitle(int32 StepIndex) const;
+
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    FString BuildCompletionMessage(bool bCanLaunch, int32 FailCount, int32 WarningCount) const;
+
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    FString GetLastCompletionMessage() const { return LastCompletionMessage; }
+
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    bool CanLaunchFromLastPreflight() const { return bLastCanLaunch; }
+
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    int32 GetLastPreflightFailCount() const { return LastPreflightFailCount; }
+
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    int32 GetLastPreflightWarningCount() const { return LastPreflightWarningCount; }
+
 protected:
     static TArray<FString> StepNames;
     int32 CurrentStep = -1;
@@ -70,4 +88,8 @@ protected:
     FString SelectedCitypack = TEXT("akron-oh-beta-001");
     int32 ControlSchemeIndex = 0;
     FString PlayerName = TEXT("Racer");
+    FString LastCompletionMessage;
+    bool bLastCanLaunch = false;
+    int32 LastPreflightFailCount = 0;
+    int32 LastPreflightWarningCount = 0;
 };

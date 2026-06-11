@@ -84,21 +84,23 @@ cd racegps/apps/unreal-akron-beta
 & "C:\Program Files\Epic Games\UE_5.5\Engine\Build\BatchFiles\RunUAT.bat" `
     BuildCookRun -project="$PWD\raceGPSAkronBeta.uproject" `
     -noP4 -platform=Win64 -clientconfig=Shipping -cook -stage -pak -archive `
-    -archivedirectory="$PWD\..\..\releases\v0.2.0"
+    -archivedirectory="D:\projects\racegps\Build\Windows"
 ```
 
 ---
 
 ## Citypack Installation
 
-Citypacks are **not** bundled in the installer (GitHub 100MB limit). After install:
+The current Windows installer is configured to bundle repo citypacks into the installed `citypacks/` directory.
 
-1. Launch game -> Onboarding Step 3 prompts for city
-2. Click **"Compile New City"** -> enter any city name
-3. The Universal City Compiler fetches OSM data and builds the pack
-4. Citypacks are saved to `Saved/citypacks/<city-id>/`
+After install:
 
-Pre-compiled citypacks can also be dropped into `Saved/citypacks/`.
+1. Launch game -> Onboarding Step 3 prompts for city selection
+2. Use a bundled citypack if one is present under `citypacks/`
+3. Or click **"Compile New City"** to generate an additional pack
+4. Runtime-generated citypacks can be saved to `Saved/citypacks/<city-id>/`
+
+Pre-compiled citypacks can also be dropped into either `citypacks/` (installer-managed) or `Saved/citypacks/` (runtime-managed).
 
 ---
 

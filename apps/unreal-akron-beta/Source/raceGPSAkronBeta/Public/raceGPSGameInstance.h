@@ -33,6 +33,9 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "raceGPS|Settings")
     FString LastSelectedVehicle = TEXT("Sedan");
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "raceGPS|Settings")
+    FString LastSelectedHandlingMode = TEXT("Arcade");
+
     UPROPERTY(BlueprintReadOnly, Category = "raceGPS|Settings")
     TObjectPtr<class UVehicleTuningData> LastSelectedVehicleTuning;
 

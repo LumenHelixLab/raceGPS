@@ -48,6 +48,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Audio")
     void SetMasterVolume(float Volume);
 
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|Audio")
+    void SetBrakeInput(float BrakeInput);
+
 protected:
     UPROPERTY()
     TObjectPtr<class UAudioComponent> EngineAudio;
@@ -60,6 +63,7 @@ protected:
 
     float CurrentVolume = 1.0f;
     float LastSpeedKmh = 0.0f;
+    float CurrentBrakeInput = 0.0f;
 
     void UpdateEngineSound(float SpeedKmh, float RPM);
     void UpdateScreechSound(float SpeedKmh, float Slip);

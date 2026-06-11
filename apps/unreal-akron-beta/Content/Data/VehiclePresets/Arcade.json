@@ -1,0 +1,93 @@
+{
+  "PresetName": "Arcade",
+  "Description": "Drift-friendly handling with generous counter-steer assist. Best for casual fun.",
+  "VehicleMass": 1400.0,
+  "DragCoefficient": 0.28,
+  "ChassisWidth": 180.0,
+  "ChassisHeight": 140.0,
+  "MaxEngineRPM": 7500.0,
+  "IdleRPM": 900.0,
+  "BrakeTorque": 1400.0,
+  "HandbrakeTorque": 3500.0,
+  "DownForceCoefficient": 0.08,
+  "DownForceOffset": 0.0,
+  "SteeringCurve": 0.6,
+  "AckermannAccuracy": 0.85,
+  "DriftAngleMax": 45.0,
+  "CounterSteerGain": 0.75,
+  "HandbrakeDriftFactor": 2.0,
+  "TractionControl": 0.15,
+  "StabilityControl": 0.2,
+  "Transmission": {
+    "FinalDriveRatio": 3.8,
+    "GearRatios": [3.8, 2.2, 1.4, 1.0, 0.75, 0.6],
+    "ReverseGearRatio": -3.5,
+    "UpShiftRPM": 6500.0,
+    "DownShiftRPM": 2200.0,
+    "ChangeUpTime": 0.2,
+    "ChangeDownTime": 0.2
+  },
+  "Differential": {
+    "DifferentialType": "LimitedSlip_4W",
+    "FrontRearSplit": 0.45,
+    "FrontLeftRightSplit": 0.5,
+    "RearLeftRightSplit": 0.55,
+    "CentreBias": 1.5,
+    "FrontBias": 1.4,
+    "RearBias": 1.6
+  },
+  "Wheels": [
+    {
+      "Radius": 35.0,
+      "Width": 22.0,
+      "Mass": 18.0,
+      "SteerAngle": 35.0,
+      "bDrive": true,
+      "bHandbrake": false,
+      "SuspensionStiffness": 400.0,
+      "SuspensionDamping": 22.0,
+      "MaxRaise": 12.0,
+      "MaxDrop": 12.0,
+      "SuspensionForceOffset": 0.0
+    },
+    {
+      "Radius": 35.0,
+      "Width": 22.0,
+      "Mass": 18.0,
+      "SteerAngle": 35.0,
+      "bDrive": true,
+      "bHandbrake": false,
+      "SuspensionStiffness": 400.0,
+      "SuspensionDamping": 22.0,
+      "MaxRaise": 12.0,
+      "MaxDrop": 12.0,
+      "SuspensionForceOffset": 0.0
+    },
+    {
+      "Radius": 37.0,
+      "Width": 24.0,
+      "Mass": 20.0,
+      "SteerAngle": 0.0,
+      "bDrive": true,
+      "bHandbrake": true,
+      "SuspensionStiffness": 380.0,
+      "SuspensionDamping": 20.0,
+      "MaxRaise": 10.0,
+      "MaxDrop": 10.0,
+      "SuspensionForceOffset": 0.0
+    },
+    {
+      "Radius": 37.0,
+      "Width": 24.0,
+      "Mass": 20.0,
+      "SteerAngle": 0.0,
+      "bDrive": true,
+      "bHandbrake": true,
+      "SuspensionStiffness": 380.0,
+      "SuspensionDamping": 20.0,
+      "MaxRaise": 10.0,
+      "MaxDrop": 10.0,
+      "SuspensionForceOffset": 0.0
+    }
+  ]
+}

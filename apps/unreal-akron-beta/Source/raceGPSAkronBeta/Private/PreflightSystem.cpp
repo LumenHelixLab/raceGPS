@@ -6,6 +6,9 @@
 #include "Misc/FileHelper.h"
 #include "GenericPlatform/GenericPlatformMisc.h"
 #include "Engine/Engine.h"
+#include "Dom/JsonObject.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 TArray<FPreflightCheck> UPreflightSystem::RunAllChecks()
 {
@@ -92,13 +95,15 @@ bool UPreflightSystem::IsFirstRun()
 
 void UPreflightSystem::MarkFirstRunComplete()
 {
+    FString ConfigDir = FPaths::ProjectSavedDir() / TEXT("Config");
+    FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*ConfigDir);
     FString ConfigPath = FPaths::ProjectSavedDir() / TEXT("Config/PlayerSettings.json");
     FString Json;
     TSharedPtr<FJsonObject> Root;
-    TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
 
     if (FFileHelper::LoadFileToString(Json, *ConfigPath))
     {
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
         FJsonSerializer::Deserialize(Reader, Root);
     }
     if (!Root.IsValid())
@@ -239,17 +244,32 @@ FPreflightCheck UPreflightSystem::CheckCitypackIntegrity()
     Check.Category = TEXT("Citypack Data");
     Check.Description = TEXT("Akron citypack must be present and valid");
 
+    IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
     FString ManifestPath = FPaths::ProjectContentDir() / TEXT("../citypacks/akron-oh-beta-001/akron_semantic_manifest.json");
-    if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*ManifestPath))
+    FString RoutesPath = FPaths::ProjectContentDir() / TEXT("../citypacks/akron-oh-beta-001/akron_routes.json");
+    FString LevelSpecPath = FPaths::ProjectContentDir() / TEXT("../../generated/AkronWorld_LevelSpec.json");
+    if (!PlatformFile.FileExists(*ManifestPath))
     {
         Check.Status = EPreflightStatus::Fail;
         Check.Detail = TEXT("Akron citypack manifest not found");
         Check.RecommendedAction = TEXT("Verify game installation or re-install citypack");
     }
+    else if (!PlatformFile.FileExists(*RoutesPath))
+    {
+        Check.Status = EPreflightStatus::Fail;
+        Check.Detail = TEXT("Akron route data not found");
+        Check.RecommendedAction = TEXT("Regenerate or restore akron_routes.json before launching");
+    }
+    else if (!PlatformFile.FileExists(*LevelSpecPath))
+    {
+        Check.Status = EPreflightStatus::Fail;
+        Check.Detail = TEXT("Canonical AkronWorld level spec not found");
+        Check.RecommendedAction = TEXT("Run tools/generate-level-spec.py to regenerate AkronWorld_LevelSpec.json");
+    }
     else
     {
         Check.Status = EPreflightStatus::Pass;
-        Check.Detail = TEXT("Akron citypack manifest found");
+        Check.Detail = TEXT("Akron manifest, route data, and canonical level spec found");
     }
     return Check;
 }
@@ -261,7 +281,7 @@ FPreflightCheck UPreflightSystem::CheckSaveDirectory()
     Check.Description = TEXT("Save directory must be writable");
 
     FString Status = GetSaveDirectoryStatus();
-    if (Status.Contains(TEXT("writable")))
+    if (Status.StartsWith(TEXT("Save directory writable:")))
     {
         Check.Status = EPreflightStatus::Pass;
         Check.Detail = Status;

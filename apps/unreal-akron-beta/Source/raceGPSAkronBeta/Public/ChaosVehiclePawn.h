@@ -48,6 +48,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
     void SetTuningData(UVehicleTuningData* NewTuningData);
 
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
+    float CalculateDriftAngle() const;
+
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
+    float CalculateWheelSlipRatio() const;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "raceGPS|Vehicle")
     TObjectPtr<UVehicleTuningData> TuningData;
 

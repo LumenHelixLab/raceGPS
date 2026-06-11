@@ -67,16 +67,16 @@ public:
     float GetTotalRaceDistance() const;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
-    FString CityPackPath = TEXT("citypacks/akron-oh-beta-001/");
+    FString CityPackPath = TEXT("../../citypacks/akron-oh-beta-001/");
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
-    FString ManifestFile = TEXT("manifest.json");
+    FString ManifestFile = TEXT("akron_semantic_manifest.json");
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
     FString XodrFile = TEXT("akron.xodr");
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
-    FString RouteDir = TEXT("citypacks/akron-oh-beta-001/routes/");
+    FString RouteDir = TEXT("../../citypacks/akron-oh-beta-001/routes/");
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
     int32 SelectedRouteIndex = 0;
@@ -175,6 +175,9 @@ public:
     TArray<TObjectPtr<class UVehicleTuningData>> VehiclePresets;
 
     UPROPERTY(BlueprintReadOnly, Category = "raceGPS|Vehicle")
+    TMap<FString, TObjectPtr<class UVehicleTuningData>> HandlingModePresets;
+
+    UPROPERTY(BlueprintReadOnly, Category = "raceGPS|Vehicle")
     TObjectPtr<class UVehicleTuningData> SelectedVehicleTuning;
 
 protected:
@@ -204,5 +207,7 @@ protected:
     void InitHUDWidgets();
     void OnVehicleCollision(float ImpactSpeedKmh);
     void CreateDefaultVehiclePresets();
+    void LoadHandlingModePresets();
+    TObjectPtr<class UVehicleTuningData> BuildMergedVehicleTuning(class UVehicleTuningData* BaseVehiclePreset, const FString& HandlingMode);
     void ApplyVehicleTuningToPlayer();
 };
