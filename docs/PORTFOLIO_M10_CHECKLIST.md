@@ -19,5 +19,6 @@ Milestone: Second Shippable Beta & Orchestration Entry (portfolio M10)
 
 ## Verification
 
+- [x] Automated backend wire smoke (`node scripts/verify-ue5-backend-wire.mjs`) — see `docs/PIE_VERIFICATION.md`
 - [ ] Akron beta playable end-to-end in packaged build
 - [ ] Second city pipeline produces valid OpenDRIVE → UE5 bundle without manual fixes
