@@ -26,6 +26,7 @@ import {
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { slugRoom, sanitizeMode } from './room-utils.js';
 
 const PORT = Number(process.env.RACEGPS_PORT || 8787);
 const WEB_ORIGIN = process.env.RACEGPS_WEB_ORIGIN || 'http://localhost:5173';
@@ -806,14 +807,6 @@ function broadcast(room: Room, msg: ServerMessage, except?: WebSocket): void {
 
 function getSid(header?: string): string | undefined {
   return header ? cookie.parse(header).racegps_sid : undefined;
-}
-
-function slugRoom(title: string): string {
-  return `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${nanoid(5)}`;
-}
-
-function sanitizeMode(value: unknown): RaceGPSMode {
-  return ['cruise', 'race', 'challenge', 'hot_pursuit', 'explore'].includes(String(value)) ? value as RaceGPSMode : 'cruise';
 }
 
 loadCityPack();
