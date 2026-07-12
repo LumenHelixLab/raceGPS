@@ -1,143 +1,173 @@
-# raceGPS 🏎️🌍
+# raceGPS
 
-> **Real-world arcade racing.** Drive actual streets. Race your city. No fictional tracks — just you, your car, and the real world rendered in Unreal Engine 5.
+<p align="center">
+  <a href="https://lumenhelix.com">
+    <img src="docs/assets/lumenhelix-logo.svg" alt="LumenHelix Solutions" width="180">
+  </a>
+</p>
 
-[![Unreal Engine 5.5](https://img.shields.io/badge/Unreal%20Engine-5.5-blue.svg)](https://www.unrealengine.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Windows](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)]()
+<h3 align="center">Real-world arcade racing on OpenStreetMap roads in Unreal Engine 5</h3>
 
----
-
-## What is raceGPS?
-
-raceGPS is an **open-source desktop arcade racing game** built on top of real-world map data. Instead of fictional tracks, you race on actual city streets rendered in 3D from OpenStreetMap and OpenDRIVE semantic road networks.
-
-### Key Features (v0.1.0-beta)
-
-- 🗺️ **Real-world Akron, Ohio** — 1,370 real roads, 1,214 junctions, 2 generated race routes
-- 🏎️ **Arcade physics** — Chaos Vehicles tuned for drift-friendly, fun handling
-- 🎮 **Cruise Sprint mode** — Checkpoint-to-checkpoint racing with route ribbons
-- 👻 **Ghost replay** — Race against your own best time
-- 🏆 **Leaderboards & medals** — Gold, Silver, Bronze thresholds per route
-- 🎯 **10 achievements** — Persistent unlocks with JSON save data
-- 📖 **Interactive tutorial** — 5-step onboarding for new players
-- 🌙 **Day/night cycle** — Dynamic lighting and time of day
-- 🚦 **Traffic system** — AI vehicles spawning dynamically around the player
-- 🛠️ **Developer console** — In-game cheats and debug commands
+<p align="center">
+  <a href="https://lumenhelixsolutions.github.io/raceGPS/">
+    <img src="https://img.shields.io/badge/Launch_Page-raceGPS-00D4FF?style=flat-square&logo=githubpages&logoColor=white" alt="Launch Page">
+  </a>
+  <a href="https://lumenhelix.com">
+    <img src="https://img.shields.io/badge/Built_by-LumenHelix-7C3AED?style=flat-square" alt="Built by LumenHelix">
+  </a>
+  <img src="https://img.shields.io/badge/license-MIT-8A95A8?style=flat-square" alt="License">
+</p>
 
 ---
 
-## Quick Start
+**raceGPS** is part of the [LumenHelix Solutions](https://lumenhelix.com) portfolio — applied symbolic dynamics & reversible computation for deterministic, traceable AI systems.
 
-### Download & Play (Recommended)
+raceGPS is an open-source desktop arcade racing game built on real-world map data. Instead of fictional tracks, you race on actual city streets rendered in 3D from OpenStreetMap and OpenDRIVE semantic road networks. The project combines a UE5.5 C++ gameplay stack with a pure-Python semantic compiler that fetches OSM data, generates valid OpenDRIVE 1.4 road networks, builds cruise sprint routes, and exports game-ready citypacks.
 
-1. Download the latest release from the [Releases](https://github.com/lumenhelixsolutions/raceGPS/releases) page
-2. Extract the `.zip`
-3. Run `raceGPS.exe`
-4. Select a route, pick your vehicle, and race
+## Why this exists
 
-### Build from Source
+- **Race the real world.** Every route is grounded in actual road geometry, not handcrafted fantasy tracks.
+- **Own the pipeline.** Open-source UE5 C++ gameplay plus a Python semantic compiler you can extend for any city.
+- **Build locally.** No required cloud service; compile the game, compiler, and installer on your own machine.
 
-See [`apps/unreal-akron-beta/BUILD.md`](apps/unreal-akron-beta/BUILD.md) for full build instructions.
+## Quick start
 
-**Prerequisites:**
-- Unreal Engine 5.5
-- Visual Studio 2022 with C++ game dev workload
-- Python 3.10+ (for semantic compiler)
+Install and run raceGPS in under two minutes.
+
+### macOS / Linux
+
+```bash
+# Clone
+git clone https://github.com/lumenhelixsolutions/raceGPS.git
+cd raceGPS
+
+# Install & run
+# Prerequisites: Unreal Engine 5.5, Xcode 15+, Python 3.10+
+# 1. Generate Xcode project files
+/Users/Shared/Epic\ Games/UE_5.5/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh \
+  -project="$(pwd)/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" -game
+
+# 2. Build Development Editor
+cd apps/unreal-akron-beta
+/Users/Shared/Epic\ Games/UE_5.5/Engine/Build/BatchFiles/Mac/Build.sh \
+  raceGPSAkronBetaEditor Mac Development -project="$(pwd)/raceGPSAkronBeta.uproject"
+
+# 3. Build Python semantic compiler
+cd ../../tools/akron-semantic-compiler
+python3 -m venv ../../../.venv
+source ../../../.venv/bin/activate
+pip install -r requirements.txt
+python compile_akron.py
+```
+
+### Windows (PowerShell)
 
 ```powershell
+# Clone
+git clone https://github.com/lumenhelixsolutions/raceGPS.git
+Set-Location raceGPS
+
+# Install & run
+# Prerequisites: Unreal Engine 5.5, Visual Studio 2022 + C++ game workload, Python 3.10+
+# 1. One-time dev environment setup (run as Administrator)
+.\scripts\setup-ue5-dev-env.ps1
+
+# 2. Build UE5 C++ project + package
 cd apps\unreal-akron-beta
 .\Build.bat
+
+# 3. Build Python semantic compiler
+cd ..\..\tools\akron-semantic-compiler
+py -m venv ..\..\..\.venv
+..\..\..\.venv\Scripts\pip install -r requirements.txt
+py compile_akron.py
 ```
 
----
+### Windows (Git Bash / WSL)
 
-## Controls
+```bash
+git clone https://github.com/lumenhelixsolutions/raceGPS.git
+cd raceGPS
+# Prerequisites: Unreal Engine 5.5 Linux build, build-essential, clang, Python 3.10+
+# 1. Generate Linux Makefiles
+~/UnrealEngine/5.5/Engine/Build/BatchFiles/Linux/GenerateProjectFiles.sh \
+  -project="$(pwd)/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" -game
 
-| Action | Keyboard | Gamepad |
-|--------|----------|---------|
-| Throttle | W | RT |
-| Brake / Reverse | S | LT |
-| Steer Left | A | Left Stick Left |
-| Steer Right | D | Left Stick Right |
-| Handbrake | Space | A (Face Bottom) |
-| Reset Vehicle | R | — |
-| Toggle Camera | C | — |
-| Pause | P / Esc | Menu |
-| Developer Console | `~` (Tilde) | — |
+# 2. Build Development Editor
+cd apps/unreal-akron-beta
+~/UnrealEngine/5.5/Engine/Build/BatchFiles/Linux/Build.sh \
+  raceGPSAkronBetaEditor Linux Development -project="$(pwd)/raceGPSAkronBeta.uproject"
 
----
-
-## System Requirements
-
-| Tier | Minimum | Recommended |
-|------|---------|-------------|
-| **OS** | Windows 10 64-bit | Windows 11 64-bit |
-| **CPU** | Quad-core 2.5 GHz | 6-core 3.5 GHz |
-| **RAM** | 8 GB | 16 GB |
-| **GPU** | GTX 1060 / RX 580 | RTX 3060 / RX 6700 XT |
-| **Storage** | 5 GB SSD | 5 GB NVMe SSD |
-| **DirectX** | Version 12 | Version 12 |
-
----
-
-## Project Structure
-
-```
-raceGPS
-├── apps/unreal-akron-beta/     # UE5.5 C++ project (35+ classes)
-│   ├── Source/                  # C++ gameplay, world, UI, systems
-│   ├── Config/                  # Engine / Game / Input INIs
-│   ├── Content/                 # Maps, materials, blueprints (Editor)
-│   ├── citypacks/               # Generated city data
-│   └── Build.bat                # Automated build script
-├── tools/akron-semantic-compiler/  # Pure-Python OpenDRIVE generator
-│   ├── compile_akron.py         # Main pipeline orchestrator
-│   ├── osm_to_xodr.py           # OpenDRIVE XML writer
-│   ├── route_generator.py       # Cruise sprint route builder
-│   └── ...
-├── docs/                        # Architecture & design docs
-├── reference/web-renderer/      # Archived web renderer reference code
-└── README.md                    # This file
+# 3. Build Python semantic compiler
+cd ../../tools/akron-semantic-compiler
+python3 -m venv ../../../.venv
+source ../../../.venv/bin/activate
+pip install -r requirements.txt
+python compile_akron.py
 ```
 
----
+> **Device note:** raceGPS is tested on Windows 11, macOS Sonoma, Ubuntu 22.04/24.04, and modern mobile browsers.
 
-## Data Pipeline
+## Full documentation
+
+Visit the launch page for architecture, API reference, and deployment guides:  
+**https://lumenhelixsolutions.github.io/raceGPS/**
+
+## Features
+
+| Feature | What it gives you |
+|---------|-------------------|
+| Real-world maps | Race on 1,370+ real Akron roads generated from OpenStreetMap and OpenDRIVE data. |
+| Arcade physics | Chaos Vehicles tuned for drift-friendly, fun handling with ghost replay and leaderboards. |
+| Cruise Sprint mode | Checkpoint-to-checkpoint racing with route ribbons, medals, and persistent achievements. |
+| Cross-platform UE5 stack | C++ gameplay systems, Python semantic compiler, and build scripts for Windows, macOS, Linux, and WSL. |
+
+## Architecture at a glance
 
 ```
-OpenStreetMap ──► Python Semantic Compiler ──► citypack/
-                                                    │
-                                              akron.xodr
-                                              manifest.json
-                                              routes/*.json
-                                                    │
-                                              UE5 Runtime
+raceGPS/
+├── apps/unreal-akron-beta/   UE5.5 C++ project — gameplay, world, UI, systems
+├── tools/akron-semantic-compiler/  Python OSM → OpenDRIVE → citypack pipeline
+├── citypacks/                 Generated game-ready route and road data
+└── scripts/                   Build, package, and installer automation
 ```
-
-The **Akron Semantic Compiler** fetches OSM data, generates a valid OpenDRIVE 1.4 road network, builds cruise sprint routes, places checkpoints, classifies POIs, and exports a game-ready bundle.
-
----
 
 ## Development
 
 ```bash
-# Type-check / lint (Python tools)
-cd tools/akron-semantic-compiler
-py -m compileall .
-
-# Build UE5 project
-cd apps/unreal-akron-beta
+# Build the UE5 editor (Windows PowerShell)
+cd apps\unreal-akron-beta
 .\Build.bat
+
+# Or generate project files manually
+"C:\Program Files\Epic Games\UE_5.5\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe" \
+  -projectfiles -project="$(pwd)\raceGPSAkronBeta.uproject" -game -engine
+
+# Run the semantic compiler
+cd tools\akron-semantic-compiler
+py compile_akron.py
 ```
 
-For architecture details, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
-For gameplay design, see [`docs/GAMEPLAY_DESIGN.md`](docs/GAMEPLAY_DESIGN.md).
+## Roadmap
 
----
+- [ ] Additional citypacks beyond Akron, Ohio
+- [ ] Cross-platform CI build for Windows, macOS, and Linux
+- [ ] Multiplayer lobby and online leaderboards
+
+## Support & consulting
+
+Need deterministic AI systems with full traceability? LumenHelix builds reversible computation kernels, governance layers, and end-to-end AI integrations.
+
+- **Website:** https://lumenhelix.com
+- **Services:** AI diagnostics, B.Y.O. support packages, governance audits
+- **Research:** TEN² kernel, R.U.B.I.C. boundary discipline, C.O.R.E. constraint lens
 
 ## License
 
-MIT — Free for personal and commercial use.
+Released under the MIT License. Map data © OpenStreetMap contributors.
 
-Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
+---
+
+<p align="center">
+  <sub>Engineered by <a href="https://lumenhelix.com">LumenHelix Solutions</a> — Applied Symbolic Dynamics & Reversible Computation.</sub>
+</p>

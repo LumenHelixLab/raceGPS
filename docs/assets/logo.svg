@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none" role="img" aria-label="LumenHelix Solutions">
+  <defs>
+    <linearGradient id="helixGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00D4FF"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Helix mark -->
+  <g transform="translate(8, 8)" filter="url(#glow)">
+    <path d="M16 0 C24 0 28 8 20 12 C12 16 12 24 20 28 C28 32 24 40 16 40 C8 40 4 32 12 28 C20 24 20 16 12 12 C4 8 8 0 16 0 Z" fill="url(#helixGrad)" opacity="0.95"/>
+    <circle cx="16" cy="6" r="2.5" fill="#F0F4F8"/>
+    <circle cx="16" cy="34" r="2.5" fill="#F0F4F8"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="56" y="30" font-family="Space Grotesk, Inter, system-ui, sans-serif" font-size="22" font-weight="600" fill="#F0F4F8" letter-spacing="-0.02em">
+    LumenHelix
+  </text>
+</svg>
