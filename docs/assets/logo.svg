@@ -1,10 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="raceGPS logo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="raceGPS logo">
   <defs>
-    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#EF4444"/>
       <stop offset="100%" stop-color="#F59E0B"/>
     </linearGradient>
   </defs>
-  <rect width="48" height="48" rx="12" fill="url(#logoGrad)"/>
-  <text x="24" y="33" font-family="Space Grotesk, Inter, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF" text-anchor="middle">R</text>
+  <rect width="128" height="128" rx="28" fill="url(#g)" opacity="0.15"/>
+  <polygon points="64,14 110,40 110,88 64,114 18,88 18,40" fill="none" stroke="#EF4444" stroke-width="6"/>
+  <text x="64" y="74" font-family="Space Grotesk, Inter, sans-serif" font-size="38" font-weight="700" fill="#EF4444" text-anchor="middle">R</text>
 </svg>

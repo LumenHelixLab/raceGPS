@@ -1,7 +1,11 @@
 # raceGPS
 
 <p align="center">
-  <img src="docs/assets/logo.svg" alt="raceGPS logo" width="160">
+  <img src="docs/assets/hero.svg" alt="raceGPS header" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="raceGPS logo" width="120">
 </p>
 
 <h3 align="center">Real-world arcade racing on OpenStreetMap roads in Unreal Engine 5</h3>
@@ -9,9 +13,9 @@
 <p align="center">Race on actual city streets generated from OpenStreetMap and OpenDRIVE, powered by UE5 C++ and a Python semantic compiler.</p>
 
 <p align="center">
-  <a href="https://lumenhelixsolutions.github.io/raceGPS/">Launch Page</a>
+  <a href="https://lumenhelixlab.github.io/raceGPS/">Launch Page</a>
   <span> · </span>
-  <a href="https://github.com/lumenhelixsolutions/raceGPS">GitHub</a>
+  <a href="https://github.com/lumenhelixlab/raceGPS">GitHub</a>
   <span> · </span>
   <a href="https://lumenhelix.com">LumenHelix</a>
 </p>
@@ -31,7 +35,7 @@ raceGPS is an open-source desktop arcade racing game built on real-world map dat
 ### macOS / Linux
 
 ```bash
-git clone https://github.com/lumenhelixsolutions/raceGPS.git
+git clone https://github.com/lumenhelixlab/raceGPS.git
 cd raceGPS
 # Prerequisites: UE 5.5, Xcode 15+, Python 3.10+
 /Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh \
@@ -49,7 +53,7 @@ python compile_akron.py
 ### Windows (PowerShell)
 
 ```powershell
-git clone https://github.com/lumenhelixsolutions/raceGPS.git
+git clone https://github.com/lumenhelixlab/raceGPS.git
 Set-Location raceGPS
 # Prerequisites: UE 5.5, VS 2022 + C++ game workload, Python 3.10+
 .\scripts\setup-ue5-dev-env.ps1
@@ -64,7 +68,7 @@ py compile_akron.py
 ### Windows (Git Bash / WSL)
 
 ```bash
-git clone https://github.com/lumenhelixsolutions/raceGPS.git
+git clone https://github.com/lumenhelixlab/raceGPS.git
 cd raceGPS
 # Prerequisites: UE 5.5 Linux build, build-essential, clang, Python 3.10+
 ~/UnrealEngine/5.5/Engine/Build/BatchFiles/Linux/GenerateProjectFiles.sh \
