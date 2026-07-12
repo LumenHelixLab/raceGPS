@@ -8,10 +8,17 @@
 ## Quick Start (Recommended)
 
 ### Windows
-1. Download `raceGPS-v0.2.0-Win64-Setup.exe`
-2. Double-click -> UAC prompt -> follow wizard
-3. Installer auto-detects UE5.5 / VS2022; offers guided install if missing
-4. Launch from desktop shortcut
+1. Download `raceGPS-v0.2.0-Win64-Setup.exe` from [Releases](https://github.com/LumenHelixLab/raceGPS/releases)
+2. Double-click → UAC prompt → follow wizard (preflight checks RAM, disk, VC++ runtimes)
+3. Launch from desktop shortcut (points at `Binaries\Win64\raceGPS.exe`)
+
+**Build the installer from source:**
+```powershell
+# After UE5 packaging (or full Build.bat):
+.\scripts\stage-windows-installer.ps1    # normalize payload → Build/Windows/
+.\scripts\build-windows-installer.ps1    # stage + makensis → installer/raceGPS-v0.2.0-Win64-Setup.exe
+```
+Or run `apps\unreal-akron-beta\Build.bat` which stages automatically at the end.
 
 ### Linux
 ```bash
@@ -19,6 +26,26 @@ chmod +x raceGPS-v0.2.0-Linux-Setup.run
 ./raceGPS-v0.2.0-Linux-Setup.run
 # Follow prompts; script will install UE5.5 via Epic Online Services if needed
 ```
+
+---
+
+## World Content Requirement
+
+The Windows installer ships citypack **data** (`citypacks/akron-oh-beta-001/`) but the playable **3D world** requires a cooked `AkronWorld` map asset (`Content/Maps/AkronWorld.umap`). If that map was not included in the build:
+
+1. Onboarding **Step 0** shows a failing **World Map** preflight row and blocks **Next**
+2. **Play** on the main menu opens the **Akron world not installed** gate with:
+   - **Verify installation** — re-scan install files and write `%LOCALAPPDATA%\raceGPS\logs\preflight.log`
+   - **Open setup guide** — GitHub README (Level Setup Guide)
+   - **Reinstall** — GitHub Releases page
+
+Release builds must create `AkronWorld.umap` in UE 5.5 Editor before running `Build.bat`. Dev/CI may pass `AllowPlaceholder`:
+
+```bat
+Build.bat AllowPlaceholder
+```
+
+Staged installers include `Build/Windows/world-content-manifest.json` listing required world packages.
 
 ---
 
@@ -33,6 +60,7 @@ On first launch, the game runs a **Preflight System** that validates:
 | GPU | DX12 compatible | GTX 1060 / RX 580+ | Auto-set Low preset |
 | Disk | 5 GB free | 20 GB free | Block launch |
 | Citypack | `akron-oh-beta-001` present | Any compiled citypack | Offer download |
+| World Map | `AkronWorld` cooked package or `.umap` | Real saved UE map | Block launch; show install gate |
 | Save Dir | Writable | SSD preferred | Suggest Admin mode |
 | Network | Optional | For leaderboards | Skip silently |
 
@@ -69,7 +97,7 @@ If the installer cannot run (e.g., no admin rights, unusual path requirements):
 ### Build from Source
 ```powershell
 # 1. Clone
-git clone https://github.com/lumenhelixsolutions/racegps.git
+git clone https://github.com/LumenHelixLab/racegps.git
 cd racegps/apps/unreal-akron-beta
 
 # 2. Generate project
@@ -84,7 +112,7 @@ cd racegps/apps/unreal-akron-beta
 & "C:\Program Files\Epic Games\UE_5.5\Engine\Build\BatchFiles\RunUAT.bat" `
     BuildCookRun -project="$PWD\raceGPSAkronBeta.uproject" `
     -noP4 -platform=Win64 -clientconfig=Shipping -cook -stage -pak -archive `
-    -archivedirectory="D:\projects\racegps\Build\Windows"
+    -archivedirectory="$PWD\..\..\Build\Windows"
 ```
 
 ---
@@ -133,6 +161,6 @@ raceGPS-v0.2.0-Win64-Setup.exe /S /D=D:\Games\raceGPS
 
 ## Support
 
-- **Issues:** https://github.com/lumenhelixsolutions/racegps/issues
-- **Discussions:** https://github.com/lumenhelixsolutions/racegps/discussions
-- **Docs:** https://lumenhelixsolutions.github.io/racegps
+- **Issues:** https://github.com/LumenHelixLab/racegps/issues
+- **Discussions:** https://github.com/LumenHelixLab/racegps/discussions
+- **Docs:** https://lumenhelixlab.github.io/racegps

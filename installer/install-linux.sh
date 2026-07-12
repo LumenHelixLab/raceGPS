@@ -8,7 +8,7 @@ set -euo pipefail
 PRODUCT_NAME="raceGPS"
 PRODUCT_VERSION="0.2.0"
 PUBLISHER="LumenHelix Solutions"
-REPO_URL="https://github.com/lumenhelixsolutions/raceGPS"
+REPO_URL="https://github.com/LumenHelixLab/raceGPS"
 
 # Colors
 RED='\033[0;31m'

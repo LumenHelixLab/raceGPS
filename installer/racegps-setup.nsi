@@ -5,12 +5,13 @@
 !define PRODUCT_NAME "raceGPS"
 !define PRODUCT_VERSION "0.2.0"
 !define PRODUCT_PUBLISHER "LumenHelix Solutions"
-!define PRODUCT_WEB_SITE "https://github.com/lumenhelixsolutions/raceGPS"
+!define PRODUCT_WEB_SITE "https://github.com/LumenHelixLab/raceGPS"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\raceGPS.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define MIN_RAM_MB "8192"
 !define MIN_DISK_MB "5120"
+!define GAME_EXE_REL "Binaries\Win64\raceGPS.exe"
 
 ; MUI 2
 !include "MUI2.nsh"
@@ -36,7 +37,6 @@ Page custom PreflightPage PreflightLeave
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 Page custom FinishPage
-!insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -82,17 +82,22 @@ Function PreflightPage
         EnableWindow $mui.Button.Next 0
     ${EndIf}
 
-    ; Check RAM
+    ; Check RAM (GlobalMemoryStatusEx via System plugin — no System.nsh required)
     ${NSD_CreateLabel} 0 50u 100% 12u ""
     Pop $R2
-    System::Call "kernel32::GlobalMemoryStatusEx(*) v .r0"
-    System::Call "*(&i64) i (r0) .r1"
-    System::Call "*$1(&i64, &i64, &i64, &i64, &i64, &i64, &i64, &i64)"
-    System::Call "*$1(&i64 .r2, &i64 .r3, &i64 .r4, &i64 .r5, &i64 .r6, &i64 .r7, &i64 .r8, &i64 .r9)"
-    IntOp $R3 $8 / 1048576  ; Total physical RAM in MB
+    System::Alloc 64
+    Pop $0
+    System::Call "*$0(i 64)"
+    System::Call "kernel32::GlobalMemoryStatusEx(i r0) i .r1"
+    System::Call "*$0(i.r2, i.r3, l r4, l r5, l r6, l r7, l r8, l r9, l r10, l r11)"
+    System::Free $0
+    System::Int64Op r4 / 1048576
+    Pop $R3
     ${If} $R3 >= ${MIN_RAM_MB}
+        SetCtlColors $R2 0x00AA00 transparent
         ${NSD_SetText} $R2 "✓ RAM: $R3 MB (min: ${MIN_RAM_MB} MB)"
     ${Else}
+        SetCtlColors $R2 0xCC8800 transparent
         ${NSD_SetText} $R2 "⚠ RAM: $R3 MB (min: ${MIN_RAM_MB} MB recommended)"
     ${EndIf}
 
@@ -104,13 +109,14 @@ Function PreflightPage
         StrCpy $R5 "$PROGRAMFILES64"
     ${EndIf}
     System::Call 'kernel32::GetDiskFreeSpaceEx(w "$R5", *l .r0, *l .r1, *l .r2) i .r3'
-    System::Int64Op $1 / 1048576
+    System::Int64Op $0 / 1048576
     Pop $R6
     ${If} $R6 >= ${MIN_DISK_MB}
+        SetCtlColors $R4 0x00AA00 transparent
         ${NSD_SetText} $R4 "✓ Disk space: $R6 MB available on $R5"
     ${Else}
-        ${NSD_SetText} $R4 "✗ Disk space: $R6 MB (need ${MIN_DISK_MB} MB). Choose another drive."
-        EnableWindow $mui.Button.Next 0
+        SetCtlColors $R4 0xCC8800 transparent
+        ${NSD_SetText} $R4 "⚠ Disk space: $R6 MB on $R5 (need ${MIN_DISK_MB} MB). Pick another folder on the next page."
     ${EndIf}
 
     ; Check DirectX
@@ -150,7 +156,7 @@ FunctionEnd
 Section "Game Files" SEC_GAME
     SectionIn RO
     SetOutPath "$INSTDIR"
-    File /nonfatal /r "..\Build\Windows\*.*"
+    File /r "..\Build\Windows\*.*"
     SetOutPath "$INSTDIR\citypacks"
     File /r "..\citypacks\*.*"
 SectionEnd
@@ -161,6 +167,11 @@ Section "Akron Citypack (Default)" SEC_CITYPACK
 SectionEnd
 
 Section "Visual C++ Redistributables" SEC_VCREDIST
+    ReadRegStr $0 HKLM "SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64" "Version"
+    ${If} $0 != ""
+        DetailPrint "VC++ Redistributables already installed."
+        Goto vc_done
+    ${EndIf}
     DetailPrint "Installing VC++ 2015-2022 Redistributables..."
     SetOutPath "$TEMP"
     NSISdl::download "https://aka.ms/vs/17/release/vc_redist.x64.exe" "$TEMP\vc_redist.x64.exe"
@@ -170,15 +181,16 @@ Section "Visual C++ Redistributables" SEC_VCREDIST
     ${Else}
         DetailPrint "WARNING: VC++ Redist download failed. Game may not run."
     ${EndIf}
+    vc_done:
 SectionEnd
 
 Section "Desktop Shortcut" SEC_SHORTCUT
-    CreateShortcut "$DESKTOP\raceGPS.lnk" "$INSTDIR\raceGPS.exe" "" "$INSTDIR\raceGPS.exe" 0
+    CreateShortcut "$DESKTOP\raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}" "" "$INSTDIR" 0
 SectionEnd
 
 Section "Start Menu Shortcuts" SEC_STARTMENU
     CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
-    CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Play raceGPS.lnk" "$INSTDIR\raceGPS.exe"
+    CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Play raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}" "" "$INSTDIR" 0
     CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
@@ -187,10 +199,10 @@ SectionEnd
 ; ============================================================
 Section -Post
     WriteUninstaller "$INSTDIR\uninst.exe"
-    WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\raceGPS.exe"
+    WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\${GAME_EXE_REL}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "${PRODUCT_NAME}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-    WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\raceGPS.exe"
+    WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${GAME_EXE_REL}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
@@ -242,11 +254,11 @@ Function FinishPage
 FunctionEnd
 
 Function LaunchGame
-    Exec '"$INSTDIR\raceGPS.exe"'
+    Exec '"$INSTDIR\${GAME_EXE_REL}"'
     Quit
 FunctionEnd
 
 Function OpenCitypackManager
-    Exec '"$INSTDIR\raceGPS.exe" -citypackmanager'
+    Exec '"$INSTDIR\${GAME_EXE_REL}" -citypackmanager'
     Quit
 FunctionEnd
