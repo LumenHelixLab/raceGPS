@@ -1,0 +1,41 @@
+/* raceGPS — product-specific theme */
+
+:root {
+  --bg-deep: #0B1021;
+  --bg-surface: #111827;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E5E7EB;
+  --accent: #EF4444;
+  --secondary: #F59E0B;
+  --accent-glow: #EF444459;
+  --accent-soft: #EF44441A;
+}
+
+.hero-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-visual svg {
+  width: min(55vw, 520px);
+  height: auto;
+  opacity: 0.55;
+}
+
+@media (max-width: 768px) {
+  .hero-visual svg { width: 85vw; opacity: 0.35; }
+}
+
+.tagline::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.btn-primary { background: linear-gradient(135deg, var(--accent), #DC2626); }
+.stat-value { color: var(--accent); text-shadow: 0 0 18px rgba(239, 68, 68, 0.25); }
+.tagline::before { background: var(--secondary); box-shadow: 0 0 12px rgba(245, 158, 11, 0.45); }

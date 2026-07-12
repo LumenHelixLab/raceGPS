@@ -3,26 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>raceGPS — LumenHelix Solutions</title>
-  <meta name="description" content="raceGPS by LumenHelix — an open-source desktop arcade racing game built on real-world map data, rendered in Unreal Engine 5.">
+  <title>raceGPS — Real-world arcade racing on OpenStreetMap roads in Unreal Engine 5</title>
+  <meta name="description" content="raceGPS — open-source desktop arcade racer built on real-world map data. UE5 C++ gameplay plus a Python OSM to OpenDRIVE semantic compiler.">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/base.css">
+  <link rel="stylesheet" href="assets/project.css">
 </head>
 <body>
   <header class="site-header">
     <div class="container">
-      <a class="brand" href="https://lumenhelix.com" target="_blank" rel="noopener">
-        <img src="assets/logo.svg" alt="LumenHelix">
-        <span>LumenHelix</span>
+      <a class="brand" href="/">
+        <img src="assets/logo.svg" alt="raceGPS">
+        <span>raceGPS</span>
       </a>
       <nav aria-label="Primary">
-        <a href="#install">Install</a>
         <a href="#features">Features</a>
+        <a href="#install">Install</a>
         <a href="#docs">Docs</a>
-        <a href="https://lumenhelix.com" target="_blank" rel="noopener">lumenhelix.com</a>
+        <a href="https://github.com/lumenhelixsolutions/raceGPS" target="_blank" rel="noopener">GitHub</a>
+        <span class="parent-link">a <a href="https://lumenhelix.com" target="_blank" rel="noopener">LumenHelix</a> project</span>
       </nav>
       <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -36,39 +38,28 @@
 
   <main>
     <section class="hero">
-      <div class="hero-bg" aria-hidden="true">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="hx" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00D4FF" stop-opacity="0.6"/>
-              <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.3"/>
-            </linearGradient>
-          </defs>
-          <g fill="none" stroke="url(#hx)" stroke-width="1.5">
-            <path d="M200,20 Q300,100 200,200 Q100,300 200,380">
-              <animate attributeName="d" dur="20s" repeatCount="indefinite"
-                values="M200,20 Q300,100 200,200 Q100,300 200,380;M200,20 Q100,100 200,200 Q300,300 200,380;M200,20 Q300,100 200,200 Q100,300 200,380"/>
-            </path>
-            <path d="M200,20 Q300,100 200,200 Q100,300 200,380" transform="rotate(180 200 200)" opacity="0.5">
-              <animate attributeName="d" dur="20s" repeatCount="indefinite"
-                values="M200,20 Q300,100 200,200 Q100,300 200,380;M200,20 Q100,100 200,200 Q300,300 200,380;M200,20 Q300,100 200,200 Q100,300 200,380"/>
-            </path>
-          </g>
-          <circle cx="200" cy="200" r="160" stroke="#1E293B" stroke-width="1" fill="none" opacity="0.5"/>
-          <circle cx="200" cy="200" r="120" stroke="#1E293B" stroke-width="1" fill="none" opacity="0.35"/>
-        </svg>
+      <div class="hero-visual" aria-hidden="true">
+        <svg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient id='rg1' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='#EF4444' stop-opacity='0.7'/><stop offset='100%' stop-color='#F59E0B' stop-opacity='0.3'/></linearGradient><linearGradient id='rg2' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='#EF4444'/><stop offset='100%' stop-color='#DC2626'/></linearGradient></defs><circle cx='200' cy='200' r='150' stroke='url(#rg1)' stroke-width='1.5' fill='none' opacity='0.45'><animate attributeName='r' values='150;158;150' dur='4s' repeatCount='indefinite'/></circle><path d='M80 200 Q140 120 200 160 T320 180' stroke='#374151' stroke-width='22' fill='none' stroke-linecap='round'/><path d='M80 200 Q140 120 200 160 T320 180' stroke='#4B5563' stroke-width='16' fill='none' stroke-linecap='round' stroke-dasharray='12 18'/><path d='M120 260 Q180 300 240 260 T340 240' stroke='#374151' stroke-width='18' fill='none' stroke-linecap='round'/><path d='M120 260 Q180 300 240 260 T340 240' stroke='#4B5563' stroke-width='12' fill='none' stroke-linecap='round' stroke-dasharray='10 14'/><g transform='translate(180, 130) rotate(15)'><rect x='0' y='0' width='56' height='28' rx='6' fill='url(#rg2)'/><circle cx='12' cy='28' r='7' fill='#111827'/><circle cx='44' cy='28' r='7' fill='#111827'/><rect x='38' y='6' width='10' height='8' fill='#FCD34D'/></g><circle cx='100' cy='150' r='6' fill='#F59E0B'><animate attributeName='opacity' values='0.4;1;0.4' dur='2s' repeatCount='indefinite'/></circle><circle cx='300' cy='290' r='6' fill='#F59E0B'><animate attributeName='opacity' values='0.4;1;0.4' dur='2s' repeatCount='indefinite' begin='0.7s'/></circle><circle cx='340' cy='120' r='5' fill='#EF4444' opacity='0.8'/><circle cx='70' cy='280' r='5' fill='#EF4444' opacity='0.6'/></svg>
       </div>
 
       <div class="container">
-        <div class="badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
-          LumenHelix Portfolio
-        </div>
-        <h1>Race your city. No fictional tracks.</h1>
-        <p class="lead">Real-world arcade racing on OpenStreetMap and OpenDRIVE road networks, built in Unreal Engine 5.</p>
+        <div class="tagline">Real-world arcade racing on OpenStreetMap roads in Unreal Engine 5</div>
+        <h1>Race the real world.</h1>
+        <p class="lead">Real streets. Real maps. Arcade physics. Built in Unreal Engine 5.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#install">Install raceGPS</a>
+          <a class="btn btn-primary" href="#install">Get raceGPS</a>
           <a class="btn btn-secondary" href="https://github.com/lumenhelixsolutions/raceGPS" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="stats">
+      <div class="container">
+        <div class="stats">
+          <div class="stat"><span class="stat-value">1,370+</span><span class="stat-label">real Akron roads</span></div>
+          <div class="stat"><span class="stat-value">UE5.5</span><span class="stat-label">C++ gameplay</span></div>
+          <div class="stat"><span class="stat-value">Python</span><span class="stat-label">semantic compiler</span></div>
+          <div class="stat"><span class="stat-value">Open</span><span class="stat-label">source</span></div>
         </div>
       </div>
     </section>
@@ -76,37 +67,27 @@
     <section id="features">
       <div class="container">
         <div class="section-header">
-          <h2>What raceGPS gives you</h2>
-          <p>raceGPS turns actual city streets into arcade race routes.</p>
+          <h2>Built for real-world arcade racing</h2>
+          <p>Turn OpenStreetMap data into game-ready citypacks and race them in Unreal Engine 5.</p>
         </div>
         <div class="card-grid">
           <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polygon points='1 6 1 22 8 18 16 22 21 22 21 6 16 2 8 6 1 2'/></svg>
             <h3>Real-world maps</h3>
             <p>Race on 1,370+ real Akron roads generated from OpenStreetMap and OpenDRIVE data.</p>
           </article>
           <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <path d="M3 9h18M9 21V9"/>
-            </svg>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx='12' cy='12' r='10'/><circle cx='12' cy='12' r='3'/><path d='M12 2v4M12 18v4M2 12h4M18 12h4'/></svg>
             <h3>Arcade physics</h3>
             <p>Chaos Vehicles tuned for drift-friendly, fun handling with ghost replay and leaderboards.</p>
           </article>
           <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>
             <h3>Cruise Sprint mode</h3>
             <p>Checkpoint-to-checkpoint racing with route ribbons, medals, and persistent achievements.</p>
           </article>
           <article class="card">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x='2' y='3' width='20' height='14' rx='2' ry='2'/><line x1='8' y1='21' x2='16' y2='21'/><line x1='12' y1='17' x2='12' y2='21'/></svg>
             <h3>Cross-platform UE5 stack</h3>
             <p>C++ gameplay systems, Python semantic compiler, and build scripts for Windows, macOS, Linux, and WSL.</p>
           </article>
@@ -114,30 +95,25 @@
       </div>
     </section>
 
-    <section id="install" style="background: var(--lh-surface);">
+    <section id="install" style="background: var(--bg-surface);">
       <div class="container">
         <div class="section-header">
           <h2>Install in seconds</h2>
-          <p>Cross-platform commands for macOS, Linux, Windows, and WSL.</p>
+          <p>Set up UE5.5, clone raceGPS, run the semantic compiler, and build the game for your platform.</p>
         </div>
         <div class="install-tabs">
           <div class="tab-list" role="tablist" id="install-tabs" aria-label="Install commands">
             <button class="tab-btn" role="tab" id="install-tabs-0" aria-selected="true" aria-controls="panel-macos" tabindex="0">macOS / Linux</button>
-            <button class="tab-btn" role="tab" id="install-tabs-1" aria-selected="false" aria-controls="panel-windows" tabindex="-1">Windows (PowerShell)</button>
+            <button class="tab-btn" role="tab" id="install-tabs-1" aria-selected="false" aria-controls="panel-windows" tabindex="-1">Windows</button>
             <button class="tab-btn" role="tab" id="install-tabs-2" aria-selected="false" aria-controls="panel-wsl" tabindex="-1">Git Bash / WSL</button>
           </div>
           <div class="tab-panel" id="panel-macos" role="tabpanel" aria-labelledby="install-tabs-0" aria-hidden="false">
-            <div class="terminal"><pre># Prerequisites: Unreal Engine 5.5, Xcode 15+, Python 3.10+
-# 1. Generate Xcode project files
-/Users/Shared/Epic\ Games/UE_5.5/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh \
+            <div class="terminal"><pre># Prerequisites: UE 5.5, Xcode 15+, Python 3.10+
+/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/GenerateProjectFiles.sh \
   -project="$(pwd)/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" -game
-
-# 2. Build Development Editor
 cd apps/unreal-akron-beta
-/Users/Shared/Epic\ Games/UE_5.5/Engine/Build/BatchFiles/Mac/Build.sh \
+/Users/Shared/Epic Games/UE_5.5/Engine/Build/BatchFiles/Mac/Build.sh \
   raceGPSAkronBetaEditor Mac Development -project="$(pwd)/raceGPSAkronBeta.uproject"
-
-# 3. Build Python semantic compiler
 cd ../../tools/akron-semantic-compiler
 python3 -m venv ../../../.venv
 source ../../../.venv/bin/activate
@@ -145,32 +121,22 @@ pip install -r requirements.txt
 python compile_akron.py</pre></div>
           </div>
           <div class="tab-panel" id="panel-windows" role="tabpanel" aria-labelledby="install-tabs-1" aria-hidden="true">
-            <div class="terminal"><pre># Prerequisites: Unreal Engine 5.5, Visual Studio 2022 + C++ game workload, Python 3.10+
-# 1. One-time dev environment setup (run as Administrator)
+            <div class="terminal"><pre># Prerequisites: UE 5.5, VS 2022 + C++ game workload, Python 3.10+
 .\scripts\setup-ue5-dev-env.ps1
-
-# 2. Build UE5 C++ project + package
 cd apps\unreal-akron-beta
 .\Build.bat
-
-# 3. Build Python semantic compiler
 cd ..\..\tools\akron-semantic-compiler
 py -m venv ..\..\..\.venv
 ..\..\..\.venv\Scripts\pip install -r requirements.txt
 py compile_akron.py</pre></div>
           </div>
           <div class="tab-panel" id="panel-wsl" role="tabpanel" aria-labelledby="install-tabs-2" aria-hidden="true">
-            <div class="terminal"><pre># Prerequisites: Unreal Engine 5.5 Linux build, build-essential, clang, Python 3.10+
-# 1. Generate Linux Makefiles
+            <div class="terminal"><pre># Prerequisites: UE 5.5 Linux build, build-essential, clang, Python 3.10+
 ~/UnrealEngine/5.5/Engine/Build/BatchFiles/Linux/GenerateProjectFiles.sh \
   -project="$(pwd)/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" -game
-
-# 2. Build Development Editor
 cd apps/unreal-akron-beta
 ~/UnrealEngine/5.5/Engine/Build/BatchFiles/Linux/Build.sh \
   raceGPSAkronBetaEditor Linux Development -project="$(pwd)/raceGPSAkronBeta.uproject"
-
-# 3. Build Python semantic compiler
 cd ../../tools/akron-semantic-compiler
 python3 -m venv ../../../.venv
 source ../../../.venv/bin/activate
@@ -182,7 +148,23 @@ python compile_akron.py</pre></div>
       </div>
     </section>
 
-    <section id="docs">
+    <section id="architecture">
+      <div class="container">
+        <div class="section-header">
+          <h2>How it works</h2>
+          <p>A pure-Python OSM to OpenDRIVE compiler feeds a UE5.5 C++ arcade racer.</p>
+        </div>
+        <div class="terminal"><pre>OpenStreetMap data
+        |
+        v
+Python semantic compiler  ->  OpenDRIVE 1.4 road network
+        |
+        v
+citypacks/  ->  UE5.5 C++ gameplay  ->  Windows / macOS / Linux</pre></div>
+      </div>
+    </section>
+
+    <section id="docs" style="background: var(--bg-surface);">
       <div class="container">
         <div class="section-header">
           <h2>Documentation</h2>
@@ -191,7 +173,7 @@ python compile_akron.py</pre></div>
         <ul class="docs-list">
           <li>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <a href="https://github.com/lumenhelixsolutions/raceGPS/blob/main/README.md" target="_blank" rel="noopener">README — quick start &amp; overview</a>
+            <a href="https://github.com/lumenhelixsolutions/raceGPS/blob/main/README.md" target="_blank" rel="noopener">README — quick start & overview</a>
           </li>
           <li>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
@@ -199,7 +181,7 @@ python compile_akron.py</pre></div>
           </li>
           <li>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-            <a href="https://lumenhelix.com" target="_blank" rel="noopener">LumenHelix Solutions — enterprise AI &amp; governance</a>
+            <a href="https://lumenhelix.com" target="_blank" rel="noopener">LumenHelix — applied symbolic dynamics</a>
           </li>
         </ul>
       </div>
@@ -208,14 +190,17 @@ python compile_akron.py</pre></div>
 
   <footer class="site-footer">
     <div class="container">
-      <a class="brand" href="https://lumenhelix.com" target="_blank" rel="noopener">
-        <img src="assets/logo.svg" alt="LumenHelix">
-        <span>LumenHelix Solutions</span>
+      <a class="brand" href="/">
+        <img src="assets/logo.svg" alt="raceGPS">
+        <span>raceGPS</span>
       </a>
-      <p>Applied Symbolic Dynamics &amp; Reversible Computation. We build deterministic, traceable AI systems for teams that need governance without lock-in.</p>
+      <p>Real streets. Real maps. Real racing.</p>
       <div class="footer-cta">
-        <a class="btn btn-primary" href="https://lumenhelix.com" target="_blank" rel="noopener">Visit lumenhelix.com</a>
+        <a class="btn btn-primary" href="https://github.com/lumenhelixsolutions/raceGPS" target="_blank" rel="noopener">Star on GitHub</a>
       </div>
+      <p class="parent-attribution">
+        A <a href="https://lumenhelix.com" target="_blank" rel="noopener">LumenHelix</a> project · Applied Symbolic Dynamics & Reversible Computation
+      </p>
     </div>
   </footer>
 
