@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 32" role="img" aria-label="LumenHelix /lab">
+  <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 26 C4 26 4 20 4 16 C4 10 10 4 16 4 C22 4 28 10 28 16 C28 20 28 26 22 26"/>
+    <path d="M10 26 H22"/>
+    <path d="M12 30 H20"/>
+    <path d="M16 10 V14"/>
+    <path d="M12 12 C12 12 14 14 16 14 C18 14 20 12 20 12"/>
+    <path d="M10 16 C10 16 12 18 16 18 C20 18 22 16 22 16"/>
+    <path d="M8 20 C8 20 11 22 16 22 C21 22 24 20 24 20"/>
+    <line x1="6" y1="8" x2="9" y2="11"/>
+    <line x1="26" y1="8" x2="23" y2="11"/>
+    <line x1="4" y1="16" x2="7" y2="16"/>
+    <line x1="25" y1="16" x2="28" y2="16"/>
+  </g>
+  <text x="36" y="22" font-family="Space Grotesk, Inter, sans-serif" font-size="14" font-weight="600" fill="#22D3EE">LUMEN</text>
+  <text x="78" y="22" font-family="Space Grotesk, Inter, sans-serif" font-size="14" font-weight="600" fill="#E2E8F0">helix</text>
+  <text x="116" y="22" font-family="JetBrains Mono, monospace" font-size="13" font-weight="500" fill="#4ADE80">/lab</text>
+</svg>

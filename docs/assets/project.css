@@ -1,0 +1,58 @@
+/* raceGPS — product-specific theme */
+
+:root {
+  --bg-deep: #0B1021;
+  --bg-surface: #111827;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E5E7EB;
+  --accent: #EF4444;
+  --secondary: #F59E0B;
+  --accent-glow: #EF444459;
+  --accent-soft: #EF44441A;
+}
+
+.hero {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 70% 50%, var(--accent-glow) 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-surface) 100%);
+  overflow: hidden;
+}
+
+.hero-visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 5vw;
+  pointer-events: none;
+}
+
+.hero-visual img {
+  width: min(55vw, 520px);
+  height: auto;
+  opacity: 0.45;
+}
+
+@media (max-width: 768px) {
+  .hero-visual {
+    justify-content: center;
+    padding-right: 0;
+    opacity: 0.25;
+  }
+  .hero-visual img { width: 85vw; }
+}
+
+.tagline::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.btn-primary { background: linear-gradient(135deg, var(--accent), #DC2626); }
+.stat-value { color: var(--accent); text-shadow: 0 0 18px rgba(239, 68, 68, 0.25); }
+.tagline::before { background: var(--secondary); box-shadow: 0 0 12px rgba(245, 158, 11, 0.45); }

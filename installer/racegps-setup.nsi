@@ -5,7 +5,7 @@
 !define PRODUCT_NAME "raceGPS"
 !define PRODUCT_VERSION "0.2.0"
 !define PRODUCT_PUBLISHER "LumenHelix Solutions"
-!define PRODUCT_WEB_SITE "https://github.com/lumenhelixsolutions/raceGPS"
+!define PRODUCT_WEB_SITE "https://github.com/LumenHelixLab/raceGPS"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\raceGPS.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
