@@ -8,7 +8,7 @@ Canonical-For-Project: true
 
 ## Last Verified
 
-- Remote: `lumenhelixsolutions/raceGPS`
+- Remote: `LumenHelixLab/raceGPS`
 - Backend tests: `cd apps/backend && npm test` — room-utils + health/rooms pass
 - Second city: Cleveland compiler output at `generated/cleveland_5.0km/`
 
