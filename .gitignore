@@ -50,3 +50,9 @@ __pycache__/
 citypacks/*/
 generated/*/
 *.osm
+
+# UE app local artifacts
+apps/unreal-akron-beta/Temp/
+apps/unreal-akron-beta/citypacks/
+apps/unreal-akron-beta/cesium-request-cache.sqlite*
+*.log.bak*
