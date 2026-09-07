@@ -9,7 +9,7 @@ EditorScriptingUtilities enabled in the uproject):
         -script="tools/ue5-headless-map-import.py" ^
         -unattended -nop4 -nullrhi
 
-It creates (or recreates) /Game/Maps/<level_name> from the level spec,
+It creates a fresh map at /Game/Maps/<level_name> from the level spec,
 populates it with the same actor pass as tools/ue5-import-level-spec.py
 (spawn points, route splines, checkpoint gates, sun rotation, reflection
 captures, traffic volumes), then saves the .umap asset.
@@ -27,6 +27,8 @@ import unreal
 
 SCRIPT_PATH = Path(__file__).resolve()
 REPO_ROOT = SCRIPT_PATH.parent.parent
+sys.path.insert(0, str(SCRIPT_PATH.parent))
+from geo_frame import require_world_frame
 
 SPEC_REL = "generated/Cleveland5.0KmWorld_LevelSpec.json"
 IMPORTER_REL = "tools/ue5-import-level-spec.py"
@@ -51,6 +53,7 @@ def main() -> int:
     import json
 
     spec_doc = json.loads(spec_path.read_text(encoding="utf-8"))
+    require_world_frame(spec_doc)
     level_name = spec_doc.get("level_name") or spec_path.stem.replace("_LevelSpec", "")
     # UE package names cannot contain '.' (or spaces); sanitize for the asset
     # path while keeping the spec's level_name untouched (runtime contract).
@@ -66,14 +69,12 @@ def main() -> int:
 
     unreal.log(f"[raceGPS] Creating level {package_path} from {spec_path.name}")
 
-    # Start from a blank level so reruns are idempotent. Use the Level Editor
+    # Start from a fresh level; existing assets are protected. Use the Level Editor
     # Subsystem (EditorLevelLibrary is deprecated and its save path fails
     # headlessly on untitled worlds).
     if unreal.EditorAssetLibrary.does_asset_exist(package_path):
-        unreal.log(f"[raceGPS] Deleting existing {package_path} for a clean re-import")
-        if not unreal.EditorAssetLibrary.delete_asset(package_path):
-            unreal.log_error(f"[raceGPS] Failed to delete existing {package_path}")
-            return 1
+        unreal.log_error(f"[raceGPS] Refusing to replace existing map {package_path}; use a new migration level name")
+        return 1
     level_subsys = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
     if not level_subsys.new_level(package_path):
         unreal.log_error(f"[raceGPS] Failed to create level {package_path}")

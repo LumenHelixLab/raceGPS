@@ -10,6 +10,8 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools/universal-city-compiler'))
 from route_engine import directed_graph
+sys.path.insert(0, str(ROOT / "tools"))
+from geo_frame import SOURCE_FRAME
 
 
 def digest(path):
@@ -28,6 +30,8 @@ def audit(pack):
         if len(manifests) != 1:
             raise ValueError('Exactly one semantic manifest is required')
         manifest = json.loads(manifests[0].read_text())
+        if manifest.get('coordinate_frame') != SOURCE_FRAME:
+            errors.append('Unsupported or missing source coordinate frame; regenerate the pack')
         refs = dict(manifest.get('files', {}))
         for key in ('routes', 'road_graph', 'spawn_points', 'pois', 'buildings', 'gameplay_layer'):
             if key in manifest:
@@ -57,6 +61,14 @@ def audit(pack):
         if not manifest.get('sha256'):
             warnings.append('Legacy manifest has no pinned output hashes')
         graph = json.loads(paths['road_graph'].read_text()) if 'road_graph' in paths else {'roads': []}
+        if graph.get('coordinate_frame') != SOURCE_FRAME or graph.get('origin') != manifest.get('origin'):
+            errors.append('Road graph coordinate frame/origin differs from manifest')
+        if 'buildings' in paths:
+            buildings = json.loads(paths['buildings'].read_text())
+            if buildings.get('coordinate_frame') != SOURCE_FRAME or buildings.get('origin') != manifest.get('origin'):
+                errors.append('Building coordinate frame/origin differs from manifest')
+            if buildings.get('footprint_space') not in ('wgs84-degrees', 'eqc-enu-m'):
+                errors.append('Unknown building footprint space')
         road_ids = {str(r['id']) for r in graph['roads']}
         result['road_count'] = len(graph['roads'])
         if not road_ids:

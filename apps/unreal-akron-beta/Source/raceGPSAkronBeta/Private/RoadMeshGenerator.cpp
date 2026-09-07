@@ -115,7 +115,7 @@ void ARoadMeshGenerator::GenerateRoadMesh(const FAkronRoadSegment& Segment, UPro
 {
     const TArray<FVector>& Points = Segment.WorldPoints;
     const int32 NumPoints = Points.Num();
-    const float HalfWidth = Segment.WidthMeters * 0.5f;
+    const float HalfWidth = Segment.WidthMeters * 100.0f * 0.5f;
 
     TArray<FVector> Vertices;
     TArray<int32> Triangles;
@@ -148,7 +148,7 @@ void ARoadMeshGenerator::GenerateRoadMesh(const FAkronRoadSegment& Segment, UPro
             Forward = ((Points[i] - Points[i - 1]) + (Points[i + 1] - Points[i])).GetSafeNormal();
         }
 
-        FVector Right = FVector::CrossProduct(Forward, FVector::UpVector).GetSafeNormal();
+        FVector Right = FVector::CrossProduct(FVector::UpVector, Forward).GetSafeNormal();
         FVector Left = -Right;
 
         FVector Center = Points[i];
@@ -160,7 +160,7 @@ void ARoadMeshGenerator::GenerateRoadMesh(const FAkronRoadSegment& Segment, UPro
         Vertices.Add(LeftPos);
         Vertices.Add(RightPos);
 
-        FVector Normal = bUseFlatShading ? FVector::UpVector : FVector::CrossProduct(Right, Forward).GetSafeNormal();
+        FVector Normal = bUseFlatShading ? FVector::UpVector : FVector::CrossProduct(Forward, Right).GetSafeNormal();
         Normals.Add(Normal);
         Normals.Add(Normal);
 

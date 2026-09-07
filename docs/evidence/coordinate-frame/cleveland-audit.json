@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "citypack": "frame-v1-context-a",
+  "errors": [
+    "Manifest explicitly marks this pack as not release ready",
+    "No playable routes",
+    "No spawn points"
+  ],
+  "warnings": [],
+  "files": {
+    "airfield.json": "6dcb0ea2deecf69c252c9f2d6fe36ff8576843032b24bafa46343058a5febac3",
+    "cleveland-burke-context_buildings.json": "06c812038d304b0c754e38b07375c8c356a8be786b44f7605f07b26a51655e92",
+    "cleveland-burke-context_pois.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "cleveland-burke-context_road_graph.json": "76424a080d252585f2c6e9113073598cfa0e0152e7560336e1ed8440f5898bb7",
+    "cleveland-burke-context_routes.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "source.osm": "66f90dc05b4c78238f61cbac46d49f14932c1c912b468647908523354028932b",
+    "source.json": "549cb09143819c617687e6406f5299fc06b16b6f2776aa843e48961c7cd6b2e9",
+    "cleveland-burke-context_spawn_points.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "cleveland-burke-context.xodr": "37a08b63f92d3dd765abbed78439c3e7991e7cfb476fcfe1d506e1563c7879bd"
+  },
+  "status": "failed",
+  "scope": "input integrity and explicit route connectivity; no Unreal or ASAM certification",
+  "road_count": 607,
+  "xodr_road_count": 607,
+  "road_identity_difference": {
+    "graph_only_count": 0,
+    "xodr_only_count": 0,
+    "graph_only_sample": [],
+    "xodr_only_sample": []
+  },
+  "component_sizes": [
+    530,
+    66,
+    6,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "route_count": 0
+}

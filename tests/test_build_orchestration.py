@@ -32,12 +32,12 @@ def fixture(tmp_path, monkeypatch):
     pack.mkdir(parents=True)
     points = [{'lat':41.0,'lon':-81.0},{'lat':41.01,'lon':-81.0}]
     files = {'road_graph':'graph.json','routes':'routes.json','spawn_points':'spawns.json','buildings':'buildings.json','xodr':'test.xodr'}
-    (pack / 'test_semantic_manifest.json').write_text(json.dumps({'files': files}))
-    (pack / 'graph.json').write_text(json.dumps({'roads':[{'id':'1','points':points}], 'intersections':[]}))
+    (pack / 'test_semantic_manifest.json').write_text(json.dumps({'files': files, 'coordinate_frame':'racegps-eqc-enu-m-v1','origin':{'lat':41.0,'lon':-81.0}}))
+    (pack / 'graph.json').write_text(json.dumps({'coordinate_frame':'racegps-eqc-enu-m-v1','origin':{'lat':41.0,'lon':-81.0},'roads':[{'id':'1','points':points}], 'intersections':[]}))
     (pack / 'routes.json').write_text(json.dumps([{'route_id':'fixture','points':points,
         'segments':[{'road_id':'1','segment_index':0,'direction':1}]}]))
     (pack / 'spawns.json').write_text('[{"lat":41,"lon":-81}]')
-    (pack / 'buildings.json').write_text('{"buildings":[]}')
+    (pack / 'buildings.json').write_text(json.dumps({'coordinate_frame':'racegps-eqc-enu-m-v1','origin':{'lat':41.0,'lon':-81.0},'footprint_space':'wgs84-degrees','buildings':[]}))
     (pack / 'test.xodr').write_text('<OpenDRIVE><road id="1"/></OpenDRIVE>')
     (root / 'generated').mkdir()
     (root / 'generated/Test_LevelSpec.json').write_text('{}')

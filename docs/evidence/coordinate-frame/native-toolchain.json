@@ -1,0 +1,14 @@
+{
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+  "standard": "c++17",
+  "flags": [
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "production_header": "apps/unreal-akron-beta/Source/raceGPSAkronBeta/Public/RaceGPSGeoFrame.h",
+  "probe": "tests/cpp/geo_frame_probe.cpp",
+  "verification_scope": "engine-independent math compiled and executed; Unreal/UHT/Slate not compiled",
+  "user_reported_unreal": "5.7.4",
+  "user_machine_access_verified": false
+}

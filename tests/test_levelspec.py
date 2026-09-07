@@ -25,7 +25,7 @@ def meters_per_degree_lon(origin_lat: float) -> float:
 
 
 def meters_per_degree_lat() -> float:
-    return 110540.0
+    return 111320.0
 
 
 def geo_to_world(lat: float, lon: float, origin_lat: float, origin_lon: float) -> dict:
@@ -37,24 +37,19 @@ def geo_to_world(lat: float, lon: float, origin_lat: float, origin_lon: float) -
 
 
 @pytest.fixture(scope="module")
-def level_spec():
+def level_spec(tmp_path_factory):
     """Ensure generate-level-spec.py has run and return the parsed spec."""
-    before_mtime = SPEC_PATH.stat().st_mtime if SPEC_PATH.exists() else None
+    output_dir = tmp_path_factory.mktemp("frame-spec")
+    spec_path = output_dir / "AkronWorld_LevelSpec.json"
     result = subprocess.run(
-        [sys.executable, str(PROJECT_ROOT / "tools" / "generate-level-spec.py")],
+        [sys.executable, str(PROJECT_ROOT / "tools" / "generate-level-spec.py"), "--output-dir", str(output_dir)],
         capture_output=True,
         text=True,
     )
     assert result.returncode == 0, f"generate-level-spec.py failed:\n{result.stderr}"
-    assert SPEC_PATH.exists(), f"Level spec not generated at {SPEC_PATH}"
-    assert str(SPEC_PATH) in result.stdout, (
-        f"generator stdout did not reference canonical spec path {SPEC_PATH}:\n{result.stdout}"
-    )
-    after_mtime = SPEC_PATH.stat().st_mtime
-    assert before_mtime is None or after_mtime > before_mtime, (
-        f"canonical spec file was not refreshed: before={before_mtime}, after={after_mtime}"
-    )
-    return json.loads(SPEC_PATH.read_text())
+    assert spec_path.exists(), f"Level spec not generated at {spec_path}"
+    assert str(spec_path) in result.stdout
+    return json.loads(spec_path.read_text())
 
 
 @pytest.fixture(scope="module")
@@ -123,6 +118,7 @@ class TestLevelSpecSchema:
         assert "cycle_duration_minutes" in dnc
 
     def test_metadata(self, level_spec):
+        assert level_spec["coordinate_frame"] == "racegps-ue-esu-cm-v1"
         meta = level_spec["metadata"]
         assert meta.get("generated_by") == "generate-level-spec.py"
         assert "spec_version" in meta
@@ -146,8 +142,8 @@ class TestSpawnPointsInBounds:
         mpdlat = meters_per_degree_lat()
         for sp in level_spec["spawn_points"]:
             loc = sp["location"]
-            lon = loc["x"] / mpdlon + origin_lon
-            lat = -loc["z"] / mpdlat + origin_lat
+            lon = loc["x"] / 100.0 / mpdlon + origin_lon
+            lat = -loc["y"] / 100.0 / mpdlat + origin_lat
             assert bounds["west"] <= lon <= bounds["east"]
             assert bounds["south"] <= lat <= bounds["north"]
 
@@ -171,8 +167,8 @@ class TestRouteDistances:
             for i in range(len(pts) - 1):
                 a, b = pts[i], pts[i + 1]
                 dx = b["x"] - a["x"]
-                dz = b["z"] - a["z"]
-                total += math.hypot(dx, dz)
+                dy = b["y"] - a["y"]
+                total += math.hypot(dx, dy) / 100.0
             stated = route["distance_meters"]
             variance = abs(total - stated) / max(stated, 1)
             assert variance <= 0.15, (
@@ -188,7 +184,7 @@ class TestRouteDistances:
             for cp in route.get("checkpoints", []):
                 loc = cp["location"]
                 min_dist = min(
-                    math.hypot(loc["x"] - p["x"], loc["z"] - p["z"])
+                    math.hypot(loc["x"] - p["x"], loc["y"] - p["y"]) / 100.0
                     for p in pts
                 )
                 assert min_dist <= 100, (
@@ -203,7 +199,7 @@ class TestRouteDistances:
             route = matching[0]
             start = route["spline_points"][0]
             loc = sp["location"]
-            dist = math.hypot(loc["x"] - start["x"], loc["z"] - start["z"])
+            dist = math.hypot(loc["x"] - start["x"], loc["y"] - start["y"]) / 100.0
             assert dist <= 1.0, (
                 f"Spawn point {sp['id']} is {dist:.1f}m from route {route_id} start"
             )

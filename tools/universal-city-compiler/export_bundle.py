@@ -3,6 +3,9 @@
 
 import json
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from geo_frame import SOURCE_FRAME
 from typing import Any
 
 
@@ -16,6 +19,8 @@ def export_bundle(citypack_dir: Path, city_id: str, bounds: dict, routes: list[d
 
     origin_lat = (bounds["south"] + bounds["north"]) / 2.0
     origin_lon = (bounds["west"] + bounds["east"]) / 2.0
+    origin = road_graph.get("origin", {"lat": origin_lat, "lon": origin_lon})
+    origin_lat, origin_lon = origin["lat"], origin["lon"]
 
     # Generate spawn points from route starts
     spawn_points = []
@@ -39,7 +44,7 @@ def export_bundle(citypack_dir: Path, city_id: str, bounds: dict, routes: list[d
     # Write individual files
     (citypack_dir / f"{city_id}_routes.json").write_text(json.dumps(routes, indent=2), encoding="utf-8")
     (citypack_dir / f"{city_id}_pois.json").write_text(json.dumps(pois, indent=2), encoding="utf-8")
-    (citypack_dir / f"{city_id}_buildings.json").write_text(json.dumps({"buildings": buildings}, indent=2), encoding="utf-8")
+    (citypack_dir / f"{city_id}_buildings.json").write_text(json.dumps({"coordinate_frame": SOURCE_FRAME, "footprint_space": "wgs84-degrees", "origin": origin, "buildings": buildings}, indent=2), encoding="utf-8")
     (citypack_dir / f"{city_id}_spawn_points.json").write_text(json.dumps(spawn_points, indent=2), encoding="utf-8")
 
     # Write road graph for debugging
@@ -71,6 +76,7 @@ def export_bundle(citypack_dir: Path, city_id: str, bounds: dict, routes: list[d
         files["biome"] = f"{city_id}_biome.json"
 
     manifest = {
+        "coordinate_frame": SOURCE_FRAME,
         "city_id": city_id,
         "name": city_id.replace("_", " ").title(),
         "version": "2.0.0",

@@ -43,6 +43,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Buildings")
     int32 BuildingsPerFrame = 50;
 
+    // Same geographic origin as the active manifest; set before generation.
+    double OriginLat = 0.0;
+    double OriginLon = 0.0;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Buildings")
     float MaxDrawDistance = 5000.0f;
 

@@ -1,0 +1,34 @@
+{
+  "identical": true,
+  "files": {
+    "cleveland-burke-context.xodr": "37a08b63f92d3dd765abbed78439c3e7991e7cfb476fcfe1d506e1563c7879bd",
+    "cleveland-burke-context_semantic_manifest.json": "3f693f8f97ce2059520fd352f4570dc74de7612e3ebf2a3e4f5977fcd32515ac",
+    "cleveland-burke-context_road_graph.json": "76424a080d252585f2c6e9113073598cfa0e0152e7560336e1ed8440f5898bb7",
+    "cleveland-burke-context_spawn_points.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "cleveland-burke-context_pois.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "cleveland-burke-context_routes.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "airfield.json": "6dcb0ea2deecf69c252c9f2d6fe36ff8576843032b24bafa46343058a5febac3",
+    "cleveland-burke-context_buildings.json": "06c812038d304b0c754e38b07375c8c356a8be786b44f7605f07b26a51655e92",
+    "source.osm": "66f90dc05b4c78238f61cbac46d49f14932c1c912b468647908523354028932b",
+    "source.json": "549cb09143819c617687e6406f5299fc06b16b6f2776aa843e48961c7cd6b2e9"
+  },
+  "result": {
+    "status": "context_compiled_not_race_ready",
+    "city_id": "cleveland-burke-context",
+    "roads": 607,
+    "buildings": 1502,
+    "airfield_features": 47,
+    "output_sha256": {
+      "airfield.json": "6dcb0ea2deecf69c252c9f2d6fe36ff8576843032b24bafa46343058a5febac3",
+      "cleveland-burke-context.xodr": "37a08b63f92d3dd765abbed78439c3e7991e7cfb476fcfe1d506e1563c7879bd",
+      "cleveland-burke-context_buildings.json": "06c812038d304b0c754e38b07375c8c356a8be786b44f7605f07b26a51655e92",
+      "cleveland-burke-context_pois.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "cleveland-burke-context_road_graph.json": "76424a080d252585f2c6e9113073598cfa0e0152e7560336e1ed8440f5898bb7",
+      "cleveland-burke-context_routes.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "cleveland-burke-context_spawn_points.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "source.json": "549cb09143819c617687e6406f5299fc06b16b6f2776aa843e48961c7cd6b2e9",
+      "source.osm": "66f90dc05b4c78238f61cbac46d49f14932c1c912b468647908523354028932b"
+    },
+    "source_sha256": "66f90dc05b4c78238f61cbac46d49f14932c1c912b468647908523354028932b"
+  }
+}

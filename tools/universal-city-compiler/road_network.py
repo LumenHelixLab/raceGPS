@@ -4,6 +4,9 @@
 import xml.etree.ElementTree as ET
 import math
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from geo_frame import SOURCE_FRAME
 from typing import Any
 
 # Meters of vertical offset applied per OSM layer level so the UE5 importer
@@ -173,6 +176,7 @@ def build_road_graph(osm_path: Path, origin_lat: float = 0.0, origin_lon: float 
     }
 
     return {
+        "coordinate_frame": SOURCE_FRAME,
         "roads": roads,
         "intersections": intersections,
         "bounds": bounds,

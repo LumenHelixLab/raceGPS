@@ -207,8 +207,8 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "raceGPS|GameMode")
     float CountdownTimer = 0.0f;
 
-    float WorldOriginLat = 41.08f;
-    float WorldOriginLon = -81.52f;
+    double WorldOriginLat = 41.08;
+    double WorldOriginLon = -81.52;
 
     UPROPERTY()
     TObjectPtr<class ARoadMeshGenerator> StartupRoadGenerator;

@@ -1,4 +1,5 @@
 #include "AkronXodrImporter.h"
+#include "RaceGPSGeoFrame.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Misc/ConfigCacheIni.h"
@@ -295,35 +296,17 @@ bool UAkronXodrImporter::ResolveCityLayout(FRaceGPSCityLayout& OutLayout)
     return true;
 }
 
-float UAkronXodrImporter::MetersPerDegreeLon(float Lat)
+FVector UAkronXodrImporter::GeoToWorld(double Lat, double Lon, double OriginLat, double OriginLon)
 {
-    float Rad = FMath::DegreesToRadians(Lat);
-    return 111320.0f * FMath::Cos(Rad);
+    const auto P = RaceGPSGeoFrame::FromGeographic(Lat, Lon, OriginLat, OriginLon);
+    return FVector(P.X, P.Y, P.Z);
 }
 
-float UAkronXodrImporter::MetersPerDegreeLat()
+FVector UAkronXodrImporter::XodrToWorld(double X, double Y, double OriginLat, double OriginLon)
 {
-    return 110540.0f;
-}
-
-FVector UAkronXodrImporter::GeoToWorld(float Lat, float Lon, float OriginLat, float OriginLon)
-{
-    float MetersPerLon = MetersPerDegreeLon(OriginLat);
-    float MetersPerLat = MetersPerDegreeLat();
-    float X = (Lon - OriginLon) * MetersPerLon;
-    float Y = 0.0f;
-    float Z = -(Lat - OriginLat) * MetersPerLat;
-    return FVector(X, Y, Z);
-}
-
-FVector UAkronXodrImporter::XodrToWorld(float X, float Y, float OriginLat, float OriginLon)
-{
-    // OpenDRIVE: X=east, Y=north
-    // Unreal:    X=east, Z=-north (south is positive Z)
-    // Origin already baked into XODR local coords, so just remap axes
-    (void)OriginLat;
-    (void)OriginLon;
-    return FVector(X, 0.0f, -Y);
+    // XODR already contains local east/north meters about the manifest origin.
+    const auto P = RaceGPSGeoFrame::ToUnreal(X, Y);
+    return FVector(P.X, P.Y, P.Z);
 }
 
 bool UAkronXodrImporter::ImportXodr(const FString& XodrPath, TArray<FAkronRoadSegment>& OutRoads)
@@ -357,8 +340,8 @@ bool UAkronXodrImporter::ImportXodr(const FString& XodrPath, TArray<FAkronRoadSe
     }
 
     // Parse geoReference from header to extract origin
-    float OriginLat = 41.08f;
-    float OriginLon = -81.52f;
+    double OriginLat = 41.08;
+    double OriginLon = -81.52;
     const FXmlNode* HeaderNode = RootNode->FindChildNode(TEXT("header"));
     if (HeaderNode)
     {
@@ -374,14 +357,14 @@ bool UAkronXodrImporter::ImportXodr(const FString& XodrPath, TArray<FAkronRoadSe
                 FString LatStr = GeoRef.Mid(LatIdx + 7);
                 int32 SpaceIdx = LatStr.Find(TEXT(" "));
                 if (SpaceIdx != INDEX_NONE) LatStr = LatStr.Left(SpaceIdx);
-                OriginLat = FCString::Atof(*LatStr);
+                OriginLat = FCString::Atod(*LatStr);
             }
             if (LonIdx != INDEX_NONE)
             {
                 FString LonStr = GeoRef.Mid(LonIdx + 7);
                 int32 SpaceIdx = LonStr.Find(TEXT(" "));
                 if (SpaceIdx != INDEX_NONE) LonStr = LonStr.Left(SpaceIdx);
-                OriginLon = FCString::Atof(*LonStr);
+                OriginLon = FCString::Atod(*LonStr);
             }
         }
         else
@@ -441,9 +424,29 @@ bool UAkronXodrImporter::ImportXodr(const FString& XodrPath, TArray<FAkronRoadSe
 
                 FString XStr = Geom->GetAttribute(TEXT("x"));
                 FString YStr = Geom->GetAttribute(TEXT("y"));
-                float X = FCString::Atof(*XStr);
-                float Y = FCString::Atof(*YStr);
-                Segment.WorldPoints.Add(XodrToWorld(X, Y, OriginLat, OriginLon));
+                const double X = FCString::Atod(*XStr);
+                const double Y = FCString::Atod(*YStr);
+                const double Heading = FCString::Atod(*Geom->GetAttribute(TEXT("hdg")));
+                const double Length = FCString::Atod(*Geom->GetAttribute(TEXT("length")));
+                // This importer supports line primitives only. Never silently
+                // drop a curve or accept an incomplete/zero-length segment.
+                if (!Geom->FindChildNode(TEXT("line")) || Length <= 0.0 ||
+                    !FMath::IsFinite(X) || !FMath::IsFinite(Y) || !FMath::IsFinite(Heading) || !FMath::IsFinite(Length))
+                {
+                    UE_LOG(LogTemp, Error, TEXT("[raceGPS] Unsupported or invalid XODR geometry on road %s"), *Segment.RoadId);
+                    OutRoads.Empty();
+                    return false;
+                }
+                const FVector Start = XodrToWorld(X, Y, OriginLat, OriginLon);
+                if (Segment.WorldPoints.IsEmpty()) Segment.WorldPoints.Add(Start);
+                else if (!Segment.WorldPoints.Last().Equals(Start, 1.0))
+                {
+                    UE_LOG(LogTemp, Error, TEXT("[raceGPS] Discontinuous XODR geometry on road %s"), *Segment.RoadId);
+                    OutRoads.Empty();
+                    return false;
+                }
+                const auto End = RaceGPSGeoFrame::LineEnd(X, Y, Heading, Length);
+                Segment.WorldPoints.Add(FVector(End.X, End.Y, End.Z));
             }
         }
 
@@ -475,24 +478,19 @@ bool UAkronXodrImporter::LoadRoadGraphJson(const FString& JsonPath, TArray<FAkro
         return false;
     }
 
-    float OriginLat = 41.08f;
-    float OriginLon = -81.52f;
+    double OriginLat = 41.08;
+    double OriginLon = -81.52;
 
-    // Compiler (Dialect B) road graphs carry a top-level origin; use it when present.
     const TSharedPtr<FJsonObject>* OriginObj = nullptr;
-    if (Root->TryGetObjectField(TEXT("origin"), OriginObj) && OriginObj && OriginObj->IsValid())
+    FString Frame;
+    if (!Root->TryGetStringField(TEXT("coordinate_frame"), Frame) ||
+        Frame != UTF8_TO_TCHAR(RaceGPSGeoFrame::SourceFrame) ||
+        !Root->TryGetObjectField(TEXT("origin"), OriginObj) ||
+        !(*OriginObj)->TryGetNumberField(TEXT("lat"), OriginLat) ||
+        !(*OriginObj)->TryGetNumberField(TEXT("lon"), OriginLon))
     {
-        double Lat = 0.0, Lon = 0.0;
-        if ((*OriginObj)->TryGetNumberField(TEXT("lat"), Lat) && (*OriginObj)->TryGetNumberField(TEXT("lon"), Lon))
-        {
-            OriginLat = static_cast<float>(Lat);
-            OriginLon = static_cast<float>(Lon);
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Road graph %s has no top-level origin; defaulting to Akron (%.4f, %.4f)"),
-            *FullPath, OriginLat, OriginLon);
+        UE_LOG(LogTemp, Error, TEXT("[raceGPS] Road graph requires an explicit frame and origin"));
+        return false;
     }
 
     const TArray<TSharedPtr<FJsonValue>>* RoadsArr;
@@ -528,7 +526,7 @@ bool UAkronXodrImporter::LoadRoadGraphJson(const FString& JsonPath, TArray<FAkro
                     double Lat = 0.0, Lon = 0.0;
                     (*PtObj)->TryGetNumberField(TEXT("lat"), Lat);
                     (*PtObj)->TryGetNumberField(TEXT("lon"), Lon);
-                    Segment.WorldPoints.Add(GeoToWorld(static_cast<float>(Lat), static_cast<float>(Lon), OriginLat, OriginLon));
+                    Segment.WorldPoints.Add(GeoToWorld(Lat, Lon, OriginLat, OriginLon));
                 }
             }
 
@@ -543,7 +541,7 @@ bool UAkronXodrImporter::LoadRoadGraphJson(const FString& JsonPath, TArray<FAkro
     return OutRoads.Num() > 0;
 }
 
-bool UAkronXodrImporter::LoadManifest(const FString& ManifestPath, float& OutWorldOriginLat, float& OutWorldOriginLon)
+bool UAkronXodrImporter::LoadManifest(const FString& ManifestPath, double& OutWorldOriginLat, double& OutWorldOriginLon)
 {
     FString FullPath = FPaths::ProjectDir() / ManifestPath;
     FString Content;
@@ -561,45 +559,18 @@ bool UAkronXodrImporter::LoadManifest(const FString& ManifestPath, float& OutWor
         return false;
     }
 
-    // Origin resolution (both manifest dialects carry "origin"; legacy readers used
-    // bounds.lat_min/lon_min which no dialect ships — keep as a back-compat fallback).
-    double OriginLat = 0.0, OriginLon = 0.0;
-    bool bFoundOrigin = false;
-
+    FString Frame;
     const TSharedPtr<FJsonObject>* OriginObj = nullptr;
-    if (Root->TryGetObjectField(TEXT("origin"), OriginObj) && OriginObj && OriginObj->IsValid())
+    if (!Root->TryGetStringField(TEXT("coordinate_frame"), Frame) ||
+        Frame != UTF8_TO_TCHAR(RaceGPSGeoFrame::SourceFrame) ||
+        !Root->TryGetObjectField(TEXT("origin"), OriginObj) || !OriginObj || !OriginObj->IsValid() ||
+        !(*OriginObj)->TryGetNumberField(TEXT("lat"), OutWorldOriginLat) ||
+        !(*OriginObj)->TryGetNumberField(TEXT("lon"), OutWorldOriginLon) ||
+        !FMath::IsFinite(OutWorldOriginLat) || !FMath::IsFinite(OutWorldOriginLon) ||
+        FMath::Abs(OutWorldOriginLat) >= 90.0 || FMath::Abs(OutWorldOriginLon) > 180.0)
     {
-        bFoundOrigin = (*OriginObj)->TryGetNumberField(TEXT("lat"), OriginLat) &&
-                       (*OriginObj)->TryGetNumberField(TEXT("lon"), OriginLon);
-    }
-
-    const TSharedPtr<FJsonObject>* BoundsObj = nullptr;
-    if (!bFoundOrigin && Root->TryGetObjectField(TEXT("bounds"), BoundsObj) && BoundsObj && BoundsObj->IsValid())
-    {
-        // Legacy key spellings first, then the contractual west/south corner.
-        if ((*BoundsObj)->TryGetNumberField(TEXT("lat_min"), OriginLat) &&
-            (*BoundsObj)->TryGetNumberField(TEXT("lon_min"), OriginLon))
-        {
-            bFoundOrigin = true;
-        }
-        else if ((*BoundsObj)->TryGetNumberField(TEXT("south"), OriginLat) &&
-                 (*BoundsObj)->TryGetNumberField(TEXT("west"), OriginLon))
-        {
-            bFoundOrigin = true;
-        }
-    }
-
-    // Only overwrite the caller's origin when we actually found one, so the
-    // caller-provided defaults stay in effect otherwise.
-    if (bFoundOrigin)
-    {
-        OutWorldOriginLat = static_cast<float>(OriginLat);
-        OutWorldOriginLon = static_cast<float>(OriginLon);
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Manifest %s has no origin or bounds corner; keeping default origin (%.4f, %.4f)"),
-            *FullPath, OutWorldOriginLat, OutWorldOriginLon);
+        UE_LOG(LogTemp, Error, TEXT("[raceGPS] Unsupported frame or missing/invalid origin; regenerate the citypack and scene"));
+        return false;
     }
 
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] Manifest loaded. Origin: (lat %f, lon %f)"), OutWorldOriginLat, OutWorldOriginLon);
@@ -633,7 +604,7 @@ void UAkronXodrImporter::ParseRouteObject(const TSharedPtr<FJsonObject>& RouteOb
                 double Lat = 0.0, Lon = 0.0;
                 (*Pt)->TryGetNumberField(TEXT("lat"), Lat);
                 (*Pt)->TryGetNumberField(TEXT("lon"), Lon);
-                OutRoute.Waypoints.Add(FVector(static_cast<float>(Lon), 0.0f, -static_cast<float>(Lat)));
+                OutRoute.Waypoints.Add(FVector(Lon, 0.0, -Lat));
             }
         }
     }
@@ -649,7 +620,7 @@ void UAkronXodrImporter::ParseRouteObject(const TSharedPtr<FJsonObject>& RouteOb
                 double Lat = 0.0, Lon = 0.0;
                 (*Cp)->TryGetNumberField(TEXT("lat"), Lat);
                 (*Cp)->TryGetNumberField(TEXT("lon"), Lon);
-                OutRoute.CheckpointLocations.Add(FVector(static_cast<float>(Lon), 0.0f, -static_cast<float>(Lat)));
+                OutRoute.CheckpointLocations.Add(FVector(Lon, 0.0, -Lat));
             }
         }
     }
@@ -738,8 +709,8 @@ void UAkronXodrImporter::ParseSpawnArray(const TArray<TSharedPtr<FJsonValue>>& S
             (*Obj)->TryGetNumberField(TEXT("lat"), Lat);
             (*Obj)->TryGetNumberField(TEXT("lon"), Lon);
             (*Obj)->TryGetNumberField(TEXT("heading"), Heading);
-            Sp.Location = FVector(static_cast<float>(Lon), 0.0f, -static_cast<float>(Lat));
-            Sp.Rotation = FRotator(0.0f, static_cast<float>(Heading), 0.0f);
+            Sp.Location = FVector(Lon, 0.0, -Lat);
+            Sp.Rotation = FRotator(0.0, RaceGPSGeoFrame::CompassToYaw(Heading), 0.0);
             OutSpawns.Add(Sp);
         }
     }
@@ -813,7 +784,7 @@ void UAkronXodrImporter::ParsePOIArray(const TArray<TSharedPtr<FJsonValue>>& Poi
             double Lat = 0.0, Lon = 0.0;
             (*Obj)->TryGetNumberField(TEXT("lat"), Lat);
             (*Obj)->TryGetNumberField(TEXT("lon"), Lon);
-            Poi.Location = FVector(static_cast<float>(Lon), 0.0f, -static_cast<float>(Lat));
+            Poi.Location = FVector(Lon, 0.0, -Lat);
             OutPOIs.Add(Poi);
         }
     }

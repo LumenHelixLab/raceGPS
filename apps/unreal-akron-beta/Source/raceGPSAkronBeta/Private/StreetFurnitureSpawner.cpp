@@ -1,4 +1,6 @@
 #include "StreetFurnitureSpawner.h"
+#include "AkronXodrImporter.h"
+#include "RaceGPSGeoFrame.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Dom/JsonObject.h"
@@ -62,31 +64,19 @@ void AStreetFurnitureSpawner::LoadIntersections()
         return;
     }
 
-    // Load spawn center from manifest origin
-    FVector SpawnCenter = FVector::ZeroVector;
-    FString ManifestPath = FPaths::ProjectDir() / TEXT("citypacks/akron-oh-beta-001/akron_semantic_manifest.json");
-    FString ManifestContent;
-    if (FFileHelper::LoadFileToString(ManifestContent, *ManifestPath))
+    const TSharedPtr<FJsonObject>* Origin = nullptr;
+    FString Frame;
+    double OriginLat = 0.0, OriginLon = 0.0;
+    if (!Root->TryGetStringField(TEXT("coordinate_frame"), Frame) ||
+        Frame != UTF8_TO_TCHAR(RaceGPSGeoFrame::SourceFrame) ||
+        !Root->TryGetObjectField(TEXT("origin"), Origin) ||
+        !(*Origin)->TryGetNumberField(TEXT("lat"), OriginLat) ||
+        !(*Origin)->TryGetNumberField(TEXT("lon"), OriginLon))
     {
-        TSharedPtr<FJsonObject> ManifestRoot;
-        TSharedRef<TJsonReader<>> ManifestReader = TJsonReaderFactory<>::Create(ManifestContent);
-        if (FJsonSerializer::Deserialize(ManifestReader, ManifestRoot))
-        {
-            const TSharedPtr<FJsonObject>* OriginObj;
-            if (ManifestRoot->TryGetObjectField(TEXT("origin"), OriginObj))
-            {
-                double Lat = 0.0, Lon = 0.0;
-                (*OriginObj)->TryGetNumberField(TEXT("lat"), Lat);
-                (*OriginObj)->TryGetNumberField(TEXT("lon"), Lon);
-                // Convert to local meters roughly
-                SpawnCenter = FVector(
-                    (Lon - (-81.52f)) * 111320.0f * FMath::Cos(FMath::DegreesToRadians(41.08f)),
-                    (Lat - 41.08f) * 111320.0f,
-                    0.0f
-                );
-            }
-        }
+        UE_LOG(LogTemp, Error, TEXT("[raceGPS] Furniture graph requires an explicit coordinate frame and origin"));
+        return;
     }
+    const FVector SpawnCenter = FVector::ZeroVector;
 
     for (const auto& Val : *IntersectionsArr)
     {
@@ -98,14 +88,10 @@ void AStreetFurnitureSpawner::LoadIntersections()
         (*Obj)->TryGetNumberField(TEXT("lat"), Lat);
         (*Obj)->TryGetNumberField(TEXT("lon"), Lon);
 
-        FVector WorldLoc = FVector(
-            (Lon - (-81.52f)) * 111320.0f * FMath::Cos(FMath::DegreesToRadians(41.08f)),
-            (Lat - 41.08f) * 111320.0f,
-            0.0f
-        );
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(Lat, Lon, OriginLat, OriginLon);
 
         // Only spawn near the route area
-        if (FVector::Dist2D(WorldLoc, SpawnCenter) > SpawnRadius)
+        if (FVector::Dist2D(WorldLoc, SpawnCenter) > SpawnRadius * 100.0f)
             continue;
 
         // Place traffic light at intersection
@@ -116,7 +102,7 @@ void AStreetFurnitureSpawner::LoadIntersections()
         Placements.Add(PL);
 
         // Place barrier near intersection
-        FVector Offset = FVector(FMath::RandRange(-5.0f, 5.0f), FMath::RandRange(-5.0f, 5.0f), 0.0f);
+        FVector Offset = FVector(FMath::RandRange(-500.0f, 500.0f), FMath::RandRange(-500.0f, 500.0f), 0.0f);
         PL.Location = WorldLoc + Offset;
         PL.Type = TEXT("barrier");
         Placements.Add(PL);

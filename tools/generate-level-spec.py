@@ -9,34 +9,27 @@ Usage:
 
 import json
 import math
+from geo_frame import geo_to_unreal, compass_to_yaw, WORLD_FRAME, METERS_PER_DEGREE
 from pathlib import Path
 
 
 def meters_per_degree_lon(origin_lat: float) -> float:
-    """Meters per degree of longitude at a given latitude (matches C++ MetersPerDegreeLon)."""
-    return 111320.0 * math.cos(math.radians(origin_lat))
+    return METERS_PER_DEGREE * math.cos(math.radians(origin_lat))
 
 
 def meters_per_degree_lat() -> float:
-    """Meters per degree of latitude (matches C++ MetersPerDegreeLat)."""
-    return 110540.0
+    return METERS_PER_DEGREE
 
 
 def geo_to_world(lat: float, lon: float, origin_lat: float, origin_lon: float) -> dict:
-    """Convert WGS84 lat/lon to UE5 world coordinates (matches C++ GeoToWorld)."""
-    mpdlon = meters_per_degree_lon(origin_lat)
-    mpdlat = meters_per_degree_lat()
-    x = (lon - origin_lon) * mpdlon
-    z = -(lat - origin_lat) * mpdlat
-    return {"x": round(x, 3), "y": 0.0, "z": round(z, 3)}
+    return {k: round(v, 3) for k, v in geo_to_unreal(lat, lon, origin_lat, origin_lon).items()}
 
 
 def heading_to_rotation(heading: float) -> dict:
-    """Convert compass heading to UE5 rotation (matches C++ direct usage)."""
-    return {"pitch": 0.0, "yaw": round(heading, 2), "roll": 0.0}
+    return {"pitch": 0.0, "yaw": round(compass_to_yaw(heading), 2), "roll": 0.0}
 
 
-def compute_bounding_box(points: list[dict], padding: float = 500.0) -> dict:
+def compute_bounding_box(points: list[dict], padding: float = 50000.0) -> dict:
     """Compute axis-aligned bounding box from a list of {x,y,z} points."""
     if not points:
         return {"min_x": -1000, "min_y": -100, "min_z": -1000,
@@ -66,14 +59,14 @@ def generate_traffic_volumes(routes: list[dict], origin_lat: float, origin_lon: 
             a = geo_to_world(pts[i]["lat"], pts[i]["lon"], origin_lat, origin_lon)
             b = geo_to_world(pts[i + step]["lat"], pts[i + step]["lon"], origin_lat, origin_lon)
             cx = (a["x"] + b["x"]) / 2
-            cz = (a["z"] + b["z"]) / 2
-            dx = abs(b["x"] - a["x"]) + 200
-            dz = abs(b["z"] - a["z"]) + 200
+            cy = (a["y"] + b["y"]) / 2
+            dx = abs(b["x"] - a["x"]) + 20000
+            dy = abs(b["y"] - a["y"]) + 20000
             volumes.append({
                 "id": f"traffic_{route['route_id']}_{i}",
                 "bounds": {
-                    "min": {"x": round(cx - dx / 2, 2), "y": -10.0, "z": round(cz - dz / 2, 2)},
-                    "max": {"x": round(cx + dx / 2, 2), "y": 30.0, "z": round(cz + dz / 2, 2)},
+                    "min": {"x": round(cx - dx / 2, 2), "y": round(cy - dy / 2, 2), "z": -1000.0},
+                    "max": {"x": round(cx + dx / 2, 2), "y": round(cy + dy / 2, 2), "z": 3000.0},
                 },
                 "density": 0.25,
                 "vehicle_types": ["sedan", "suv", "truck"],
@@ -81,11 +74,11 @@ def generate_traffic_volumes(routes: list[dict], origin_lat: float, origin_lon: 
     return volumes
 
 
-def main(citypack_dir: Path | None = None) -> int:
+def main(citypack_dir: Path | None = None, output_dir: Path | None = None) -> int:
     project_root = Path(__file__).resolve().parents[1]
     if citypack_dir is None:
         citypack_dir = project_root / "citypacks" / "akron-oh-beta-001"
-    generated_dir = project_root / "generated"
+    generated_dir = output_dir or project_root / "generated"
     generated_dir.mkdir(parents=True, exist_ok=True)
 
     # Auto-detect city_id from manifest filename
@@ -173,7 +166,7 @@ def main(citypack_dir: Path | None = None) -> int:
         for cp in r["checkpoints"]:
             all_points.append(cp["location"])
 
-    world_bounds = compute_bounding_box(all_points, padding=500.0)
+    world_bounds = compute_bounding_box(all_points, padding=50000.0)
 
     # Load optional M2 procedural world data
     water_data = None
@@ -198,6 +191,7 @@ def main(citypack_dir: Path | None = None) -> int:
         "level_name": city_id.replace("_", " ").title().replace(" ", "") + "World",
         "city_id": manifest["city_id"],
         "origin": origin,
+        "coordinate_frame": WORLD_FRAME,
         "world_bounds": world_bounds,
         "spawn_points": spec_spawns,
         "routes": spec_routes,
@@ -223,7 +217,7 @@ def main(citypack_dir: Path | None = None) -> int:
         "biome": biome_data,
         "metadata": {
             "generated_by": "generate-level-spec.py",
-            "spec_version": "2.0.0",
+            "spec_version": "3.0.0",
         },
     }
 
@@ -239,5 +233,6 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--citypack", type=Path, default=None, help="Path to citypack directory")
+    ap.add_argument("--output-dir", type=Path, default=None, help="Use a fresh directory for frame migration")
     args = ap.parse_args()
-    raise SystemExit(main(args.citypack))
+    raise SystemExit(main(args.citypack, args.output_dir))

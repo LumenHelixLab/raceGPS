@@ -17,6 +17,9 @@ Usage outside UE5 (preview):
 import argparse
 import json
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from geo_frame import require_world_frame, scene_tags
 
 try:
     import unreal
@@ -112,6 +115,7 @@ def main() -> int:
         return 1
 
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    require_world_frame(spec)
 
     if not HAS_UNREAL:
         print("#" * 70)
@@ -193,7 +197,7 @@ def main() -> int:
     for poi in landmarks:
         loc = poi["location"]
         label = f"ReflCapture_{poi['id']}"
-        refl_loc = {"x": loc["x"], "y": loc["y"] + 50, "z": loc["z"]}
+        refl_loc = {"x": loc["x"], "y": loc["y"], "z": loc["z"] + 5000}
         if HAS_UNREAL:
             actor_class = unreal.SphereReflectionCapture if hasattr(unreal, "SphereReflectionCapture") else unreal.Actor
         else:
@@ -216,6 +220,16 @@ def main() -> int:
         else:
             actor_class = "getattr(unreal, 'TriggerVolume', unreal.Actor)"
         _spawn_actor(actor_class, center, {"pitch": 0, "yaw": 0, "roll": 0}, label)
+
+    tags = scene_tags(spec)
+    if HAS_UNREAL:
+        marker = unreal.EditorLevelLibrary.spawn_actor_from_class(unreal.Actor, unreal.Vector(0, 0, 0))
+        if not marker:
+            raise RuntimeError("Failed to create coordinate-frame marker")
+        marker.set_actor_label("raceGPS_CoordinateFrame")
+        marker.set_editor_property("tags", [unreal.Name(tag) for tag in tags])
+    else:
+        print("# Required scene frame tags:", tags)
 
     if not HAS_UNREAL:
         print("#" * 70)

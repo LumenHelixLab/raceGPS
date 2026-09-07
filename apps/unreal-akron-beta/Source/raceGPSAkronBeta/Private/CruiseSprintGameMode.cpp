@@ -1,4 +1,5 @@
 #include "CruiseSprintGameMode.h"
+#include "RaceGPSGeoFrame.h"
 #include "raceGPSGameInstance.h"
 #include "ChaosVehiclePawn.h"
 #include "VehicleTuningData.h"
@@ -191,6 +192,8 @@ void ACruiseSprintGameMode::StartPlay()
             BuildingGen->BuildingsJsonPath = !CityLayout.BuildingsPath.IsEmpty()
                 ? CityLayout.BuildingsPath
                 : CityPackPath + TEXT("akron_buildings.json");
+            BuildingGen->OriginLat = WorldOriginLat;
+            BuildingGen->OriginLon = WorldOriginLon;
             BuildingGen->GenerateBuildingsAsync();
         }
     }
@@ -394,6 +397,19 @@ void ACruiseSprintGameMode::LoadCityData()
         return;
     }
 
+    // Existing map binaries used a different planar frame. A successful new
+    // import stamps the frame and origin; do not mix old scenery with new roads.
+    TArray<AActor*> FrameMarkers;
+    UGameplayStatics::GetAllActorsWithTag(this,
+        FName(*FString::Printf(TEXT("racegps.frame:%s"), UTF8_TO_TCHAR(RaceGPSGeoFrame::WorldFrame))), FrameMarkers);
+    const FName LatTag(*FString::Printf(TEXT("racegps.origin.lat=%.9f"), WorldOriginLat));
+    const FName LonTag(*FString::Printf(TEXT("racegps.origin.lon=%.9f"), WorldOriginLon));
+    if (FrameMarkers.Num() != 1 || !FrameMarkers[0]->Tags.Contains(LatTag) || !FrameMarkers[0]->Tags.Contains(LonTag))
+    {
+        FailStartup(TEXT("This scene needs a city data update. Install the matching updated scene and city pack."));
+        return;
+    }
+
     // Routes: single array file resolved from the manifest (both dialects), with the
     // legacy per-route directory as fallback.
     if (!CityLayout.RoutesPath.IsEmpty())
@@ -449,7 +465,7 @@ void ACruiseSprintGameMode::SpawnPlayerAtStart()
 
     FAkronSpawnPoint& Spawn = LoadedSpawns[0];
     FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-        Spawn.Location.Z, Spawn.Location.X, WorldOriginLat, WorldOriginLon);
+        -Spawn.Location.Z, Spawn.Location.X, WorldOriginLat, WorldOriginLon);
     WorldLoc.Z = 50.0f; // Slight lift off ground
 
     APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);

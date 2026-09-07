@@ -1,6 +1,7 @@
 // Copyright raceGPS. All Rights Reserved.
 
 #include "RuntimeCityLoader.h"
+#include "RaceGPSGeoFrame.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/FileHelper.h"
@@ -45,6 +46,14 @@ bool ARuntimeCityLoader::LoadCitypack(const FString& Path)
     if (!FJsonSerializer::Deserialize(Reader, RootObject))
     {
         UE_LOG(LogTemp, Error, TEXT("Failed to parse citypack JSON"));
+        return false;
+    }
+
+    FString Frame;
+    if (!RootObject->TryGetStringField(TEXT("coordinate_frame"), Frame) ||
+        Frame != UTF8_TO_TCHAR(RaceGPSGeoFrame::WorldFrame))
+    {
+        UE_LOG(LogTemp, Error, TEXT("Unsupported level-spec coordinate frame; regenerate scene"));
         return false;
     }
 
@@ -126,7 +135,7 @@ void ARuntimeCityLoader::StreamChunk(const FVector& PlayerLocation, float Radius
     {
         if (!IsValid(Actor)) continue;
         float Dist = FVector::Dist(PlayerLocation, Actor->GetActorLocation());
-        Actor->SetActorHiddenInGame(Dist > RadiusMeters);
+        Actor->SetActorHiddenInGame(Dist > RadiusMeters * 100.0f);
     }
 }
 

@@ -92,7 +92,7 @@ def test_offline_rebuild_is_identical_and_not_race_ready(tmp_path):
 
 def test_manifest_path_escape_rejected(tmp_path):
     (tmp_path/'test_semantic_manifest.json').write_text(json.dumps({'files':{'routes':'../secret.json'}}))
-    assert 'escapes citypack' in audit(tmp_path)['errors'][0]
+    assert any('escapes citypack' in error for error in audit(tmp_path)['errors'])
 
 
 def test_audit_rejects_route_jump_and_altered_points(tmp_path):

@@ -140,7 +140,7 @@ public:
     static bool LoadRoadGraphJson(const FString& JsonPath, TArray<FAkronRoadSegment>& OutRoads);
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Akron")
-    static bool LoadManifest(const FString& ManifestPath, float& OutWorldOriginLat, float& OutWorldOriginLon);
+    static bool LoadManifest(const FString& ManifestPath, double& OutWorldOriginLat, double& OutWorldOriginLon);
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Akron")
     static bool LoadRouteSplines(const FString& RoutePathOrDir, TArray<FAkronRouteSpline>& OutRoutes);
@@ -177,12 +177,10 @@ public:
     static bool ResolveManifestDataFile(const FString& ManifestPath, const FString& FieldName, FString& OutPath);
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|Akron")
-    static FVector GeoToWorld(float Lat, float Lon, float OriginLat, float OriginLon);
+    static FVector GeoToWorld(double Lat, double Lon, double OriginLat, double OriginLon);
 
 private:
-    static float MetersPerDegreeLon(float Lat);
-    static float MetersPerDegreeLat();
-    static FVector XodrToWorld(float X, float Y, float OriginLat, float OriginLon);
+    static FVector XodrToWorld(double X, double Y, double OriginLat, double OriginLon);
 
     /** Shared helpers for the dialect-tolerant loaders. */
     static bool LoadJsonObjectFile(const FString& ProjectRelativePath, TSharedPtr<FJsonObject>& OutRoot);

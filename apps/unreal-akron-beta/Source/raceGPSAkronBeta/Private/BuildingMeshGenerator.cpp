@@ -1,4 +1,6 @@
 #include "BuildingMeshGenerator.h"
+#include "AkronXodrImporter.h"
+#include "RaceGPSGeoFrame.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Dom/JsonObject.h"
@@ -60,6 +62,21 @@ void ABuildingMeshGenerator::LoadBuildingsJson()
         return;
     }
 
+    FString Frame, FootprintSpace;
+    const TSharedPtr<FJsonObject>* Origin = nullptr;
+    double FileLat = 0.0, FileLon = 0.0;
+    if (!Root->TryGetStringField(TEXT("coordinate_frame"), Frame) ||
+        Frame != UTF8_TO_TCHAR(RaceGPSGeoFrame::SourceFrame) ||
+        !Root->TryGetStringField(TEXT("footprint_space"), FootprintSpace) ||
+        (FootprintSpace != TEXT("wgs84-degrees") && FootprintSpace != TEXT("eqc-enu-m")) ||
+        !Root->TryGetObjectField(TEXT("origin"), Origin) ||
+        !(*Origin)->TryGetNumberField(TEXT("lat"), FileLat) || !(*Origin)->TryGetNumberField(TEXT("lon"), FileLon) ||
+        !FMath::IsNearlyEqual(FileLat, OriginLat, 1.e-10) || !FMath::IsNearlyEqual(FileLon, OriginLon, 1.e-10))
+    {
+        UE_LOG(LogTemp, Error, TEXT("[raceGPS] Building coordinate frame/origin mismatch; regenerate the pack"));
+        return;
+    }
+
     const TArray<TSharedPtr<FJsonValue>>* Arr;
     if (!Root->TryGetArrayField(TEXT("buildings"), Arr))
     {
@@ -75,9 +92,11 @@ void ABuildingMeshGenerator::LoadBuildingsJson()
 
         FBuildingData B;
         (*Obj)->TryGetStringField(TEXT("id"), B.Id);
-        (*Obj)->TryGetStringField(TEXT("type"), B.Type);
+        if (!(*Obj)->TryGetStringField(TEXT("building_type"), B.Type))
+            (*Obj)->TryGetStringField(TEXT("type"), B.Type);
         (*Obj)->TryGetStringField(TEXT("name"), B.Name);
-        (*Obj)->TryGetNumberField(TEXT("height"), B.Height);
+        if (!(*Obj)->TryGetNumberField(TEXT("height_meters"), B.Height))
+            (*Obj)->TryGetNumberField(TEXT("height"), B.Height);
         (*Obj)->TryGetNumberField(TEXT("area_m2"), B.AreaM2);
 
         const TArray<TSharedPtr<FJsonValue>>* FpArr;
@@ -88,13 +107,37 @@ void ABuildingMeshGenerator::LoadBuildingsJson()
                 const TSharedPtr<FJsonObject>* FpObj;
                 if (!FpVal->TryGetObject(FpObj))
                     continue;
-                double X = 0.0, Y = 0.0;
-                (*FpObj)->TryGetNumberField(TEXT("x"), X);
-                (*FpObj)->TryGetNumberField(TEXT("y"), Y);
-                B.Footprint.Add(FVector2D(X, Y));
+                double A = 0.0, C = 0.0;
+                const bool bGeographic = FootprintSpace == TEXT("wgs84-degrees");
+                if (!(*FpObj)->TryGetNumberField(bGeographic ? TEXT("lat") : TEXT("x"), A) ||
+                    !(*FpObj)->TryGetNumberField(bGeographic ? TEXT("lon") : TEXT("y"), C) ||
+                    !FMath::IsFinite(A) || !FMath::IsFinite(C))
+                {
+                    UE_LOG(LogTemp, Error, TEXT("[raceGPS] Invalid building footprint"));
+                    Buildings.Empty();
+                    return;
+                }
+                if (bGeographic)
+                {
+                    const FVector P = UAkronXodrImporter::GeoToWorld(A, C, OriginLat, OriginLon);
+                    B.Footprint.Add(FVector2D(P.X, P.Y));
+                }
+                else
+                {
+                    const auto P = RaceGPSGeoFrame::ToUnreal(A, C);
+                    B.Footprint.Add(FVector2D(P.X, P.Y));
+                }
             }
         }
 
+        // OSM polygon rings repeat the first point; the mesh closes it itself.
+        if (B.Footprint.Num() > 3 && B.Footprint[0].Equals(B.Footprint.Last(), 0.01))
+            B.Footprint.Pop();
+        if (B.Footprint.Num() < 3 || !FMath::IsFinite(B.Height) || B.Height <= 0.0f)
+        {
+            Buildings.Empty();
+            return;
+        }
         Buildings.Add(B);
     }
 
@@ -126,7 +169,7 @@ void ABuildingMeshGenerator::CreateBuildingMesh(const FBuildingData& Building, i
     TArray<FProcMeshTangent> Tangents;
 
     int32 N = Building.Footprint.Num();
-    float H = Building.Height;
+    float H = Building.Height * 100.0f;
 
     // Wall vertices: bottom ring then top ring
     for (int32 i = 0; i < N; ++i)
