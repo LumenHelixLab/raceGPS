@@ -65,3 +65,7 @@ apps/unreal-akron-beta/Intermediate/
 generated/*_ueimport.json
 generated/*_ueimport_progress.json
 generated/diag_*.png
+
+# Reproducible local compiler outputs; retain only pinned inputs and evidence.
+build-evidence/
+!data/sources/cleveland-burke/snapshot.osm

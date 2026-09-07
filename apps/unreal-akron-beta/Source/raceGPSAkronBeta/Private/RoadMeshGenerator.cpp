@@ -2,6 +2,7 @@
 #include "AkronXodrImporter.h"
 #include "ProceduralMeshComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/Material.h"
 
 ARoadMeshGenerator::ARoadMeshGenerator(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
@@ -27,7 +28,7 @@ void ARoadMeshGenerator::Tick(float DeltaTime)
     {
         bAsyncGenerating = false;
         bGenerationComplete = true;
-        PrimaryActorTick.bStartWithTickEnabled = false;
+        SetActorTickEnabled(false);
         UE_LOG(LogTemp, Log, TEXT("[raceGPS] Road mesh generation complete: %d roads"), TotalRoadsGenerated);
     }
 }
@@ -39,6 +40,7 @@ void ARoadMeshGenerator::GenerateRoadMeshes()
     TArray<FAkronRoadSegment> Roads;
     if (!UAkronXodrImporter::ImportXodr(XodrPath, Roads))
     {
+        bGenerationFailed = true;
         UE_LOG(LogTemp, Error, TEXT("[raceGPS] Failed to import roads for mesh generation"));
         return;
     }
@@ -51,7 +53,8 @@ void ARoadMeshGenerator::GenerateRoadMeshes()
         UProceduralMeshComponent* Mesh = NewObject<UProceduralMeshComponent>(this);
         Mesh->RegisterComponent();
         Mesh->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-        Mesh->bUseAsyncCooking = true;
+        // Batches spread mesh work across frames; finish collision before Ready.
+        Mesh->bUseAsyncCooking = false;
         Mesh->bUseComplexAsSimpleCollision = true;
 
         GenerateRoadMesh(Segment, Mesh);
@@ -70,6 +73,7 @@ void ARoadMeshGenerator::GenerateRoadMeshAsync()
     PendingRoads.Empty();
     if (!UAkronXodrImporter::ImportXodr(XodrPath, PendingRoads))
     {
+        bGenerationFailed = true;
         UE_LOG(LogTemp, Error, TEXT("[raceGPS] Failed to import roads for async mesh generation"));
         return;
     }
@@ -77,7 +81,7 @@ void ARoadMeshGenerator::GenerateRoadMeshAsync()
     PendingIndex = 0;
     bAsyncGenerating = true;
     bGenerationComplete = false;
-    PrimaryActorTick.bStartWithTickEnabled = true;
+    SetActorTickEnabled(true);
 
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] Starting async road mesh generation: %d roads"), PendingRoads.Num());
 }
@@ -95,7 +99,8 @@ void ARoadMeshGenerator::ProcessBatch()
         UProceduralMeshComponent* Mesh = NewObject<UProceduralMeshComponent>(this);
         Mesh->RegisterComponent();
         Mesh->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-        Mesh->bUseAsyncCooking = true;
+        // Batches spread mesh work across frames; finish collision before Ready.
+        Mesh->bUseAsyncCooking = false;
         Mesh->bUseComplexAsSimpleCollision = true;
 
         GenerateRoadMesh(Segment, Mesh);
@@ -187,10 +192,10 @@ void ARoadMeshGenerator::GenerateRoadMesh(const FAkronRoadSegment& Segment, UPro
     Mesh->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColors, Tangents, true);
 
     // Simple asphalt material
-    static ConstructorHelpers::FObjectFinder<UMaterial> RoadMat(TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
-    if (RoadMat.Succeeded())
+    UMaterial* RoadMat = LoadObject<UMaterial>(nullptr, TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
+    if (RoadMat)
     {
-        UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(RoadMat.Object, this);
+        UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(RoadMat, this);
         if (DynMat)
         {
             DynMat->SetVectorParameterValue(TEXT("Color"), FLinearColor(0.15f, 0.15f, 0.15f));
@@ -214,4 +219,6 @@ void ARoadMeshGenerator::ClearRoadMeshes()
     bAsyncGenerating = false;
     bGenerationComplete = false;
     TotalRoadsGenerated = 0;
+    bGenerationFailed = false;
+    SetActorTickEnabled(false);
 }

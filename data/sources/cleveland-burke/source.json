@@ -1,0 +1,12 @@
+{
+  "url": "https://api.openstreetmap.org/api/0.6/map?bbox=-81.705,41.509,-81.655,41.528",
+  "retrieved_at": "2026-09-07T20:50:08.516444+00:00",
+  "role": "Contemporary context only; not the 2006 racing line",
+  "attribution": "\u00a9 OpenStreetMap contributors",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "status": "downloaded",
+  "bytes": 6431190,
+  "sha256": "66f90dc05b4c78238f61cbac46d49f14932c1c912b468647908523354028932b",
+  "nodes": 22396,
+  "ways": 2969
+}

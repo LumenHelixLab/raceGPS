@@ -16,6 +16,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from citypack_audit import audit
 DEFAULT_PROJECT = ROOT / 'apps/unreal-akron-beta/raceGPSAkronBeta.uproject'
 PLATFORMS = {'Windows': 'Win64', 'Linux': 'Linux', 'Darwin': 'Mac'}
 
@@ -97,6 +99,14 @@ def stage_runtime_data(source_root, archive, project_name, target, system):
         shutil.copy2(spec, destination / spec.name)
 
 
+def validate_runtime_data(source_root):
+    manifests = sorted((source_root / 'citypacks').glob('*/*_semantic_manifest.json'))
+    if not manifests:
+        raise ValueError('No semantic citypack manifests available')
+    reports = [audit(manifest.parent) for manifest in manifests]
+    return reports
+
+
 def artifact_hashes(archive):
     result = {}
     for path in sorted(archive.rglob('*')):
@@ -139,6 +149,9 @@ def main(argv=None):
         else:
             if archive.exists() and any(archive.iterdir()):
                 raise ValueError('Archive must be empty: use a fresh --archive to avoid accepting stale artifacts')
+            report['citypack_audits'] = validate_runtime_data(project.parent.parent.parent)
+            if any(item['status'] != 'passed' for item in report['citypack_audits']):
+                raise ValueError('Runtime citypack integrity failed; see citypack_audits in the evidence report')
             for index, command in enumerate(commands, 1):
                 log = report_path.with_suffix(f'.step{index}.log')
                 print(f'Running step {index}; log: {log}', flush=True)

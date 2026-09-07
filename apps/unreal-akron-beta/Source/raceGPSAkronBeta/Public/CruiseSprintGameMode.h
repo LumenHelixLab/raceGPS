@@ -13,7 +13,8 @@ enum class ECruiseSprintState : uint8
     Countdown       UMETA(DisplayName = "Countdown"),
     Racing          UMETA(DisplayName = "Racing"),
     Finished        UMETA(DisplayName = "Finished"),
-    Paused          UMETA(DisplayName = "Paused")
+    Paused          UMETA(DisplayName = "Paused"),
+    Failed          UMETA(DisplayName = "Unavailable")
 };
 
 UCLASS()
@@ -26,6 +27,7 @@ public:
 
     virtual void StartPlay() override;
     virtual void Tick(float DeltaTime) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|GameMode")
     void StartRace();
@@ -53,6 +55,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
     ECruiseSprintState GetRaceState() const { return CurrentState; }
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
+    FString GetStartupError() const { return StartupError; }
 
     virtual void PostLogin(APlayerController* NewPlayer) override;
     virtual void Logout(AController* Exiting) override;
@@ -205,6 +210,16 @@ protected:
     float WorldOriginLat = 41.08f;
     float WorldOriginLon = -81.52f;
 
+    UPROPERTY()
+    TObjectPtr<class ARoadMeshGenerator> StartupRoadGenerator;
+
+    UPROPERTY(BlueprintReadOnly, Category = "raceGPS|GameMode")
+    FString StartupError;
+
+    TSharedPtr<class SWidget> StartupErrorPanel;
+    float StartupWaitSeconds = 0.0f;
+    bool bCityReady = false;
+    void FailStartup(const FString& Reason);
     void LoadCityData();
     bool IsVersionCompatible(const FString& CityVersion) const;
     void SpawnPlayerAtStart();

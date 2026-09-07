@@ -30,8 +30,15 @@ def fixture(tmp_path, monkeypatch):
         path.chmod(0o755)
     pack = root / 'citypacks/test-city'
     pack.mkdir(parents=True)
-    (pack / 'test_semantic_manifest.json').write_text('{}')
-    (pack / 'test.xodr').write_text('<OpenDRIVE/>')
+    points = [{'lat':41.0,'lon':-81.0},{'lat':41.01,'lon':-81.0}]
+    files = {'road_graph':'graph.json','routes':'routes.json','spawn_points':'spawns.json','buildings':'buildings.json','xodr':'test.xodr'}
+    (pack / 'test_semantic_manifest.json').write_text(json.dumps({'files': files}))
+    (pack / 'graph.json').write_text(json.dumps({'roads':[{'id':'1','points':points}], 'intersections':[]}))
+    (pack / 'routes.json').write_text(json.dumps([{'route_id':'fixture','points':points,
+        'segments':[{'road_id':'1','segment_index':0,'direction':1}]}]))
+    (pack / 'spawns.json').write_text('[{"lat":41,"lon":-81}]')
+    (pack / 'buildings.json').write_text('{"buildings":[]}')
+    (pack / 'test.xodr').write_text('<OpenDRIVE><road id="1"/></OpenDRIVE>')
     (root / 'generated').mkdir()
     (root / 'generated/Test_LevelSpec.json').write_text('{}')
     return root, project, engine, batch
@@ -111,7 +118,7 @@ def test_windows_package_must_contain_game_and_cooked_content(fixture, tmp_path)
     (app / 'Content/Paks').mkdir(parents=True)
     (app / 'Content/Paks/Game.pak').write_bytes(b'fixture only')
     build.stage_runtime_data(root, archive, 'Game', 'Game', 'Windows')
-    assert (app / 'citypacks/test-city/test.xodr').read_text() == '<OpenDRIVE/>'
+    assert (app / 'citypacks/test-city/test.xodr').read_text() == '<OpenDRIVE><road id="1"/></OpenDRIVE>'
     assert (app / 'generated/Test_LevelSpec.json').is_file()
     assert 'Windows/Game/citypacks/test-city/test.xodr' in build.artifact_hashes(archive)
 
@@ -139,3 +146,14 @@ def test_mac_commands_use_mac_not_linux(fixture, tmp_path):
     commands = build.command_plan(project, batch / 'Mac/Build.sh', batch / 'RunUAT.sh', 'Darwin', 'Shipping', 'Game', tmp_path)
     assert commands[0][2] == 'Mac'
     assert '-platform=Mac' in commands[1]
+
+
+def test_invalid_city_data_stops_before_editor_execution(fixture, monkeypatch, tmp_path):
+    root, project, engine, _ = fixture
+    monkeypatch.setattr(build.platform, 'system', lambda: 'Linux')
+    (root / 'citypacks/test-city/buildings.json').unlink()
+    report = tmp_path / 'blocked.json'
+    assert build.main(['--project', str(project), '--engine', str(engine), '--report', str(report)]) == 1
+    data = json.loads(report.read_text())
+    assert data['steps'] == []
+    assert data['citypack_audits'][0]['status'] == 'failed'
