@@ -56,6 +56,10 @@ apps/unreal-akron-beta/Temp/
 apps/unreal-akron-beta/citypacks/
 apps/unreal-akron-beta/cesium-request-cache.sqlite*
 *.log.bak*
+apps/unreal-akron-beta/Build/
+apps/unreal-akron-beta/Saved/
+apps/unreal-akron-beta/Binaries/
+apps/unreal-akron-beta/Intermediate/
 
 # Transient UE import progress/result dumps and diagnostic captures
 generated/*_ueimport.json

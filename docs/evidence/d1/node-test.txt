@@ -1,0 +1,41 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> racegps-monorepo@0.1.0 test
+> npm run test --workspaces --if-present
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @racegps/backend@0.1.0 pretest
+> npm run build --workspace @racegps/protocol && npm run build --workspace @racegps/race-engine
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @racegps/protocol@0.1.0 build
+> tsc -p tsconfig.json
+
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> @racegps/race-engine@0.1.0 build
+> tsc -p tsconfig.json
+
+
+> @racegps/backend@0.1.0 test
+> node --import tsx --test tests/*.test.ts
+
+▶ room-utils
+  ✔ slugRoom normalizes title and adds suffix (1.746794ms)
+  ✔ sanitizeMode accepts known modes (0.186982ms)
+  ✔ sanitizeMode falls back to cruise (0.097781ms)
+✔ room-utils (3.286724ms)
+▶ racegps backend ws stack
+  ✔ GET /health returns ok (33.260187ms)
+  ✔ GET /api/rooms returns array (9.889706ms)
+✔ racegps backend ws stack (482.437918ms)
+ℹ tests 5
+ℹ suites 2
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 716.78018

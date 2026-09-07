@@ -1,0 +1,62 @@
+{
+  "source_commit": "b56b6c814c23423d13b7683607d0da5ba89130f2",
+  "host": "Linux",
+  "content_extension_counts": {
+    ".md": 1,
+    ".umap": 2,
+    ".uasset": 145,
+    ".placeholder": 1,
+    ".json": 30,
+    ".py": 2
+  },
+  "maps": [
+    {
+      "path": "apps/unreal-akron-beta/Content/Maps/AkronWorld.umap",
+      "bytes": 13150,
+      "sha256": "741141ef8954ea6ec0769b338f3fd3bd2e30549c2d543dc5e1d2915663faade7",
+      "first_four_bytes_hex": "c1832a9e",
+      "lfs_pointer": false,
+      "editor_loaded": false
+    },
+    {
+      "path": "apps/unreal-akron-beta/Content/Maps/Cleveland5_0KmWorld.umap",
+      "bytes": 2963711,
+      "sha256": "d3886e49229e60b612ac304f81d324b8b5dc0cc749a30a18eb83bafce5b2ffd8",
+      "first_four_bytes_hex": "c1832a9e",
+      "lfs_pointer": false,
+      "editor_loaded": false
+    }
+  ],
+  "citypacks": [
+    {
+      "path": "citypacks/akron-oh-beta-001/akron_semantic_manifest.json",
+      "city_id": "akron-oh-beta-001",
+      "missing_referenced_files": [
+        "akron_buildings.json"
+      ]
+    }
+  ],
+  "level_specs": [
+    {
+      "path": "generated/AkronWorld_LevelSpec.json",
+      "city_id": "akron-oh-beta-001",
+      "level_name": "AkronWorld",
+      "origin": {
+        "lat": 41.06999999999999,
+        "lon": -81.525
+      },
+      "matching_citypack_present": true
+    },
+    {
+      "path": "generated/Cleveland5.0KmWorld_LevelSpec.json",
+      "city_id": "cleveland_5.0km",
+      "level_name": "Cleveland5.0KmWorld",
+      "origin": {
+        "lat": 41.497532,
+        "lon": -81.70591884999999
+      },
+      "matching_citypack_present": false
+    }
+  ],
+  "interpretation": "File inventory only. Unreal objects, collision, geography and visual fidelity are not verified."
+}

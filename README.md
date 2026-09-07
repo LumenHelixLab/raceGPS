@@ -21,7 +21,7 @@
 </p>
 
 [![Unreal Engine 5.7](https://img.shields.io/badge/Unreal%20Engine-5.7-blue.svg)](https://www.unrealengine.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 [![Windows](https://img.shields.io/badge/Platform-Windows-lightgrey.svg)]()
 
 ---
@@ -36,47 +36,45 @@ raceGPS is an open-source desktop arcade racing game built on real-world map dat
 
 ## Quick start
 
-### Download & Play (Recommended)
+### Current execution checkpoint
 
-1. Download the latest release from the [Releases](https://github.com/LumenHelixLab/raceGPS/releases) page
-2. Extract the `.zip`
-3. Run `raceGPS.exe`
-4. Select a route, pick your vehicle, and race
+A packaged release has not been verified by the D1 audit. Source and map files
+exist; passing portable tests does not establish Unreal compilation or playability.
+See [D1 evidence and host handoff](docs/plans/D1_EXECUTION_REPORT.md) and
+[the approved Cleveland production plan](docs/plans/2026-09-07-cleveland-production-v5.1.md).
 
-### Windows (PowerShell)
-
-```powershell
-git clone https://github.com/LumenHelixLab/raceGPS.git
-Set-Location raceGPS
-# Prerequisites: UE 5.7, VS 2022 + C++ game workload, Python 3.10+
-.\scripts\setup-ue5-dev-env.ps1
-cd apps\unreal-akron-beta
-.\Build.bat
-cd ..\..\tools\akron-semantic-compiler
-py -m venv ..\..\..\.venv
-..\..\..\.venv\Scripts\pip install -r requirements.txt
-py compile_akron.py
-```
-
-### Windows (Git Bash / WSL)
+### Portable checks (Python 3.12, Node 24 LTS)
 
 ```bash
-git clone https://github.com/LumenHelixLab/raceGPS.git
-cd raceGPS
-# Prerequisites: UE 5.7 Linux build, build-essential, clang, Python 3.10+
-~/UnrealEngine/5.7/Engine/Build/BatchFiles/Linux/GenerateProjectFiles.sh \
-  -project="$(pwd)/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" -game
-cd apps/unreal-akron-beta
-~/UnrealEngine/5.7/Engine/Build/BatchFiles/Linux/Build.sh \
-  raceGPSAkronBetaEditor Linux Development -project="$(pwd)/raceGPSAkronBeta.uproject"
-cd ../../tools/akron-semantic-compiler
-python3 -m venv ../../../.venv
-source ../../../.venv/bin/activate
-pip install -r requirements.txt
-python compile_akron.py
+python -m venv .venv
+# Activate .venv using your shell, then:
+python -m pip install -r requirements-dev.txt
+python -m pytest tests -q
+npm ci
+npm run typecheck
+npm run build
+npm test
+npm run dev
 ```
 
-> Tested on Windows 11 and Ubuntu 22.04/24.04.
+`npm run dev` starts the development backend. The desktop game runs in Unreal.
+Backend lifecycle scripts build their local protocol/race-engine dependencies first.
+
+### Windows Unreal build
+
+Requires a local Unreal 5.7 installation, compatible VS C++ toolchain/Windows SDK,
+and Python 3.11+ (3.12 is the tested orchestration runtime).
+
+```powershell
+python scripts/build.py --check --engine "C:\Program Files\Epic Games\UE_5.7"
+python scripts/build.py --engine "C:\Program Files\Epic Games\UE_5.7" --config Development
+```
+
+`apps/unreal-akron-beta/Build.bat` delegates to this same runner. Each build uses
+a fresh archive directory and retains commands, logs, engine metadata and hashes.
+An explicit `--archive` must be empty. The result `packaged_not_play_tested` still
+requires the editor, standalone and clean-machine gameplay acceptance checks.
+Windows is the release target; Linux/Mac orchestration paths are not shipped-platform claims.
 
 ## Features
 
@@ -167,7 +165,7 @@ For gameplay design, see [`docs/GAMEPLAY_DESIGN.md`](docs/GAMEPLAY_DESIGN.md).
 
 ## License
 
-Released under the MIT License. Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
+Source code is licensed under Apache-2.0; see [LICENSE](LICENSE). Map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
 
 ---
 

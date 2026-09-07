@@ -6,6 +6,7 @@
 #include "Misc/Parse.h"
 #include "HAL/IConsoleManager.h"
 #include "HAL/FileManager.h"
+#include "HAL/PlatformProperties.h"
 #include "Dom/JsonObject.h"
 #include "Dom/JsonValue.h"
 #include "Serialization/JsonSerializer.h"
@@ -137,7 +138,10 @@ bool UAkronXodrImporter::ResolveCityLayout(FRaceGPSCityLayout& OutLayout)
     const bool bHasPackDirOverride = GConfig &&
         GConfig->GetString(TEXT("RaceGPS.CitySelection"), TEXT("CitypackDir"), ConfigValue, GGameIni) &&
         !ConfigValue.IsEmpty();
-    OutLayout.CitypackDir = bHasPackDirOverride ? ConfigValue : (FString(TEXT("../../citypacks")) / OutLayout.CityId);
+    // Cooked loose data is staged under ProjectDir; editor data lives at repo root.
+    const FString DefaultPackRoot = FPlatformProperties::RequiresCookedData()
+        ? TEXT("citypacks") : TEXT("../../citypacks");
+    OutLayout.CitypackDir = bHasPackDirOverride ? ConfigValue : (DefaultPackRoot / OutLayout.CityId);
 
     // Manifest: <pack>/*_semantic_manifest.json (filename does not always embed the city id).
     if (!FindSingleFileBySuffix(OutLayout.CitypackDir, TEXT("_semantic_manifest.json"), OutLayout.ManifestPath))
@@ -235,7 +239,8 @@ bool UAkronXodrImporter::ResolveCityLayout(FRaceGPSCityLayout& OutLayout)
     }
     else
     {
-        const FString GeneratedDir = TEXT("../../generated");
+        const FString GeneratedDir = FPlatformProperties::RequiresCookedData()
+            ? TEXT("generated") : TEXT("../../generated");
         const FString FullGeneratedDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / GeneratedDir);
         TArray<FString> SpecFiles;
         IFileManager::Get().FindFiles(SpecFiles, *(FullGeneratedDir / TEXT("*_LevelSpec.json")), true, false);

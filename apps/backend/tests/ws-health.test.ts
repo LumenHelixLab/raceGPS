@@ -10,11 +10,16 @@ const backendRoot = join(__dirname, '..');
 const TEST_PORT = 18787;
 
 let child: ChildProcess | null = null;
+let childOutput = '';
 
 function waitForHealth(port: number, timeoutMs = 15000): Promise<void> {
   const start = Date.now();
   return new Promise((resolve, reject) => {
     const tick = () => {
+      if (child?.exitCode !== null && child?.exitCode !== undefined) {
+        reject(new Error(`backend exited (${child.exitCode}): ${childOutput}`));
+        return;
+      }
       const req = http.get(`http://127.0.0.1:${port}/health`, (res) => {
         res.resume();
         if (res.statusCode === 200) resolve();
@@ -22,7 +27,7 @@ function waitForHealth(port: number, timeoutMs = 15000): Promise<void> {
         else setTimeout(tick, 200);
       });
       req.on('error', () => {
-        if (Date.now() - start > timeoutMs) reject(new Error('health timeout'));
+        if (Date.now() - start > timeoutMs) reject(new Error(`health timeout: ${childOutput}`));
         else setTimeout(tick, 200);
       });
     };
@@ -32,12 +37,15 @@ function waitForHealth(port: number, timeoutMs = 15000): Promise<void> {
 
 describe('racegps backend ws stack', () => {
   before(async () => {
-    child = spawn('npx', ['tsx', 'src/index.ts'], {
+    // Use the installed runtime directly: no nested npm resolution or shell child.
+    child = spawn(process.execPath, ['--import', 'tsx', 'src/index.ts'], {
       cwd: backendRoot,
       env: { ...process.env, RACEGPS_PORT: String(TEST_PORT) },
       stdio: 'pipe',
-      shell: true,
     });
+    childOutput = '';
+    child.stdout?.on('data', (chunk) => { childOutput = (childOutput + String(chunk)).slice(-8000); });
+    child.stderr?.on('data', (chunk) => { childOutput = (childOutput + String(chunk)).slice(-8000); });
     await waitForHealth(TEST_PORT);
   });
 
