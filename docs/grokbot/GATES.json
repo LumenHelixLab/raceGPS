@@ -1,0 +1,33 @@
+{
+  "mission": "raceGPS-autonomous-gates",
+  "updated": "2026-09-07T20:05:00-04:00",
+  "claim_levels_allowed": ["OBSERVED", "REPRODUCED_LOCALLY"],
+  "gates": {
+    "G1": {
+      "name": "local-host-baseline-d1-reconcile",
+      "status": "PASS",
+      "owner": "HOST-BUILD",
+      "worktree": "C:\\projects\\raceGPS-grokbot-cleveland",
+      "head": "0ad434c2ba6d3f8c246c34fcf4d93f8653df57f3",
+      "showcase_head": "f2a8ecd6c8112141e5297ec2cce640ab42db4014",
+      "evidence": "docs/evidence/grokbot/G1-host-baseline/",
+      "pytest_exit": 0,
+      "ue_editor_build_final_exit": 0,
+      "akron_audit_exit": 1
+    },
+    "G2": {
+      "name": "coordinates-transform-truth",
+      "status": "PASS",
+      "owner": "COORDINATES",
+      "evidence": "docs/evidence/grokbot/G2-transform-contract/",
+      "verdict": "docs/evidence/grokbot/G2-transform-contract/VERDICT.md",
+      "pytest_exit": 0,
+      "ue_editor_build_exit": 0,
+      "ue_automation_frame_exit": 0,
+      "note": "Automation contract 5/5 green after float32->double GeoToWorld fix; manual PIE ruler check of FrameDiagnosticActor still open"
+    },
+    "G3": { "name": "cleveland-course-citypack", "status": "PENDING" },
+    "G4": { "name": "packaged-solo-visual-benchmark", "status": "PENDING" },
+    "G5": { "name": "physical-race-demo-candidate", "status": "PENDING" }
+  }
+}

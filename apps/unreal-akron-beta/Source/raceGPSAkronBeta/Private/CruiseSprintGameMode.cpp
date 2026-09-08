@@ -448,9 +448,10 @@ void ACruiseSprintGameMode::SpawnPlayerAtStart()
     if (LoadedSpawns.Num() == 0) return;
 
     FAkronSpawnPoint& Spawn = LoadedSpawns[0];
-    FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-        Spawn.Location.Z, Spawn.Location.X, WorldOriginLat, WorldOriginLon);
-    WorldLoc.Z = 50.0f; // Slight lift off ground
+    // Legacy pack (lon,0,-lat): Lat=-Z, Lon=X. Prefer GeoToWorldFromPacked.
+    FVector WorldLoc = UAkronXodrImporter::GeoToWorldFromPacked(
+        Spawn.Location, WorldOriginLat, WorldOriginLon);
+    WorldLoc.Z = 50.0f; // 50 cm lift (SOURCE_TO_UNREAL_FRAME_v1: 1uu=1cm)
 
     APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
     if (PC && PC->GetPawn())
@@ -473,9 +474,9 @@ void ACruiseSprintGameMode::SpawnRouteSpline()
     TArray<FVector> WorldWaypoints;
     for (const FVector& Wp : Route.Waypoints)
     {
-        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-            -Wp.Z, Wp.X, WorldOriginLat, WorldOriginLon);
-        WorldLoc.Z = 50.0f;
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorldFromPacked(
+            Wp, WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 50.0f; // 50 cm lift
         WorldWaypoints.Add(WorldLoc);
     }
 
@@ -507,9 +508,9 @@ void ACruiseSprintGameMode::SpawnCheckpoints()
     const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
     for (int32 i = 0; i < Route.CheckpointLocations.Num(); ++i)
     {
-        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-            -Route.CheckpointLocations[i].Z, Route.CheckpointLocations[i].X, WorldOriginLat, WorldOriginLon);
-        WorldLoc.Z = 100.0f;
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorldFromPacked(
+            Route.CheckpointLocations[i], WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 100.0f; // 1 m lift in cm
 
         FActorSpawnParameters Params;
         Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

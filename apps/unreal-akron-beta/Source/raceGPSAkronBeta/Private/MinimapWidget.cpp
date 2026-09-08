@@ -1,4 +1,5 @@
 #include "MinimapWidget.h"
+#include "AkronXodrImporter.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
 #include "ChaosVehiclePawn.h"
@@ -37,11 +38,13 @@ FVector2D UMinimapWidget::WorldToMinimap(const FVector& WorldPos, const FVector&
     float CosYaw = FMath::Cos(FMath::DegreesToRadians(PlayerYaw));
     float SinYaw = FMath::Sin(FMath::DegreesToRadians(PlayerYaw));
 
-    // Rotate into player-local space (forward = up on minimap)
+    // Frame A horizontal plane is XY (X=east, Y=north). Rotate into player-local.
     float LocalX = Delta.X * CosYaw + Delta.Y * SinYaw;
     float LocalY = -Delta.X * SinYaw + Delta.Y * CosYaw;
 
-    float Scale = WidgetSize / (MinimapRadiusMeters * 2.0f);
+    // MinimapRadiusMeters is meters of world extent; world positions are cm.
+    const float RadiusUU = MinimapRadiusMeters * UAkronXodrImporter::MetersToUU;
+    float Scale = WidgetSize / (RadiusUU * 2.0f);
     return FVector2D(
         WidgetSize * 0.5f + LocalX * Scale,
         WidgetSize * 0.5f - LocalY * Scale

@@ -37,6 +37,7 @@ public:
     float TrafficLightSpacing = 50.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Furniture")
+    /** Meters of 2D radius around pack origin; compared in cm via MetersToUU. */
     float SpawnRadius = 2000.0f;
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Furniture")

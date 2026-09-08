@@ -295,35 +295,59 @@ bool UAkronXodrImporter::ResolveCityLayout(FRaceGPSCityLayout& OutLayout)
     return true;
 }
 
-float UAkronXodrImporter::MetersPerDegreeLon(float Lat)
+double UAkronXodrImporter::MetersPerDegreeLon(double Lat)
 {
-    float Rad = FMath::DegreesToRadians(Lat);
-    return 111320.0f * FMath::Cos(Rad);
+    const double Rad = FMath::DegreesToRadians(Lat);
+    return static_cast<double>(MetersPerDegreeLatConst) * FMath::Cos(Rad);
 }
 
-float UAkronXodrImporter::MetersPerDegreeLat()
+double UAkronXodrImporter::MetersPerDegreeLat()
 {
-    return 110540.0f;
+    // SOURCE_TO_UNREAL_FRAME_v1: single lat scale (111320). Legacy 110540 forbidden for new code.
+    return MetersPerDegreeLatConst;
 }
 
-FVector UAkronXodrImporter::GeoToWorld(float Lat, float Lon, float OriginLat, float OriginLon)
+// SOURCE_TO_UNREAL_FRAME_v1: 1 uu = 1 cm. Pack/compiler lengths are meters.
+constexpr double kMetersToUU = UAkronXodrImporter::MetersToUU;
+
+FVector UAkronXodrImporter::GeoToWorld(double Lat, double Lon, double OriginLat, double OriginLon)
 {
-    float MetersPerLon = MetersPerDegreeLon(OriginLat);
-    float MetersPerLat = MetersPerDegreeLat();
-    float X = (Lon - OriginLon) * MetersPerLon;
-    float Y = 0.0f;
-    float Z = -(Lat - OriginLat) * MetersPerLat;
-    return FVector(X, Y, Z);
+    // Frame A / SOURCE_TO_UNREAL_FRAME_v1: Z-up, X=east, Y=north, cm.
+    // Double precision until after the origin subtraction: float32 rounds lon ~-81.7
+    // to ~7.6e-6 deg (~30 cm), which breaks the +/-1 cm frame tolerance.
+    const double MetersPerLon = MetersPerDegreeLon(OriginLat);
+    const double MetersPerLat = MetersPerDegreeLat();
+    const double X = (Lon - OriginLon) * MetersPerLon * kMetersToUU;
+    const double Y = (Lat - OriginLat) * MetersPerLat * kMetersToUU;
+    return FVector(X, Y, 0.0);
 }
 
 FVector UAkronXodrImporter::XodrToWorld(float X, float Y, float OriginLat, float OriginLon)
 {
-    // OpenDRIVE: X=east, Y=north
-    // Unreal:    X=east, Z=-north (south is positive Z)
-    // Origin already baked into XODR local coords, so just remap axes
+    // OpenDRIVE meters X=east Y=north -> UE Frame A cm (same axes).
     (void)OriginLat;
     (void)OriginLon;
-    return FVector(X, 0.0f, -Y);
+    return FVector(X * kMetersToUU, Y * kMetersToUU, 0.0f);
+}
+
+float UAkronXodrImporter::CompassHeadingDegToUeYaw(float CompassHeadingDeg)
+{
+    // Compass 0=north CW; UE yaw 0=+X east, +90=+Y north.
+    return FMath::UnwindDegrees(90.0f - CompassHeadingDeg);
+}
+
+void UAkronXodrImporter::UnpackPackedGeoDegrees(const FVector& PackedLon0NegLat, float& OutLat, float& OutLon)
+{
+    // Legacy packing only: FVector(lon, 0, -lat). Do not use for new emitters.
+    OutLon = PackedLon0NegLat.X;
+    OutLat = -PackedLon0NegLat.Z;
+}
+
+FVector UAkronXodrImporter::GeoToWorldFromPacked(const FVector& PackedLon0NegLat, double OriginLat, double OriginLon)
+{
+    float Lat = 0.0f, Lon = 0.0f;
+    UnpackPackedGeoDegrees(PackedLon0NegLat, Lat, Lon);
+    return GeoToWorld(Lat, Lon, OriginLat, OriginLon);
 }
 
 bool UAkronXodrImporter::ImportXodr(const FString& XodrPath, TArray<FAkronRoadSegment>& OutRoads)
@@ -738,8 +762,9 @@ void UAkronXodrImporter::ParseSpawnArray(const TArray<TSharedPtr<FJsonValue>>& S
             (*Obj)->TryGetNumberField(TEXT("lat"), Lat);
             (*Obj)->TryGetNumberField(TEXT("lon"), Lon);
             (*Obj)->TryGetNumberField(TEXT("heading"), Heading);
+            // LEGACY pack (lon,0,-lat); forbidden for new emitters — see SOURCE_TO_UNREAL_FRAME_v1.
             Sp.Location = FVector(static_cast<float>(Lon), 0.0f, -static_cast<float>(Lat));
-            Sp.Rotation = FRotator(0.0f, static_cast<float>(Heading), 0.0f);
+            Sp.Rotation = FRotator(0.0f, CompassHeadingDegToUeYaw(static_cast<float>(Heading)), 0.0f);
             OutSpawns.Add(Sp);
         }
     }

@@ -177,11 +177,30 @@ public:
     static bool ResolveManifestDataFile(const FString& ManifestPath, const FString& FieldName, FString& OutPath);
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|Akron")
-    static FVector GeoToWorld(float Lat, float Lon, float OriginLat, float OriginLon);
+    static FVector GeoToWorld(double Lat, double Lon, double OriginLat, double OriginLon);
+
+
+    /** SOURCE_TO_UNREAL_FRAME_v1: 1 uu = 1 cm; pack lengths are meters. */
+    static constexpr float MetersToUU = 100.0f;
+
+    /** SOURCE_TO_UNREAL_FRAME_v1: single lat scale (was 110540 legacy). */
+    static constexpr float MetersPerDegreeLatConst = 111320.0f;
+
+    /** Compass heading_deg (0=north CW) -> UE yaw degrees (0=+X east). yaw_ue = 90 - compass. */
+    UFUNCTION(BlueprintPure, Category = "raceGPS|Akron")
+    static float CompassHeadingDegToUeYaw(float CompassHeadingDeg);
+
+    /** Unpack legacy packed geo FVector(lon, 0, -lat) degrees. Forbidden for new emitters. */
+    UFUNCTION(BlueprintPure, Category = "raceGPS|Akron")
+    static void UnpackPackedGeoDegrees(const FVector& PackedLon0NegLat, float& OutLat, float& OutLon);
+
+    /** GeoToWorld after UnpackPackedGeoDegrees (legacy spawn/waypoint packing). */
+    UFUNCTION(BlueprintPure, Category = "raceGPS|Akron")
+    static FVector GeoToWorldFromPacked(const FVector& PackedLon0NegLat, double OriginLat, double OriginLon);
 
 private:
-    static float MetersPerDegreeLon(float Lat);
-    static float MetersPerDegreeLat();
+    static double MetersPerDegreeLon(double Lat);
+    static double MetersPerDegreeLat();
     static FVector XodrToWorld(float X, float Y, float OriginLat, float OriginLon);
 
     /** Shared helpers for the dialect-tolerant loaders. */

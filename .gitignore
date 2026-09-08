@@ -69,3 +69,4 @@ generated/diag_*.png
 # Reproducible local compiler outputs; retain only pinned inputs and evidence.
 build-evidence/
 !data/sources/cleveland-burke/snapshot.osm
+.venv-grokbot/

@@ -1,4 +1,5 @@
 #include "BuildingMeshGenerator.h"
+#include "AkronXodrImporter.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Dom/JsonObject.h"
@@ -79,6 +80,8 @@ void ABuildingMeshGenerator::LoadBuildingsJson()
         (*Obj)->TryGetStringField(TEXT("name"), B.Name);
         (*Obj)->TryGetNumberField(TEXT("height"), B.Height);
         (*Obj)->TryGetNumberField(TEXT("area_m2"), B.AreaM2);
+        // Pack buildings JSON is meters X=east Y=north; Frame A world is cm.
+        B.Height *= UAkronXodrImporter::MetersToUU;
 
         const TArray<TSharedPtr<FJsonValue>>* FpArr;
         if ((*Obj)->TryGetArrayField(TEXT("footprint"), FpArr))
@@ -91,7 +94,9 @@ void ABuildingMeshGenerator::LoadBuildingsJson()
                 double X = 0.0, Y = 0.0;
                 (*FpObj)->TryGetNumberField(TEXT("x"), X);
                 (*FpObj)->TryGetNumberField(TEXT("y"), Y);
-                B.Footprint.Add(FVector2D(X, Y));
+                B.Footprint.Add(FVector2D(
+                    static_cast<float>(X) * UAkronXodrImporter::MetersToUU,
+                    static_cast<float>(Y) * UAkronXodrImporter::MetersToUU));
             }
         }
 
