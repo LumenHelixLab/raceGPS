@@ -1,36 +1,49 @@
 ; raceGPS Windows Installer
-; NSIS Script — Professional game installer with preflight onboarding
-; Requires: NSIS 3.x + nsProcess plugin
+; NSIS Script — packages a UE5 BuildCookRun archive with a standard MUI flow.
+; Requires: NSIS 3.x (stock plugins only)
+;
+; Layout contract: the payload dir (apps\unreal-akron-beta\Build\Windows) is
+; installed verbatim under $INSTDIR. The runnable exe is the UE bootstrap at
+; $INSTDIR\${GAME_EXE_REL} (default: Windows\raceGPSAkronBeta.exe).
+; build-windows-installer.ps1 detects the real exe and passes /DGAME_EXE_REL.
+
+!ifndef PRODUCT_VERSION
+    !define PRODUCT_VERSION "0.2.0"
+!endif
+!ifndef GAME_EXE_REL
+    !define GAME_EXE_REL "Windows\raceGPSAkronBeta.exe"
+!endif
+!ifndef PAYLOAD_REL
+    ; Path to the UE5 archive root, relative to this script. build-windows-installer.ps1
+    ; overrides this when packaging a timestamped build.py archive.
+    !define PAYLOAD_REL "..\apps\unreal-akron-beta\Build\Windows"
+!endif
 
 !define PRODUCT_NAME "raceGPS"
-!define PRODUCT_VERSION "0.2.0"
 !define PRODUCT_PUBLISHER "LumenHelix Solutions"
 !define PRODUCT_WEB_SITE "https://github.com/LumenHelixLab/raceGPS"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\raceGPS.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
-!define MIN_RAM_MB "8192"
-!define MIN_DISK_MB "5120"
 
 ; MUI 2
 !include "MUI2.nsh"
 !include "LogicLib.nsh"
 !include "x64.nsh"
 !include "WinVer.nsh"
-!include "nsDialogs.nsh"
-
-; Variables (kept minimal; no longer used by removed custom pages)
 
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
-; Make finish page stable and simple
+; Finish page: offer to launch the game (must be defined BEFORE page macros).
 !define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_FINISHPAGE_RUN "$INSTDIR\${GAME_EXE_REL}"
+!define MUI_FINISHPAGE_RUN_TEXT "Launch raceGPS"
 
-; Pages - standard MUI only, no custom nsDialogs pages (to eliminate all crash risks on preflight/finish).
-; All "preflight" checks and payload validation are in the build script (build-windows-installer.ps1) which prints a full report.
+; Pages - standard MUI only, no custom pages (crash-safe).
+; Payload validation lives in scripts\build-windows-installer.ps1.
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "..\LICENSE"
 !insertmacro MUI_PAGE_COMPONENTS
@@ -44,7 +57,7 @@
 ; Language
 !insertmacro MUI_LANGUAGE "English"
 
-; Installer sections
+; Installer metadata
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "raceGPS-v${PRODUCT_VERSION}-Win64-Setup.exe"
 InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
@@ -53,7 +66,28 @@ ShowInstDetails show
 ShowUnInstDetails show
 RequestExecutionLevel admin
 
-; (Preflight custom page and function removed entirely - now handled in build script for maximum stability.)
+; Version info embedded in the setup exe (Explorer properties, SmartScreen)
+VIProductVersion "${PRODUCT_VERSION}.0"
+VIAddVersionKey "ProductName" "${PRODUCT_NAME}"
+VIAddVersionKey "ProductVersion" "${PRODUCT_VERSION}"
+VIAddVersionKey "CompanyName" "${PRODUCT_PUBLISHER}"
+VIAddVersionKey "FileDescription" "${PRODUCT_NAME} Installer"
+VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
+VIAddVersionKey "LegalCopyright" "Copyright ${PRODUCT_PUBLISHER}"
+
+; ============================================================
+; GUARDS
+; ============================================================
+Function .onInit
+    ${IfNot} ${RunningX64}
+        MessageBox MB_ICONSTOP "raceGPS requires a 64-bit version of Windows."
+        Abort
+    ${EndIf}
+    ${IfNot} ${AtLeastWin10}
+        MessageBox MB_ICONSTOP "raceGPS requires Windows 10 or later."
+        Abort
+    ${EndIf}
+FunctionEnd
 
 ; ============================================================
 ; COMPONENTS
@@ -61,14 +95,16 @@ RequestExecutionLevel admin
 Section "Game Files" SEC_GAME
     SectionIn RO
     SetOutPath "$INSTDIR"
-    File /nonfatal /r "..\apps\unreal-akron-beta\Build\Windows\*.*"
+    ; UE5 packaged payload (Windows\raceGPSAkronBeta.exe + content). No /nonfatal:
+    ; a missing payload must fail the compile, not ship an empty install.
+    File /r "${PAYLOAD_REL}\*.*"
+
+    ; Runtime data the importer resolves via ../../citypacks and ../../generated
+    ; from $INSTDIR\Windows\raceGPSAkronBeta\ (packaged ProjectDir).
     SetOutPath "$INSTDIR\citypacks"
     File /r "..\citypacks\*.*"
-SectionEnd
-
-Section "Akron Citypack (Default)" SEC_CITYPACK
-    SectionIn RO
-    DetailPrint "Akron citypack bundled."
+    SetOutPath "$INSTDIR\generated"
+    File /nonfatal "..\generated\*_LevelSpec.json"
 SectionEnd
 
 Section "Visual C++ Redistributables" SEC_VCREDIST
@@ -77,19 +113,22 @@ Section "Visual C++ Redistributables" SEC_VCREDIST
     NSISdl::download "https://aka.ms/vs/17/release/vc_redist.x64.exe" "$TEMP\vc_redist.x64.exe"
     Pop $R0
     ${If} $R0 == "success"
-        ExecWait '"$TEMP\vc_redist.x64.exe" /install /quiet /norestart'
+        ExecWait '"$TEMP\vc_redist.x64.exe" /install /quiet /norestart' $R1
+        ${If} $R1 != 0
+            DetailPrint "WARNING: VC++ Redist installer exited with code $R1. Game may not run."
+        ${EndIf}
     ${Else}
-        DetailPrint "WARNING: VC++ Redist download failed. Game may not run."
+        DetailPrint "WARNING: VC++ Redist download failed ($R0). Install vc_redist.x64 manually if the game fails to start."
     ${EndIf}
 SectionEnd
 
 Section "Desktop Shortcut" SEC_SHORTCUT
-    CreateShortcut "$DESKTOP\raceGPS.lnk" "$INSTDIR\raceGPS.exe" "" "$INSTDIR\raceGPS.exe" 0
+    CreateShortcut "$DESKTOP\raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}" "" "$INSTDIR\${GAME_EXE_REL}" 0
 SectionEnd
 
 Section "Start Menu Shortcuts" SEC_STARTMENU
     CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
-    CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Play raceGPS.lnk" "$INSTDIR\raceGPS.exe"
+    CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Play raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}"
     CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
@@ -98,10 +137,10 @@ SectionEnd
 ; ============================================================
 Section -Post
     WriteUninstaller "$INSTDIR\uninst.exe"
-    WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\raceGPS.exe"
+    WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\${GAME_EXE_REL}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "${PRODUCT_NAME}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-    WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\raceGPS.exe"
+    WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${GAME_EXE_REL}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
@@ -121,7 +160,3 @@ Section Uninstall
     DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
     SetAutoClose true
 SectionEnd
-
-; Standard MUI finish with auto-run option (stable, no custom nsDialogs).
-!define MUI_FINISHPAGE_RUN "$INSTDIR\raceGPS.exe"
-!define MUI_FINISHPAGE_RUN_TEXT "Launch raceGPS"
