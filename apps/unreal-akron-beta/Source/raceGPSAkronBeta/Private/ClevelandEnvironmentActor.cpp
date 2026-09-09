@@ -1119,6 +1119,15 @@ UMaterialInstanceDynamic* AClevelandEnvironmentActor::MakeLookMID(const TCHAR* S
 				const bool bWaterSlot = S.Equals(TEXT("Water_Surface"), ESearchCase::IgnoreCase);
 				const bool bGlassSlot = bGlass || S.Contains(TEXT("Glass")) || S.Contains(TEXT("Window"));
 				ApplyCommonMIDParams(Mid, bWaterSlot, true, bGlassSlot);
+				// V16: the v13 asphalt asset is mirror-glossy (roughness 0.11, spec 0.96)
+				// and the whole ground plane blows out white under grid lights + bloom.
+				// Override to a wet-sheen range at runtime (asset stays untouched).
+				if (S.Equals(TEXT("Road_Asphalt"), ESearchCase::IgnoreCase))
+				{
+					Mid->SetScalarParameterValue(TEXT("Roughness"), 0.45f);
+					Mid->SetScalarParameterValue(TEXT("Specular"), 0.50f);
+					Mid->SetScalarParameterValue(TEXT("Metallic"), 0.0f);
+				}
 				return Mid;
 			}
 		}
@@ -1170,6 +1179,13 @@ UMaterialInstanceDynamic* AClevelandEnvironmentActor::MakeLookMID(const TCHAR* S
 	}
 	LookMIDs.Add(Mid);
 	ApplyCommonMIDParams(Mid, S.Equals(TEXT("Water_Surface"), ESearchCase::IgnoreCase), bMidnightRun, bGlass);
+	// V16: same anti-blowout override on the fallback asphalt path.
+	if (S.Equals(TEXT("Road_Asphalt"), ESearchCase::IgnoreCase))
+	{
+		Mid->SetScalarParameterValue(TEXT("Roughness"), 0.45f);
+		Mid->SetScalarParameterValue(TEXT("Specular"), 0.50f);
+		Mid->SetScalarParameterValue(TEXT("Metallic"), 0.0f);
+	}
 	return Mid;
 }
 
@@ -1341,9 +1357,11 @@ void AClevelandEnvironmentActor::ApplyNightGroundMaterials()
 		Mid->SetVectorParameterValue(TEXT("BaseColor"), FLinearColor(0.130f, 0.118f, 0.100f));
 		Mid->SetVectorParameterValue(TEXT("Color"), FLinearColor(0.130f, 0.118f, 0.100f));
 		Mid->SetVectorParameterValue(TEXT("Tint"), FLinearColor(0.130f, 0.118f, 0.100f));
-		Mid->SetScalarParameterValue(TEXT("Roughness"), 0.22f);
-		Mid->SetScalarParameterValue(TEXT("Specular"), 0.78f);
-		Mid->SetScalarParameterValue(TEXT("Metallic"), 0.06f);
+		// V16: was Roughness 0.22 / Specular 0.78 — mirror-glossy, blew out white under
+		// grid lights + bloom. Wet sheen range instead (keeps taillight streaks).
+		Mid->SetScalarParameterValue(TEXT("Roughness"), 0.50f);
+		Mid->SetScalarParameterValue(TEXT("Specular"), 0.50f);
+		Mid->SetScalarParameterValue(TEXT("Metallic"), 0.0f);
 		Mid->SetVectorParameterValue(TEXT("EmissiveColor"), FLinearColor::Black);
 		Mesh->SetMaterial(Section, Mid);
 		++Applied;

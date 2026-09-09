@@ -563,7 +563,9 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
                     WheeledEarly->SetTargetGear(1, true);
                 }
                 // Arcade Cleveland: Chaos TorqueRatio can latch at 0 after shared-CDO recreate.
-                // Push Override drive torque every crawl/race frame so cars LEAVE GRID (fun, not sim).
+                // Additive drive torque every crawl/race frame: engine power still flows when the
+                // drivetrain works (Override capped the car at MaxTorque/4 per wheel ~23 km/h),
+                // and the push remains as a floor if TorqueRatio latches again.
                 const float Thr = FMath::Clamp(CurrentThrottle * ThrottleSensitivity, 0.f, 1.f);
                 const int32 NumW = WheeledEarly->Wheels.Num();
                 if (NumW > 0 && Thr > 0.05f && CurrentBrake < 0.15f && !bHandbrake)
@@ -571,7 +573,7 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
                     const float PerWheelNm = (WheeledEarly->EngineSetup.MaxTorque * Thr) / float(NumW);
                     for (int32 wi = 0; wi < NumW; ++wi)
                     {
-                        WheeledEarly->SetTorqueCombineMethod(ETorqueCombineMethod::Override, wi);
+                        WheeledEarly->SetTorqueCombineMethod(ETorqueCombineMethod::Additive, wi);
                         WheeledEarly->SetDriveTorque(PerWheelNm, wi);
                     }
                 }
@@ -616,7 +618,8 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
             if (SlipRatio > 0.25f)
             {
                 float TCTarget = FMath::Lerp(1.0f, 0.7f, TuningData->TractionControl);
-                FinalThrottle *= FMath::Lerp(TCTarget, 1.0f, FMath::Clamp((SlipRatio - 0.25f) / 0.25f, 0.0f, 1.0f));
+                // More slip -> more cut (was inverted: full throttle returned above 0.5 slip).
+                FinalThrottle *= FMath::Lerp(1.0f, TCTarget, FMath::Clamp((SlipRatio - 0.25f) / 0.25f, 0.0f, 1.0f));
             }
         }
 
@@ -640,7 +643,7 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
                         const float PerWheelNm = (WheeledComp->EngineSetup.MaxTorque * Thr) / float(NumW);
                         for (int32 wi = 0; wi < NumW; ++wi)
                         {
-                            WheeledComp->SetTorqueCombineMethod(ETorqueCombineMethod::Override, wi);
+                            WheeledComp->SetTorqueCombineMethod(ETorqueCombineMethod::Additive, wi);
                             WheeledComp->SetDriveTorque(PerWheelNm, wi);
                         }
                     }
@@ -1563,9 +1566,11 @@ void AChaosVehiclePawn::EnsureShowcaseNightLights()
         Slot->SetVisibility(true);
     };
     // Approx Charger lamp positions (cm).
-    MakeLight(HeadlightL, TEXT("HeadlightL"), FVector(210.f, -70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 28000.f, 4200.f);
-    MakeLight(HeadlightR, TEXT("HeadlightR"), FVector(210.f,  70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 28000.f, 4200.f);
-    MakeLight(TaillightL, TEXT("TaillightL"), FVector(-210.f, -70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 9000.f, 1800.f);
-    MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 9000.f, 1800.f);
+    // V16: 28000 lm / 42 m radius per headlight (x3 cars) painted the ground plane
+    // solid white. Physical-scale values: visible pools, no blowout.
+    MakeLight(HeadlightL, TEXT("HeadlightL"), FVector(210.f, -70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 4500.f, 2400.f);
+    MakeLight(HeadlightR, TEXT("HeadlightR"), FVector(210.f,  70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 4500.f, 2400.f);
+    MakeLight(TaillightL, TEXT("TaillightL"), FVector(-210.f, -70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 1800.f, 900.f);
+    MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 1800.f, 900.f);
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] showcase night lights on look=%d"), static_cast<int32>(VehicleLook));
 }
