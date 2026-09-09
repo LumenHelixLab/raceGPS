@@ -110,10 +110,14 @@ void ARaceGridManager::HoldPlayerForCountdown()
 				Pawn->SetHandbrakeInput(true);
 			}
 			// Force forward gear while held so green flag cannot launch in reverse (gear=-1).
+			// bReverseAsBrake makes the Chaos transmission re-select reverse from
+			// brake-at-standstill every physics substep, fighting SetTargetGear — disable
+			// it for the hold and restore it on release (ReleaseAllForRacing).
 			if (auto* Move = Pawn->GetVehicleMovementComponent())
 			{
 				if (auto* W = Cast<UChaosWheeledVehicleMovementComponent>(Move))
 				{
+					W->bReverseAsBrake = false;
 					W->SetTargetGear(1, true);
 				}
 			}
@@ -138,6 +142,15 @@ void ARaceGridManager::ReleaseAllForRacing()
 			continue;
 		}
 		Pawn->CloseVehicleDoors();
+		// Restore reverse-as-brake now that the brake hold is over (disabled during the
+		// countdown hold so the transmission could not flicker into reverse at standstill).
+		if (auto* Move = Pawn->GetVehicleMovementComponent())
+		{
+			if (auto* W = Cast<UChaosWheeledVehicleMovementComponent>(Move))
+			{
+				W->bReverseAsBrake = true;
+			}
+		}
 		// AI Hold uses SetDriveOverride(0,0,1,true); SetBrakeInput is ignored while override is on.
 		Pawn->ReleaseForRace();
 	}

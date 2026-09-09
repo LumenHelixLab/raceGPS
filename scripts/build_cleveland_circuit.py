@@ -10,7 +10,7 @@ import json
 import math
 from pathlib import Path
 
-ROOT = Path("/workspace/cleveland-showcase")
+ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "citypacks/cleveland/burke_gp_1997"
 DOCS = ROOT / "docs"
 TESTS = ROOT / "tests"

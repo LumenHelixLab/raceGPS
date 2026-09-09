@@ -264,8 +264,11 @@ void ARaceAIDriverController::TickDriveForPawn(AChaosVehiclePawn* Vehicle, float
 
 	// Do not reverse-recover a car that has never actually rolled. On a crawl
 	// (speed~0) reverse every ~8s undoes the few centimeters of progress.
+	// But a car that crawls forever never reaches CPs and blocks EndRace, so a
+	// never-rolled car still gets recovery after a much longer stuck window.
 	const bool bEverRolled = PeakSpeedKmh >= Gains.RecoverySpeedKmh;
-	if (!bEverRolled)
+	const bool bLongStuck = StuckTimer > 4.f * Gains.RecoveryStuckDelaySec;
+	if (!bEverRolled && !bLongStuck)
 	{
 		if (RecoveryState != ERaceRecoveryState::None)
 		{
@@ -280,7 +283,7 @@ void ARaceAIDriverController::TickDriveForPawn(AChaosVehiclePawn* Vehicle, float
 				SlotIndex, PeakSpeedKmh, Gains.RecoverySpeedKmh);
 		}
 	}
-	const bool bAllowRecovery = LiveElapsed > 8.f && bEverRolled;
+	const bool bAllowRecovery = LiveElapsed > 8.f && (bEverRolled || bLongStuck);
 	if (bAllowRecovery && (RecoveryState != ERaceRecoveryState::None
 		|| RaceAIControlMath::RecoveryTrigger(
 			CurrentSpeed, ThrottleCommand, StuckTimer, FMath::Abs(CteCm),

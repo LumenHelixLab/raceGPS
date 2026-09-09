@@ -64,9 +64,11 @@ void ACheckpointGate::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, A
     if (!bIsActive || !OtherActor)
         return;
 
-    // Check if overlapping actor is the player vehicle
-    APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-    if (OtherActor == PlayerPawn)
+    // Check if overlapping actor is the player vehicle (guarded: PC may not exist
+    // yet on early overlaps, headless runs, or teardown)
+    APlayerController* PC = GetWorld() ? GetWorld()->GetFirstPlayerController() : nullptr;
+    APawn* PlayerPawn = PC ? PC->GetPawn() : nullptr;
+    if (PlayerPawn && OtherActor == PlayerPawn)
     {
         DeactivateGate();
         OnCheckpointReached.Broadcast(CheckpointIndex);

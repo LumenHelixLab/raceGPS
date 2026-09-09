@@ -637,10 +637,11 @@ float AClevelandShowcaseGameMode::CanonicalizeSplineS(float S, float Length) con
 	{
 		return S;
 	}
-	// Skip-start-line still in effect (NextCheckpointIndex starts at 1). Until later CPs
-	// are actually crossed, a start==finish nearest-S of ~TrackLength is the GRID, not a lap.
-	const bool bWaitingOnFinish = (NextCheckpointIndex >= CheckpointSCm.Num() - 1) && NextCheckpointIndex > 1;
-	if (!bWaitingOnFinish && S > 0.85f * Length)
+	// Skip-start-line still in effect (NextCheckpointIndex starts at 1). While still
+	// waiting for CP1, a start==finish nearest-S of ~TrackLength is the GRID, not a lap.
+	// Later CPs legitimately live past 0.85*L (CP10 is at ~0.97*L), so the flatten must
+	// only apply before the car has real progress — the S-jump rejection handles noise.
+	if (NextCheckpointIndex <= 1 && S > 0.85f * Length)
 	{
 		return 0.f;
 	}

@@ -576,7 +576,7 @@ def main() -> None:
     dressing = build_dressing(line)
     env = build_environment()
 
-        if not args.dressing_only:
+    if not args.dressing_only:
         (PACK / "water.json").write_text(json.dumps(water, indent=2) + "\n")
         (PACK / "skyline.json").write_text(json.dumps(skyline, indent=2) + "\n")
     (PACK / "track_dressing.json").write_text(json.dumps(dressing, indent=2) + "\n")

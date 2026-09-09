@@ -80,6 +80,11 @@ AChaosVehiclePawn::AChaosVehiclePawn(const FObjectInitializer& ObjectInitializer
     {
         GetMesh()->SetSkeletalMesh(VehicleMesh.Object);
     }
+
+    // Chaos CreateVehicle runs at movement-component registration during SpawnActor —
+    // before PostInitializeComponents/BeginPlay — and disables mechanical sim when the
+    // torque curve is empty. Inject the curve here so even the first create sees it.
+    EnsureEngineDriveConfig();
 }
 
 void AChaosVehiclePawn::EnsureCarlaChargerMesh()
@@ -1313,16 +1318,16 @@ float AChaosVehiclePawn::CalculateWheelSlipRatio() const
         return 0.0f;
 
     float MaxSlip = 0.0f;
-    float LinearSpeed = FMath::Max(GetSpeedKmh() / 3.6f, 0.0f); // m/s
+    float LinearSpeed = FMath::Max(GetSpeedKmh() / 3.6f, 0.0f) * 100.0f; // cm/s (1 uu = 1 cm)
     for (UChaosVehicleWheel* Wheel : WheeledComp->Wheels)
     {
         if (!Wheel)
         {
             continue;
         }
-        float WheelRadius = Wheel->WheelRadius;
-        float AngularSpeed = FMath::Abs(Wheel->GetWheelAngularVelocity());
-        float TheoreticalSpeed = AngularSpeed * WheelRadius;
+        float WheelRadius = Wheel->WheelRadius; // cm
+        float AngularSpeed = FMath::Abs(Wheel->GetWheelAngularVelocity()); // rad/s
+        float TheoreticalSpeed = AngularSpeed * WheelRadius; // cm/s
 
         if (TheoreticalSpeed > 1.0f)
         {

@@ -272,7 +272,7 @@ def generate_xodr(road_graph: dict[str, Any], output_path: Path | None = None) -
         _build_lanes(
             road_elem,
             width=road.get("width", 7.0),
-            one_way=road.get("oneway", False),
+            one_way=road.get("one_way", road.get("oneway", False)),
             total_length=total_length,
         )
 
