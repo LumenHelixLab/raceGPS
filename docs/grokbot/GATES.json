@@ -1,7 +1,10 @@
 {
   "mission": "raceGPS-autonomous-gates",
-  "updated": "2026-09-07T20:05:00-04:00",
-  "claim_levels_allowed": ["OBSERVED", "REPRODUCED_LOCALLY"],
+  "updated": "2026-09-24T18:20:14-04:00",
+  "claim_levels_allowed": [
+    "OBSERVED",
+    "REPRODUCED_LOCALLY"
+  ],
   "gates": {
     "G1": {
       "name": "local-host-baseline-d1-reconcile",
@@ -26,8 +29,36 @@
       "ue_automation_frame_exit": 0,
       "note": "Automation contract 5/5 green after float32->double GeoToWorld fix; manual PIE ruler check of FrameDiagnosticActor still open"
     },
-    "G3": { "name": "cleveland-course-citypack", "status": "PENDING" },
-    "G4": { "name": "packaged-solo-visual-benchmark", "status": "PENDING" },
-    "G5": { "name": "physical-race-demo-candidate", "status": "PENDING" }
+    "G3": {
+      "name": "cleveland-course-citypack",
+      "status": "PASS_PROVISIONAL",
+      "owner": "CITYPACK",
+      "certification_blocked": true,
+      "certification_reason": "Dated georeferenced 2006 course plan MISSING (docs/evidence/grokbot/G3-prep/BURKE_SOURCE_AUDIT.md)",
+      "claim_level": "OBSERVED/REPRODUCED_LOCALLY",
+      "worktree": "C:\\projects\\raceGPS-grokbot-cleveland",
+      "head": "ead53fc03c6cd0918b9c5a864ca24477fb3ae1bb",
+      "showcase_source_head": "c1e4688",
+      "evidence": "docs/evidence/grokbot/G3-cleveland-course-citypack/",
+      "verdict": "docs/evidence/grokbot/G3-cleveland-course-citypack/VERDICT.md",
+      "pack_canonical": "citypacks/cleveland/burke_gp_1997/",
+      "pack_apps_junction": "apps/unreal-akron-beta/citypacks/cleveland/burke_gp_1997/",
+      "pytest_cleveland_exit": 0,
+      "pytest_full_exit": 0,
+      "akron_audit_exit": 1,
+      "ue_editor_build_exit": null,
+      "ue_editor_build_note": "SKIPPED \u2014 no C++/config changes in G3",
+      "default_city_id_unchanged": "akron-oh-beta-001",
+      "global_default_gamemode_unchanged": "/Script/raceGPSAkronBeta.CruiseSprintGameMode",
+      "note": "Provisional Burke 1997-2007 / 2.106 mi OSM reconstruction; not certified 2006 line; branding Cleveland Historic Circuit"
+    },
+    "G4": {
+      "name": "packaged-solo-visual-benchmark",
+      "status": "PENDING"
+    },
+    "G5": {
+      "name": "physical-race-demo-candidate",
+      "status": "PENDING"
+    }
   }
 }

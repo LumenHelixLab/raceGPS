@@ -70,3 +70,8 @@ generated/diag_*.png
 build-evidence/
 !data/sources/cleveland-burke/snapshot.osm
 .venv-grokbot/
+
+# G3: Cleveland Burke provisional pack is source-controlled (canonical path).
+# Keep apps/unreal-akron-beta/citypacks/ ignored — local junction via scripts/link_cleveland_citypack.ps1.
+!citypacks/cleveland/
+!citypacks/cleveland/**

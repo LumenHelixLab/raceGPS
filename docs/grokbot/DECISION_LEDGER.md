@@ -51,3 +51,24 @@
 
 ## D-G1-003 — GameMode keep
 - Applied worktree-only DefaultEngine.ini GameMapsSettings with GlobalDefaultGameMode=CruiseSprintGameMode.
+
+## D-G3-001 — Provisional Burke citypack port (PASS_PROVISIONAL)
+
+- **When:** 2026-09-24T18:20:14 EDT
+- **Decision:** Ship G3 as `PASS_PROVISIONAL` with `certification: blocked`. Port showcase `burke_gp_1997` into worktree without claiming surveyed 2006 geometry.
+- **Why:** Dated georeferenced 2006 course plan is MISSING (G3-prep audit). OSM reconstruction of 1997-2007 / 2.106 mi / 10-turn clockwise family is the only coherent deliverable under fail-closed claim discipline.
+- **Paths:** Canonical `citypacks/cleveland/burke_gp_1997/`; apps tree is a junction (single source of truth).
+- **Constraints honored:** GlobalDefaultGameMode / CityId stay Akron; no historical title-sponsor branding; Akron audit exit 1 preserved; Frame A contract referenced, not violated.
+- **Evidence:** `docs/evidence/grokbot/G3-cleveland-course-citypack/`
+
+## D-G3-002 — Dual path coherence via junction
+
+- **When:** 2026-09-24T18:20:14 EDT
+- **Decision:** Keep one writable pack at repo-root `citypacks/…` and mirror under `apps/unreal-akron-beta/citypacks/…` with `mklink /J` rather than two copies.
+- **Why:** Pytest/build script expect root `citypacks/`; Unreal loader also resolves `../../citypacks/<id>`. Avoid divergent hashes (showcase previously had identical duplicate trees).
+
+## D-G3-003 — Skip UE rebuild for pack-only G3
+
+- **When:** 2026-09-24T18:20:14 EDT
+- **Decision:** Do not run a UE editor build for G3.
+- **Why:** Gate touched pack files, Python scripts/tests, and docs only — no C++ or Default*.ini changes. One-build-at-a-time policy; optional PIE/XODR load proof deferred; OBSERVED file presence + pytest recorded instead.

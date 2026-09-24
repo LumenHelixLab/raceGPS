@@ -1,0 +1,9 @@
+canonical=C:\projects\raceGPS-grokbot-cleveland\citypacks\cleveland\burke_gp_1997
+apps_junction=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\citypacks\cleveland\burke_gp_1997
+junction_target=C:\projects\raceGPS-grokbot-cleveland\citypacks\cleveland\burke_gp_1997
+apps_xodr_exists=True
+osm_context=C:\projects\raceGPS-grokbot-cleveland\data\sources\cleveland-burke
+osm_snapshot_exists=True
+default_CityId=akron-oh-beta-001
+GlobalDefaultGameMode=/Script/raceGPSAkronBeta.CruiseSprintGameMode
+ue_build=SKIPPED (no C++/config wiring changes in G3; pack+scripts+docs+tests only)

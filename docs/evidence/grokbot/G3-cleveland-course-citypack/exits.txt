@@ -1,0 +1,5 @@
+cleveland_pytest_exit=0
+akron_audit_exit=2
+akron_audit_exit=1
+full_pytest_exit=0
+cleveland_pytest_exit=0
