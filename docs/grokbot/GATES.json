@@ -1,6 +1,6 @@
 {
   "mission": "raceGPS-autonomous-gates",
-  "updated": "2026-09-24T18:24:00-04:00",
+  "updated": "2026-09-24T18:25:00-04:00",
   "claim_levels_allowed": [
     "OBSERVED",
     "REPRODUCED_LOCALLY"
@@ -37,7 +37,7 @@
       "certification_reason": "Dated georeferenced 2006 course plan MISSING (docs/evidence/grokbot/G3-prep/BURKE_SOURCE_AUDIT.md)",
       "claim_level": "OBSERVED/REPRODUCED_LOCALLY",
       "worktree": "C:\\projects\\raceGPS-grokbot-cleveland",
-      "head": "da117d85ae8cb87ff7122e3916c768cab00c3f15",
+      "head": "f839c99c9768701365f5337cb5d65a6246f3cc54",
       "showcase_source_head": "c1e4688",
       "evidence": "docs/evidence/grokbot/G3-cleveland-course-citypack/",
       "verdict": "docs/evidence/grokbot/G3-cleveland-course-citypack/VERDICT.md",
