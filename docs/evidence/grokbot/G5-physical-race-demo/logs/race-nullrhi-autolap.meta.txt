@@ -1,0 +1,5 @@
+start=2026-09-24T19:50:47.9372277-04:00
+cmd=UnrealEditor -game ClevelandShowcaseGameMode -ClevelandAutoLap -nullrhi attempt2 recovery-tuned
+pid=23652
+end=2026-09-24T19:55:12.9976695-04:00
+exit=0

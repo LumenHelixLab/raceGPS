@@ -1,0 +1,4 @@
+start=2026-09-24T19:40:02.4222997-04:00
+cmd=UnrealEditor -game ClevelandShowcaseGameMode -ClevelandAutoLap -ClevelandSkipIntro -ClevelandPreset=Sunset -nullrhi
+pid=10572
+killed=hairpin_stuck_retune

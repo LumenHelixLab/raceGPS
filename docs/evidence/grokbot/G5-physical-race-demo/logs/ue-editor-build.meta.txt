@@ -1,0 +1,4 @@
+start=2026-09-24T19:35:16.3344265-04:00
+cmd=Build.bat raceGPSAkronBetaEditor Win64 Development -Project=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject -WaitMutex -FromMsBuild
+end=2026-09-24T19:36:03.0298221-04:00
+exit=6

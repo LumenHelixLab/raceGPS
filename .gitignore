@@ -75,3 +75,10 @@ build-evidence/
 # Keep apps/unreal-akron-beta/citypacks/ ignored — local junction via scripts/link_cleveland_citypack.ps1.
 !citypacks/cleveland/
 !citypacks/cleveland/**
+
+# Keep grokbot gate evidence logs (override logs/ and *.log ignores)
+!docs/evidence/grokbot/
+!docs/evidence/grokbot/**/
+!docs/evidence/grokbot/**/*.log
+!docs/evidence/grokbot/**/*.txt
+!docs/evidence/grokbot/**/*.md
