@@ -37,7 +37,7 @@
       "certification_reason": "Dated georeferenced 2006 course plan MISSING (docs/evidence/grokbot/G3-prep/BURKE_SOURCE_AUDIT.md)",
       "claim_level": "OBSERVED/REPRODUCED_LOCALLY",
       "worktree": "C:\\projects\\raceGPS-grokbot-cleveland",
-      "head": "a43b06d8d32afcca2ad68f907b9323bf7af176f1",
+      "head": "da117d85ae8cb87ff7122e3916c768cab00c3f15",
       "showcase_source_head": "c1e4688",
       "evidence": "docs/evidence/grokbot/G3-cleveland-course-citypack/",
       "verdict": "docs/evidence/grokbot/G3-cleveland-course-citypack/VERDICT.md",
