@@ -1,6 +1,6 @@
 {
   "mission": "raceGPS-autonomous-gates",
-  "updated": "2026-09-24T18:25:00-04:00",
+  "updated": "2026-09-24T19:17:00-04:00",
   "claim_levels_allowed": [
     "OBSERVED",
     "REPRODUCED_LOCALLY"
@@ -55,7 +55,48 @@
     },
     "G4": {
       "name": "packaged-solo-visual-benchmark",
-      "status": "PENDING"
+      "status": "PASS_PARTIAL",
+      "owner": "HOST-BUILD",
+      "claim_level": "OBSERVED/REPRODUCED_LOCALLY",
+      "worktree": "C:\\\\projects\\\\raceGPS-grokbot-cleveland",
+      "head": "3ec22a73d77d5391602fefd3f6d4b033b5cf3356",
+      "showcase_source_head": "c1e4688",
+      "evidence": "docs/evidence/grokbot/G4-packaged-solo-visual/",
+      "verdict": "docs/evidence/grokbot/G4-packaged-solo-visual/VERDICT.md",
+      "launch": "apps/unreal-akron-beta/LaunchCleveland.bat",
+      "game_mode_override": "/Script/raceGPSAkronBeta.ClevelandSoloGameMode",
+      "map": "/Game/Maps/Cleveland5_0KmWorld",
+      "presets": [
+        "Sunset",
+        "Twilight",
+        "Midnight"
+      ],
+      "pack_canonical": "citypacks/cleveland/burke_gp_1997/",
+      "default_city_id_unchanged": "akron-oh-beta-001",
+      "global_default_gamemode_unchanged": "/Script/raceGPSAkronBeta.CruiseSprintGameMode",
+      "pytest_cleveland_exit": 0,
+      "pytest_full_exit": 0,
+      "akron_audit_exit": 1,
+      "ue_editor_build_exit": 0,
+      "nullrhi_solo_exits": {
+        "Sunset": 0,
+        "Twilight": 0,
+        "Midnight": 0
+      },
+      "stills": {
+        "Sunset": "docs/evidence/grokbot/G4-packaged-solo-visual/stills/cleveland_sunset_hero.png (BLACK \u2014 0 luma; preset REPRODUCED in logs)",
+        "Twilight": "docs/evidence/grokbot/G4-packaged-solo-visual/stills/cleveland_twilight_hero.png",
+        "Midnight": "docs/evidence/grokbot/G4-packaged-solo-visual/stills/cleveland_midnight_hero.png"
+      },
+      "package_development_exit": 6,
+      "package_development_retry": "HARD_CAP_KILLED",
+      "package_script": "scripts/package_cleveland_solo.ps1",
+      "package_blocker_first_attempt": "RuntimeCityLoader.cpp SetActorLabel editor-only (fixed WITH_EDITOR guards on retry)",
+      "note": "PASS_PARTIAL: LaunchCleveland solo + 3 presets REPRODUCED; Twilight/Midnight stills OK; Sunset still black (not chased); Development cook not archived. G5 owns 3-car AI + EndRace beta test run.",
+      "certification_blocked": true,
+      "certification_reason": "Inherits G3 provisional Burke pack; dated 2006 plan MISSING",
+      "package_path": null,
+      "package_note": "First UAT exit 6 (SetActorLabel); fixed WITH_EDITOR. Retry hard-capped during shader compile. Playable path = LaunchCleveland.bat."
     },
     "G5": {
       "name": "physical-race-demo-candidate",

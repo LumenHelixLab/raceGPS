@@ -72,3 +72,28 @@
 - **When:** 2026-09-24T18:20:14 EDT
 - **Decision:** Do not run a UE editor build for G3.
 - **Why:** Gate touched pack files, Python scripts/tests, and docs only — no C++ or Default*.ini changes. One-build-at-a-time policy; optional PIE/XODR load proof deferred; OBSERVED file presence + pytest recorded instead.
+
+## D-G4-001 - Slim ClevelandSoloGameMode (not full showcase stack)
+
+- **When:** 2026-09-24T19:10:00-04:00
+- **Decision:** Port a **solo** `AClevelandSoloGameMode` + `AClevelandLookDirector` (Sunset/Twilight/Midnight) instead of full showcase RaceGrid/AI/EndRace stack.
+- **Why:** G4 bar is packaged/solo visual + playable drive; G5 owns 3-car AI + EndRace beta test run. Avoid blind-merge of showcase.
+- **Launch:** `apps/unreal-akron-beta/LaunchCleveland.bat` map/GameMode override only; GlobalDefaultGameMode stays CruiseSprint; CityId stays akron-oh-beta-001.
+
+## D-G4-002 - DayNight moon floor for night presets
+
+- **When:** 2026-09-24T19:10:00-04:00
+- **Decision:** Port `bMoonAtNight` + `NightMoonIntensity` into worktree `ADayNightCycle` (from showcase behavior).
+- **Why:** Below-horizon sun + suppressed competing lights yields a black void; Midnight/Twilight need a declared moon directional (pitch -46, yaw 35 NE).
+
+## D-G4-003 - Package SetActorLabel WITH_EDITOR guard
+
+- **When:** 2026-09-24T19:10:00-04:00
+- **Decision:** Guard `AActor::SetActorLabel` calls in `RuntimeCityLoader.cpp` with `#if WITH_EDITOR`.
+- **Why:** Development `BuildCookRun` game target failed (exit 6) on editor-only API; not Cleveland-specific but blocks G4 packaging.
+
+## D-G4-004 - Sunset still black = document, do not block
+
+- **When:** 2026-09-24T19:10:00-04:00
+- **Decision:** Accept PASS_PARTIAL with Sunset still at 0 luma after GPU retry; keep Twilight/Midnight stills + all three preset log proofs.
+- **Why:** User raise prioritizes playable LaunchCleveland over screenshot API churn before G5 beta test run.

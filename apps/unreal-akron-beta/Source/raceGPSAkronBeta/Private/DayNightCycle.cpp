@@ -127,15 +127,33 @@ void ADayNightCycle::UpdateSunRotation()
     SunRot.Yaw = SunAngle + 90.0f;
     SunRot.Roll = 0.0f;
 
+    const bool bNight = !IsDaytime();
+    // G4 / Cleveland: below-horizon solar pitch unlits the world once competing lights are suppressed.
+    // Keep a high moon directional so SkyAtmosphere and ground receive light (Frame A unchanged).
+    if (bNight && bMoonAtNight)
+    {
+        SunRot.Pitch = -46.0f;
+        // Prefer a stable moon azimuth near NE so downtown (south of Burke) is sidelit, not backlight-only.
+        SunRot.Yaw = 35.0f;
+    }
+
     SunLight->SetWorldRotation(SunRot);
 
-    // Adjust intensity based on time
-    float DayIntensity = 2.5f;
-    float NightIntensity = 0.05f;
-    float Intensity = IsDaytime() ? DayIntensity : NightIntensity;
-    SunLight->SetIntensity(FMath::Lerp(SunLight->Intensity, Intensity, 0.1f));
+    const float DayIntensity = 2.5f;
+    const float MoonFloor = FMath::Max(NightMoonIntensity, 1.80f);
+    if (bNight)
+    {
+        SunLight->SetIntensity(bMoonAtNight ? MoonFloor : 0.05f);
+        if (bMoonAtNight)
+        {
+            SunLight->SetLightColor(FLinearColor(0.74f, 0.84f, 1.0f));
+        }
+    }
+    else
+    {
+        SunLight->SetIntensity(FMath::Lerp(SunLight->Intensity, DayIntensity, 0.1f));
+    }
 
-    // Update SkyAtmosphere sun disc
     if (SkyAtmosphere && bUseSkyAtmosphere)
     {
         SkyAtmosphere->SetTickGroup(TG_DuringPhysics);
