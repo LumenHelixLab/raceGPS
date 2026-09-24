@@ -37,7 +37,7 @@
       "certification_reason": "Dated georeferenced 2006 course plan MISSING (docs/evidence/grokbot/G3-prep/BURKE_SOURCE_AUDIT.md)",
       "claim_level": "OBSERVED/REPRODUCED_LOCALLY",
       "worktree": "C:\\projects\\raceGPS-grokbot-cleveland",
-      "head": "ead53fc03c6cd0918b9c5a864ca24477fb3ae1bb",
+      "head": "097a8982cc5e9357ae3951f13327a57287df47d9",
       "showcase_source_head": "c1e4688",
       "evidence": "docs/evidence/grokbot/G3-cleveland-course-citypack/",
       "verdict": "docs/evidence/grokbot/G3-cleveland-course-citypack/VERDICT.md",
@@ -50,7 +50,8 @@
       "ue_editor_build_note": "SKIPPED \u2014 no C++/config changes in G3",
       "default_city_id_unchanged": "akron-oh-beta-001",
       "global_default_gamemode_unchanged": "/Script/raceGPSAkronBeta.CruiseSprintGameMode",
-      "note": "Provisional Burke 1997-2007 / 2.106 mi OSM reconstruction; not certified 2006 line; branding Cleveland Historic Circuit"
+      "note": "Provisional Burke 1997-2007 / 2.106 mi OSM reconstruction; not certified 2006 line; branding Cleveland Historic Circuit",
+      "gates_record_commit": "98a6f6b886bdb44fa3a8362ee2e5e8b9f3121231"
     },
     "G4": {
       "name": "packaged-solo-visual-benchmark",
