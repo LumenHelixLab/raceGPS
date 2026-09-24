@@ -1,6 +1,6 @@
 {
   "mission": "raceGPS-autonomous-gates",
-  "updated": "2026-09-24T18:20:14-04:00",
+  "updated": "2026-09-24T18:23:00-04:00",
   "claim_levels_allowed": [
     "OBSERVED",
     "REPRODUCED_LOCALLY"
@@ -50,8 +50,7 @@
       "ue_editor_build_note": "SKIPPED \u2014 no C++/config changes in G3",
       "default_city_id_unchanged": "akron-oh-beta-001",
       "global_default_gamemode_unchanged": "/Script/raceGPSAkronBeta.CruiseSprintGameMode",
-      "note": "Provisional Burke 1997-2007 / 2.106 mi OSM reconstruction; not certified 2006 line; branding Cleveland Historic Circuit",
-      "gates_record_commit": "98a6f6b886bdb44fa3a8362ee2e5e8b9f3121231"
+      "note": "Provisional Burke 1997-2007 / 2.106 mi OSM reconstruction; not certified 2006 line; branding Cleveland Historic Circuit"
     },
     "G4": {
       "name": "packaged-solo-visual-benchmark",
