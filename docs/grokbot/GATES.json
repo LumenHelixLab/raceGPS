@@ -59,7 +59,7 @@
       "owner": "HOST-BUILD",
       "claim_level": "OBSERVED/REPRODUCED_LOCALLY",
       "worktree": "C:\\\\projects\\\\raceGPS-grokbot-cleveland",
-      "head": "3ec22a73d77d5391602fefd3f6d4b033b5cf3356",
+      "head": "ca6e22da4a0cd002e1489b5d44ccf0bc96022b02",
       "showcase_source_head": "c1e4688",
       "evidence": "docs/evidence/grokbot/G4-packaged-solo-visual/",
       "verdict": "docs/evidence/grokbot/G4-packaged-solo-visual/VERDICT.md",
