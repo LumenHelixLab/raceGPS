@@ -1,6 +1,6 @@
 {
   "mission": "raceGPS-autonomous-gates",
-  "updated": "2026-09-24T19:17:00-04:00",
+  "updated": "2026-09-24T19:56:10-04:00",
   "claim_levels_allowed": [
     "OBSERVED",
     "REPRODUCED_LOCALLY"
@@ -100,7 +100,41 @@
     },
     "G5": {
       "name": "physical-race-demo-candidate",
-      "status": "PENDING"
+      "status": "PASS",
+      "owner": "HOST-BUILD",
+      "claim_level": "OBSERVED/REPRODUCED_LOCALLY",
+      "worktree": "C:\\projects\\raceGPS-grokbot-cleveland",
+      "head_pre_commit": "279d32e",
+      "showcase_source_head": "c1e4688",
+      "evidence": "docs/evidence/grokbot/G5-physical-race-demo/",
+      "verdict": "docs/evidence/grokbot/G5-physical-race-demo/VERDICT.md",
+      "launch": "apps/unreal-akron-beta/LaunchClevelandRace.bat",
+      "launch_alias": "apps/unreal-akron-beta/LaunchCleveland.bat race",
+      "game_mode_override": "/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode",
+      "map": "/Game/Maps/Cleveland5_0KmWorld",
+      "cars": {
+        "player": 1,
+        "physical_ai": 2,
+        "total": 3,
+        "vehicle": "BP_DodgeCharger2024_C"
+      },
+      "pack_canonical": "citypacks/cleveland/burke_gp_1997/",
+      "presets": [
+        "Sunset",
+        "Twilight",
+        "Midnight"
+      ],
+      "default_city_id_unchanged": "akron-oh-beta-001",
+      "global_default_gamemode_unchanged": "/Script/raceGPSAkronBeta.CruiseSprintGameMode",
+      "pytest_cleveland_exit": 0,
+      "pytest_full_exit": 0,
+      "akron_audit_exit": 1,
+      "ue_editor_build_exit": 0,
+      "nullrhi_autolap_exit": 0,
+      "endrace_proof": "logs/cleveland_playtest_lap.txt outcome=finished nextCP=12/12 place=1/3",
+      "certification_blocked": true,
+      "certification_reason": "Inherits G3 provisional Burke pack; dated 2006 plan MISSING",
+      "note": "PASS: nullrhi ClevelandAutoLap completed full lap EndRace with 3 Chaos cars + CP progress. Recovery snaps used after hairpin crawl (documented)."
     }
   }
 }

@@ -15,6 +15,7 @@ public class raceGPSAkronBeta : ModuleRules
             "InputCore",
             "ChaosVehicles",
             "ChaosVehiclesCore",
+            "AIModule",
             "EnhancedInput",
             "UMG",
             "Slate",

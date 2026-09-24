@@ -97,3 +97,22 @@
 - **When:** 2026-09-24T19:10:00-04:00
 - **Decision:** Accept PASS_PARTIAL with Sunset still at 0 luma after GPU retry; keep Twilight/Midnight stills + all three preset log proofs.
 - **Why:** User raise prioritizes playable LaunchCleveland over screenshot API churn before G5 beta test run.
+## D-G5-001 - Port showcase race stack (not Solo-only)
+
+- **When:** 2026-09-24T19:56:00-04:00
+- **Decision:** Port ClevelandShowcaseGameMode + RaceGridManager + RaceAIDriverController + RacingLineComponent + showcase ChaosVehiclePawn/wheels + DodgeCharger BP/Carla assets into worktree; keep G4 ClevelandSoloGameMode and LookDirector presets.
+- **Why:** G5 bar is 3 physical Chaos cars + checkpoint lap + EndRace. Solo path alone cannot prove AI possession / EndRace.
+- **Constraints:** Launch overrides GameMode only; GlobalDefaultGameMode/CityId unchanged; provisional Burke pack; branding Cleveland Historic Circuit.
+
+## D-G5-002 - Playtest recovery snap for hairpin crawls
+
+- **When:** 2026-09-24T19:56:00-04:00
+- **Decision:** Raise AI recovery crawl threshold to 18 km/h, shorten recovery phases, and advance snap ~25 m along racing line; GameMode crawl stuck threshold 12 km/h. Playtest RequestExit after EndRace.
+- **Why:** Attempt1 hung forever at T1 Vortex (~5 km/h) without EndRace. Fail-closed EndRace proof required recovery that unblocks lap completion under `-ClevelandAutoLap`.
+- **Evidence:** attempt1 hairpin kill log + attempt2 `outcome=finished` report.
+
+## D-G5-003 - G5 PASS on nullrhi EndRace (no package re-cook)
+
+- **When:** 2026-09-24T19:56:00-04:00
+- **Decision:** Claim G5 PASS from nullrhi `-game` ClevelandAutoLap EndRace; do not re-open G4 package cook hard-cap.
+- **Why:** Mission exit bar is playable beta test run with EndRace proof; packaging was G4-owned and still blocked.

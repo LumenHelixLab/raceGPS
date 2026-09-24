@@ -1,8 +1,14 @@
 @echo off
-REM raceGPS Cleveland Historic Circuit - solo drive (G4)
+REM raceGPS Cleveland Historic Circuit - solo drive (G4) or race (G5)
 REM Does NOT change GlobalDefaultGameMode (Akron stays CruiseSprint).
 REM Usage: LaunchCleveland.bat [Sunset|Twilight|Midnight] [capture]
+REM        LaunchCleveland.bat race [Sunset|Twilight|Midnight|nullrhi|playtest]
+REM        LaunchCleveland.bat nullrhi [Sunset|Twilight|Midnight]
 setlocal
+if /I "%~1"=="race" (
+  call "%~dp0LaunchClevelandRace.bat" %~2 %~3
+  exit /b %ERRORLEVEL%
+)
 set UE=C:\Program Files\Epic Games\UE_5.7\Engine\Binaries\Win64\UnrealEditor.exe
 set PROJ=%~dp0raceGPSAkronBeta.uproject
 set MAP=/Game/Maps/Cleveland5_0KmWorld
