@@ -53,6 +53,9 @@ public:
     bool IsDaytime() const { return CurrentTimeOfDay >= 6.0f && CurrentTimeOfDay < 18.0f; }
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Time")
+    TObjectPtr<class USceneComponent> SceneRoot;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Time")
     TObjectPtr<class UDirectionalLightComponent> SunLight;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Time")

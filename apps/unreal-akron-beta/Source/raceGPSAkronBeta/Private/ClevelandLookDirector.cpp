@@ -179,14 +179,15 @@ void AClevelandLookDirector::ApplySunset()
 		Cycle->SetTimeOfDay(18.75f);
 		if (Cycle->SunLight)
 		{
-			Cycle->SunLight->SetIntensity(2.10f);
+			Cycle->SunLight->SetIntensity(4.20f); // V16: readable car sides at Sunset
 			Cycle->SunLight->SetLightColor(FLinearColor(1.0f, 0.62f, 0.32f));
 			Cycle->SunLight->SetVisibility(true);
 		}
 		if (Cycle->SkyLight)
 		{
-			Cycle->SkyLight->SetIntensity(1.05f);
-			Cycle->SkyLight->SetLightColor(FLinearColor(1.0f, 0.78f, 0.55f));
+			Cycle->SkyLight->SetIntensity(2.40f); // V16: fill black void / underlit cars
+			Cycle->SkyLight->SetLightColor(FLinearColor(1.0f, 0.82f, 0.62f));
+			Cycle->SkyLight->RecaptureSky();
 		}
 	}
 	if (Post)
@@ -200,14 +201,14 @@ void AClevelandLookDirector::ApplySunset()
 		Post->EpicPreset.SceneColorTintR = 1.12f;
 		Post->EpicPreset.SceneColorTintG = 0.95f;
 		Post->EpicPreset.SceneColorTintB = 0.82f;
-		Post->EpicPreset.AutoExposureBias = 0.05f;
+		Post->EpicPreset.AutoExposureBias = 0.55f; // visual floor V16: lift void crush
 		Post->ApplyPresetForTier(EVisualQualityTier::Epic);
 	}
 	if (GEngine)
 	{
 		GEngine->Exec(GetWorld(), TEXT("r.VolumetricCloud 1"));
 	}
-	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] Sunset applied (18:45 warm western sun, dry surface unchanged)"));
+	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] Sunset applied V16 (18:45 warm western sun, sky fill + race chase)"));
 }
 
 void AClevelandLookDirector::ApplyTwilight()

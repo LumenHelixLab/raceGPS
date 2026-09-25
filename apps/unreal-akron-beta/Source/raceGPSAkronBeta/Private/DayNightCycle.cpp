@@ -1,4 +1,5 @@
 #include "DayNightCycle.h"
+#include "Components/SceneComponent.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -13,13 +14,19 @@ ADayNightCycle::ADayNightCycle(const FObjectInitializer& ObjectInitializer)
 {
     PrimaryActorTick.bCanEverTick = true;
 
+    // CRITICAL: do NOT make SunLight the root. Static SkyAtmosphere/SkySphere/Clouds
+    // cannot attach to a Movable directional root (UE aborts attach -> black void sky).
+    SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
+    SceneRoot->SetMobility(EComponentMobility::Movable);
+    RootComponent = SceneRoot;
+
     SunLight = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("SunLight"));
     SunLight->SetMobility(EComponentMobility::Movable);
     SunLight->Intensity = 2.5f;
     SunLight->LightColor = FColor::White;
     SunLight->bAtmosphereSunLight = true;
     SunLight->AtmosphereSunLightIndex = 0;
-    RootComponent = SunLight;
+    SunLight->SetupAttachment(RootComponent);
 
     SkyLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SkyLight"));
     SkyLight->SetMobility(EComponentMobility::Movable);
@@ -27,7 +34,7 @@ ADayNightCycle::ADayNightCycle(const FObjectInitializer& ObjectInitializer)
     SkyLight->SetupAttachment(RootComponent);
 
     SkySphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SkySphere"));
-    SkySphere->SetMobility(EComponentMobility::Static);
+    SkySphere->SetMobility(EComponentMobility::Movable);
     SkySphere->SetupAttachment(RootComponent);
     SkySphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -38,21 +45,21 @@ ADayNightCycle::ADayNightCycle(const FObjectInitializer& ObjectInitializer)
         SkySphere->SetRelativeScale3D(FVector(10000.0f, 10000.0f, 10000.0f));
     }
 
-    // UE5 SkyAtmosphere — only created if engine supports it
+    // UE5 SkyAtmosphere - Movable so attach to scene root succeeds at runtime
     SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
     if (SkyAtmosphere)
     {
         SkyAtmosphere->SetupAttachment(RootComponent);
-        SkyAtmosphere->SetMobility(EComponentMobility::Static);
+        SkyAtmosphere->SetMobility(EComponentMobility::Movable);
         SkyAtmosphere->TransformMode = ESkyAtmosphereTransformMode::PlanetTopAtAbsoluteWorldOrigin;
     }
 
-    // Volumetric Clouds — only created if engine supports it
+    // Volumetric Clouds
     VolumetricClouds = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricClouds"));
     if (VolumetricClouds)
     {
         VolumetricClouds->SetupAttachment(RootComponent);
-        VolumetricClouds->SetMobility(EComponentMobility::Static);
+        VolumetricClouds->SetMobility(EComponentMobility::Movable);
         VolumetricClouds->bUsePerSampleAtmosphericLightTransmittance = true;
     }
 }

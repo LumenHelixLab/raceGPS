@@ -1324,21 +1324,18 @@ void AChaosVehiclePawn::UpdateCameraView()
 
 void AChaosVehiclePawn::UpdateClevelandShowcaseChaseFraming()
 {
-    if (!SpringArm)
+    // V16: race follow — no world-south look-at into empty void.
+    // SpringArm inherits yaw; keep a stable mild dive on the car.
+    if (!SpringArm || !bClevelandShowcaseChaseFraming)
     {
         return;
     }
-    // Pivot on the car. Look-at is WEST + SOUTH of the pawn so downtown stays in frame
-    // regardless of pawn yaw (runway is roughly ENE/WSW; inherit-yaw rear chase looks
-    // at lake/runway and never the city).
-    const FVector Pivot = GetActorLocation() + FVector(0.0f, 0.0f, 60.0f);
-    // Mild WSW+south look: keep cars centered, downtown on the right horizon.
-    // V13.1: slight UP look — upper frustum is sky, not T10 roof cloud.
-    const FVector LookAt = Pivot + FVector(-8500.0f, -15000.0f, 8.0f);
-    FRotator WorldRot = (LookAt - Pivot).Rotation();
-    WorldRot.Roll = 0.0f;
-    WorldRot.Pitch = FMath::Clamp(WorldRot.Pitch, -4.5f, 0.10f);
-    SpringArm->SetWorldRotation(WorldRot);
+    const FRotator Rel = SpringArm->GetRelativeRotation();
+    const float DesiredPitch = -12.0f;
+    if (!FMath::IsNearlyEqual(Rel.Pitch, DesiredPitch, 0.05f) || !FMath::IsNearlyZero(Rel.Roll, 0.05f))
+    {
+        SpringArm->SetRelativeRotation(FRotator(DesiredPitch, 0.0f, 0.0f));
+    }
 }
 
 void AChaosVehiclePawn::ApplyClevelandShowcaseChaseFraming()
@@ -1347,26 +1344,28 @@ void AChaosVehiclePawn::ApplyClevelandShowcaseChaseFraming()
     {
         return;
     }
+    // V16 RACE-FOLLOW: sit behind the car, inherit yaw, kill absolute world-south lock
+    // that was framing black void when downtown/-Y wasn't lit in view.
     bClevelandShowcaseChaseFraming = true;
     SpringArm->bUsePawnControlRotation = false;
     SpringArm->bInheritPitch = false;
     SpringArm->bInheritRoll = false;
-    SpringArm->bInheritYaw = false;
-    SpringArm->SetUsingAbsoluteRotation(true);
-    SpringArm->TargetArmLength = 1880.0f;
-    SpringArm->SocketOffset = FVector(0.0f, 200.0f, 36.0f);
-    // V13: magazine-flat chase — skyline on horizon, less overhead HISM roof cloud.
-    SpringArm->TargetOffset = FVector(-220.0f, -560.0f, 18.0f);
+    SpringArm->bInheritYaw = true;
+    SpringArm->SetUsingAbsoluteRotation(false);
+    SpringArm->TargetArmLength = 680.0f;
+    SpringArm->SocketOffset = FVector(0.0f, 0.0f, 140.0f);
+    SpringArm->TargetOffset = FVector(40.0f, 0.0f, 35.0f);
     SpringArm->bDoCollisionTest = false;
     SpringArm->ProbeSize = 16.0f;
-    ChaseCamera->SetFieldOfView(66.0f);
+    SpringArm->SetRelativeRotation(FRotator(-12.0f, 0.0f, 0.0f));
+    ChaseCamera->SetFieldOfView(75.0f);
     ChaseCamera->bUsePawnControlRotation = false;
     ActiveCameraIndex = 0;
     UpdateCameraView();
     UpdateClevelandShowcaseChaseFraming();
     const FRotator ArmW = SpringArm->GetComponentRotation();
     const FRotator PawnW = GetActorRotation();
-    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: applied showcase chase framing V15 WORLD-SOUTH arm=1880 FOV=66 pawnYaw=%.1f armYaw=%.1f armPitch=%.1f (downtown -Y, 3-car hero)"),
+    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: applied chase framing V16 RACE-FOLLOW arm=680 FOV=75 pawnYaw=%.1f armYaw=%.1f armPitch=%.1f (behind car, no void lock)"),
         PawnW.Yaw, ArmW.Yaw, ArmW.Pitch);
 }
 
