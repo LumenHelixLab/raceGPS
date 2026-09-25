@@ -53,3 +53,12 @@ generated/*/
 
 # T10 city-import prep artifacts (regenerable)
 generated/*_ueimport*.json
+
+# UE app local artifacts
+apps/unreal-akron-beta/Temp/
+apps/unreal-akron-beta/citypacks/
+apps/unreal-akron-beta/cesium-request-cache.sqlite*
+*.log.bak*
+
+# Diagnostic captures
+generated/diag_*.png

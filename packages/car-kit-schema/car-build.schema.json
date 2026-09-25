@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://lumenhelixsolutions.github.io/racegps/schemas/car-build.schema.json",
+  "$id": "https://lumenhelixlab.github.io/racegps/schemas/car-build.schema.json",
   "title": "raceGPS Car Build Schema",
   "description": "Semantic schema for raceGPS vehicle configurations. Used by garageGPS editor and validation pipeline.",
   "type": "object",

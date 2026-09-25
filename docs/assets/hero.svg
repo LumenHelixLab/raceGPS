@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+  <rect width="1200" height="400" fill="#0B1021"/>
+  <defs>
+    <radialGradient id="heroGlow" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0%" stop-color="#EF4444" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#EF4444" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="900" cy="200" r="180" fill="url(#heroGlow)"/>
+  <text x="80" y="180" font-family="Space Grotesk, Inter, sans-serif" font-size="72" font-weight="700" fill="#F8FAFC">raceGPS</text>
+  <text x="84" y="230" font-family="Inter, sans-serif" font-size="28" fill="#94A3B8">Real-world arcade racing on OpenStreetMap roads in Unreal Engine 5</text>
+</svg>
