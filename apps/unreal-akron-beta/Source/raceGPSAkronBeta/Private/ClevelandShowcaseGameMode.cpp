@@ -7,6 +7,8 @@
 #include "ChaosVehiclePawn.h"
 #include "CheckpointGate.h"
 #include "RaceAIDriverController.h"
+#include "NeonHUD.h"
+#include "InputCoreTypes.h"
 #include "Misc/CommandLine.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -33,6 +35,7 @@ AClevelandShowcaseGameMode::AClevelandShowcaseGameMode()
 	ProductTitle = TEXT("raceGPS");
 	CircuitTitle = TEXT("Cleveland Historic Circuit");
 	DefaultPawnClass = nullptr; // grid manager spawns the Chaos pawn
+	HUDClass = ANeonHUD::StaticClass();
 	SessionManager = CreateDefaultSubobject<URaceSessionManager>(TEXT("SessionManager"));
 }
 
@@ -101,11 +104,104 @@ void AClevelandShowcaseGameMode::LoadCityPack()
 		TotalCheckpoints, *ProductTitle, *CircuitTitle);
 }
 
+ANeonHUD* AClevelandShowcaseGameMode::ResolveNeonHud() const
+{
+	APlayerController* PC = UGameplayStatics::GetPlayerController(const_cast<AClevelandShowcaseGameMode*>(this), 0);
+	if (!PC)
+	{
+		return nullptr;
+	}
+	return Cast<ANeonHUD>(PC->GetHUD());
+}
+
 void AClevelandShowcaseGameMode::BindHud()
 {
-	// HUD widgets bind to GetHudTitleLine(), GridManager->GetStandings(),
-	// GridManager->GetPlayerPlace(), and AI telemetry UPROPERTYs.
-	UE_LOG(LogTemp, Log, TEXT("raceGPS HUD: %s"), *GetHudTitleLine());
+	ANeonHUD* Hud = ResolveNeonHud();
+	if (!Hud)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: BindHud - ANeonHUD not ready yet (HUDClass=%s)"),
+			HUDClass ? *HUDClass->GetName() : TEXT("null"));
+		return;
+	}
+
+	const int32 Place = GridManager ? GridManager->GetPlayerPlace() : 0;
+	const int32 CpCur = SessionManager ? SessionManager->CurrentCheckpoint : NextCheckpointIndex;
+	const int32 CpTot = TotalCheckpoints > 0 ? TotalCheckpoints : (SessionManager ? SessionManager->TotalCheckpoints : 0);
+	Hud->ClearFinished();
+	Hud->ShowCountdown(false);
+	Hud->SetRaceTime(SessionManager ? SessionManager->ElapsedTime : 0.f);
+	Hud->SetCheckpointProgress(CpCur, CpTot);
+	Hud->SetPlace(Place, 3);
+	if (AChaosVehiclePawn* Pawn = GridManager ? GridManager->GetPlayerPawn() : nullptr)
+	{
+		Hud->SetSpeedKmh(Pawn->GetSpeedKmh());
+	}
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: HUD bind ok title=%s place=%d cp=%d/%d"),
+		*GetHudTitleLine(), Place, CpCur, CpTot);
+}
+
+void AClevelandShowcaseGameMode::UpdateHud()
+{
+	ANeonHUD* Hud = ResolveNeonHud();
+	if (!Hud)
+	{
+		return;
+	}
+
+	const ERaceSessionState State = SessionManager
+		? SessionManager->GetCurrentState()
+		: ERaceSessionState::Menu;
+	const int32 Place = GridManager ? GridManager->GetPlayerPlace() : 0;
+	const int32 CpCur = SessionManager ? SessionManager->CurrentCheckpoint : NextCheckpointIndex;
+	const int32 CpTot = TotalCheckpoints > 0 ? TotalCheckpoints : (SessionManager ? SessionManager->TotalCheckpoints : 0);
+
+	Hud->SetPlace(Place, 3);
+	Hud->SetCheckpointProgress(CpCur, CpTot);
+
+	if (State == ERaceSessionState::Countdown)
+	{
+		const int32 CountVal = FMath::CeilToInt(SessionManager->CountdownTimer);
+		Hud->ShowCountdown(true);
+		Hud->SetCountdownValue(CountVal);
+		Hud->SetRaceTime(0.f);
+	}
+	else if (State == ERaceSessionState::Racing)
+	{
+		Hud->ShowCountdown(false);
+		Hud->SetRaceTime(SessionManager->ElapsedTime);
+	}
+	else if (State == ERaceSessionState::Finished || bShowcaseEnded)
+	{
+		Hud->ShowCountdown(false);
+		Hud->SetRaceTime(SessionManager ? SessionManager->ElapsedTime : 0.f);
+	}
+	else
+	{
+		Hud->ShowCountdown(false);
+	}
+
+	if (AChaosVehiclePawn* Pawn = GridManager ? GridManager->GetPlayerPawn() : nullptr)
+	{
+		Hud->SetSpeedKmh(Pawn->GetSpeedKmh());
+	}
+}
+
+void AClevelandShowcaseGameMode::PollRestartInput()
+{
+	if (!bShowcaseEnded)
+	{
+		return;
+	}
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PC)
+	{
+		return;
+	}
+	if (PC->WasInputKeyJustPressed(EKeys::R))
+	{
+		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: RestartShowcase via R"));
+		RestartShowcase();
+	}
 }
 
 FString AClevelandShowcaseGameMode::GetHudTitleLine() const
@@ -239,6 +335,7 @@ void AClevelandShowcaseGameMode::BeginPlay()
 	}
 	GridManager->SpawnGrid(PC);
 	SpawnShowcaseCheckpoints();
+	BindHud(); // HUD may spawn after first BindHud call
 
 	if (AChaosVehiclePawn* PlayerPawn = GridManager->GetPlayerPawn())
 	{
@@ -356,6 +453,8 @@ void AClevelandShowcaseGameMode::Tick(float DeltaSeconds)
 			CaptureStill(TEXT("chase"));
 		}
 	}
+	UpdateHud();
+	PollRestartInput();
 	if (!bShowcaseEnded && GridManager && (GridManager->HasPlayerFinished() || GridManager->HaveAllFinished()))
 	{
 		EndRace();
@@ -469,14 +568,34 @@ void AClevelandShowcaseGameMode::EndRace()
 	{
 		SessionManager->EndRace();
 	}
-	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: EndRace place=%d/3 nextCP=%d"),
-		GridManager ? GridManager->GetPlayerPlace() : 0, NextCheckpointIndex);
+	const int32 Place = GridManager ? GridManager->GetPlayerPlace() : 0;
+	const float FinalTime = SessionManager ? SessionManager->ElapsedTime : 0.f;
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: EndRace place=%d/3 nextCP=%d time=%.2f"),
+		Place, NextCheckpointIndex, FinalTime);
+
+	if (ANeonHUD* Hud = ResolveNeonHud())
+	{
+		Hud->ShowCountdown(false);
+		Hud->SetPlace(Place, 3);
+		Hud->SetRaceTime(FinalTime);
+		const TCHAR* PlaceLabel = TEXT("3RD");
+		if (Place <= 1) { PlaceLabel = TEXT("1ST"); }
+		else if (Place == 2) { PlaceLabel = TEXT("2ND"); }
+		Hud->ShowRaceFinished(FinalTime, FString(PlaceLabel));
+		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: HUD finish shown place=%s time=%.2f (R=RestartShowcase)"),
+			PlaceLabel, FinalTime);
+	}
+
 	WritePlaytestReport(bSawPositiveSpeed ? TEXT("finished") : TEXT("finished_speed0"));
 	if (bPlaytestLap)
 	{
 		CaptureStill(TEXT("playtest"));
 		UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: playtest EndRace complete - RequestExit"));
 		FGenericPlatformMisc::RequestExit(false);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: human EndRace - stay in session, RestartShowcase on R"));
 	}
 }
 
@@ -486,6 +605,19 @@ void AClevelandShowcaseGameMode::RestartShowcase()
 	NextCheckpointIndex = 1;
 	bHaveCheckpointPrevS = false;
 	PlaytestCheckpointLines.Reset();
+	RacingZeroSpeedSeconds = 0.f;
+	bDumpedDriveDiag = false;
+	bSawPositiveSpeed = false;
+	bStuckQuitIssued = false;
+	if (ANeonHUD* Hud = ResolveNeonHud())
+	{
+		Hud->ClearFinished();
+		Hud->ShowCountdown(false);
+		Hud->SetRaceTime(0.f);
+		Hud->SetCheckpointProgress(1, TotalCheckpoints);
+		Hud->SetPlace(0, 3);
+	}
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: RestartShowcase (no RequestExit)"));
 	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
 	if (GridManager)
 	{

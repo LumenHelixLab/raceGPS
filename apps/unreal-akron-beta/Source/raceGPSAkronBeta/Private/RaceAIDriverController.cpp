@@ -2,6 +2,7 @@
 #include "ClevelandModuleCompat.h"
 #include "RacingLineComponent.h"
 #include "RaceGridManager.h"
+#include "Misc/CommandLine.h"
 
 ARaceAIDriverController::ARaceAIDriverController()
 {
@@ -27,11 +28,31 @@ void ARaceAIDriverController::ConfigureDriver(URacingLineComponent* InLine, URac
 	RecoveryTimer = 0.f;
 	RecoveryState = ERaceRecoveryState::None;
 	bLoggedSkipRecovery = false;
+	ApplyRecoveryModeFromFlags();
 }
 
 void ARaceAIDriverController::SetGridManager(ARaceGridManager* InGrid)
 {
 	GridManager = InGrid;
+}
+
+void ARaceAIDriverController::ApplyRecoveryModeFromFlags()
+{
+	const TCHAR* Cmd = FCommandLine::Get();
+	bAggressiveRecovery = FParse::Param(Cmd, TEXT("ClevelandAutoLap"))
+		|| FParse::Param(Cmd, TEXT("ClevelandPlaytest"));
+	if (bAggressiveRecovery)
+	{
+		// Keep G5 playtest defaults (fast stuck trigger + +25m snap).
+		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: AI slot=%d aggressive recovery (AutoLap/playtest)"), SlotIndex);
+		return;
+	}
+	// Human race: slower trigger, wider CTE tolerance, no punch-to-teleport cadence.
+	Gains.RecoveryStuckDelaySec = 3.0f;
+	Gains.RecoveryMaxCteCm = 1800.f;
+	Gains.RecoverySteerBrakeSec = 1.2f;
+	Gains.RecoveryReverseSec = 1.0f;
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: AI slot=%d soft recovery (human race, no aggressive teleport)"), SlotIndex);
 }
 
 void ARaceAIDriverController::OnPossess(APawn* InPawn)
@@ -132,8 +153,23 @@ void ARaceAIDriverController::SnapToNearestSpline(AChaosVehiclePawn* Vehicle)
 	{
 		return;
 	}
-	// G5: advance ~25m along the line so hairpin crawls unblock EndRace playtests.
 	const float S0 = RacingLine->GetNearestS(Vehicle->GetActorLocation());
+	if (!bAggressiveRecovery)
+	{
+		// Human races: soft nudge to nearest line pose (no +25m jump). Rare; prefer steer recovery.
+		const float Lat = RaceAIControlMath::LateralOffsetCm(Personality.Aggression, Gains.MaxLateralOffsetCm);
+		const FTransform Pose = RacingLine->GetPoseAtS(S0, Lat);
+		Vehicle->ResetVehicle();
+		Vehicle->SetActorTransform(Pose, false, nullptr, ETeleportType::TeleportPhysics);
+		Vehicle->WakeForDrive();
+		CurrentSplineDistance = S0;
+		RecoveryState = ERaceRecoveryState::None;
+		RecoveryTimer = 0.f;
+		StuckTimer = 0.f;
+		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: soft recovery snap slot=%d s=%.1f (human)"), SlotIndex, S0);
+		return;
+	}
+	// G5 AutoLap/playtest: advance ~25m so hairpin crawls unblock EndRace CI.
 	const float S = RaceAIControlMath::WrapS(S0 + 2500.f, RacingLine->TrackLength);
 	const float Lat = RaceAIControlMath::LateralOffsetCm(Personality.Aggression, Gains.MaxLateralOffsetCm);
 	const FTransform Pose = RacingLine->GetPoseAtS(S, Lat);
@@ -144,7 +180,7 @@ void ARaceAIDriverController::SnapToNearestSpline(AChaosVehiclePawn* Vehicle)
 	RecoveryState = ERaceRecoveryState::None;
 	RecoveryTimer = 0.f;
 	StuckTimer = 0.f;
-	UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: recovery snap slot=%d s0=%.1f -> s=%.1f"), SlotIndex, S0, S);
+	UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: aggressive recovery snap slot=%d s0=%.1f -> s=%.1f"), SlotIndex, S0, S);
 }
 
 void ARaceAIDriverController::TickRecovery(AChaosVehiclePawn* Vehicle, float DeltaSeconds, float AbsCteCm)
@@ -211,7 +247,22 @@ void ARaceAIDriverController::TickRecovery(AChaosVehiclePawn* Vehicle, float Del
 
 	if (RecoveryState == ERaceRecoveryState::ResetSnap)
 	{
-		SnapToNearestSpline(Vehicle);
+		if (bAggressiveRecovery)
+		{
+			SnapToNearestSpline(Vehicle);
+		}
+		else if (AbsCteCm > Gains.RecoveryMaxCteCm)
+		{
+			// Human: teleport only when far offline; otherwise drop recovery and keep driving.
+			SnapToNearestSpline(Vehicle);
+		}
+		else
+		{
+			RecoveryState = ERaceRecoveryState::None;
+			RecoveryTimer = 0.f;
+			StuckTimer = 0.f;
+			UE_LOG(LogTemp, Verbose, TEXT("raceGPS Cleveland: skip soft teleport slot=%d cte=%.1f (human)"), SlotIndex, AbsCteCm);
+		}
 	}
 }
 

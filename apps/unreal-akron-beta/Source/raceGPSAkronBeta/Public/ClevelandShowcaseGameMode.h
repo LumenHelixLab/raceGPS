@@ -12,6 +12,7 @@ class AClevelandLookDirector;
 class ACameraActor;
 class AChaosVehiclePawn;
 class ACheckpointGate;
+class ANeonHUD;
 
 /**
  * Cleveland Historic Circuit showcase. Extends the existing CruiseSprint / race
@@ -99,6 +100,9 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 	void BindHud();
+	void UpdateHud();
+	void PollRestartInput();
+	ANeonHUD* ResolveNeonHud() const;
 	int32 LoadCheckpointCount() const;
 	FString ResolveCityPackPath(const FString& FileName) const;
 	void StartSkylineIntro(APlayerController* PC);

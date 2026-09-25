@@ -82,6 +82,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|AI")
 	void SetGridManager(ARaceGridManager* InGrid);
 
+	/** Aggressive teleport snaps only for AutoLap/playtest CI. Human races use soft recovery. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
+	bool bAggressiveRecovery = false;
+
+	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|AI")
+	void ApplyRecoveryModeFromFlags();
+
 	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|AI")
 	float GetRaceProgress() const;
 

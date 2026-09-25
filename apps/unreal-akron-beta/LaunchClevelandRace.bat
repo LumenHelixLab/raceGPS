@@ -2,7 +2,7 @@
 REM raceGPS Cleveland Historic Circuit - 3-car physical race (G5)
 REM Does NOT change GlobalDefaultGameMode (Akron stays CruiseSprint).
 REM Usage:
-REM   LaunchClevelandRace.bat [Sunset|Twilight|Midnight]
+REM   LaunchClevelandRace.bat [Sunset|Twilight|Midnight]   <-- HUMAN DEFAULT (no -ClevelandAutoLap)
 REM   LaunchClevelandRace.bat nullrhi [Sunset|Twilight|Midnight]
 REM   LaunchClevelandRace.bat playtest   (auto-drive lap + EndRace proof)
 setlocal
