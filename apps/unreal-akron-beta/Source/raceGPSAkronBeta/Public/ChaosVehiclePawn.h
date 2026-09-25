@@ -68,6 +68,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle|Look")
     void EnsureCarlaChargerDoors();
 
+    /** V17: force Charger-local / engine paint so broken CARLA master never shows. */
+    void ApplyChargerVisualMaterialFloor();
+
     void DumpDriveState(const TCHAR* Tag);
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|Vehicle")

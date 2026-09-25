@@ -1139,6 +1139,7 @@ void AChaosVehiclePawn::EnsureCarlaChargerDoors()
     }
     UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: EnsureCarlaChargerDoors attached=%d missing=%d pawn=%s"),
         Attached, Missing, *GetName());
+    ApplyChargerVisualMaterialFloor();
 }
 
 void AChaosVehiclePawn::DumpDriveState(const TCHAR* Tag)
@@ -1519,6 +1520,103 @@ void AChaosVehiclePawn::ApplyHellcatTune()
     }
 }
 
+
+void AChaosVehiclePawn::ApplyChargerVisualMaterialFloor()
+{
+    // V17 visual floor: CARLA M_CarPaint_Master_New fails SM6 compile (missing Triplanar MF).
+    // MI_DodgeCharger2024_BodyWork* instances that master -> DefaultMaterial hollow look.
+    // Prefer M_NightCarPaint if present; else Engine BasicShapeMaterial (always compiles).
+    UMaterialInterface* BodyMI = LoadObject<UMaterialInterface>(nullptr,
+        TEXT("/Game/Materials/M_NightCarPaint.M_NightCarPaint"));
+    if (!BodyMI)
+    {
+        BodyMI = LoadObject<UMaterialInterface>(nullptr,
+            TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
+        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor using M_NightCarPaint"));
+    }
+
+    UMaterialInterface* GlassMI = LoadObject<UMaterialInterface>(nullptr,
+        TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Materials/MI_GlassExt_Charger2024.MI_GlassExt_Charger2024"));
+    if (!GlassMI)
+    {
+        GlassMI = LoadObject<UMaterialInterface>(nullptr,
+            TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Materials/M_Glass_Vehicles.M_Glass_Vehicles"));
+    }
+    UMaterialInterface* LightsMI = LoadObject<UMaterialInterface>(nullptr,
+        TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Materials/MI_VehicleLights_Charger2020.MI_VehicleLights_Charger2020"));
+
+    auto TintBodyMID = [this](UPrimitiveComponent* Comp, int32 Slot, UMaterialInterface* Base)
+    {
+        if (!Comp || !Base) return;
+        Comp->SetMaterial(Slot, Base);
+        if (UMaterialInstanceDynamic* MID = Comp->CreateAndSetMaterialInstanceDynamic(Slot))
+        {
+            static const FName ColorParams[] = {
+                TEXT("Base_color"), TEXT("Base_color_flakes"), TEXT("BaseColor"), TEXT("Base Color"),
+                TEXT("Color"), TEXT("PaintColor"), TEXT("Tint"), TEXT("Albedo")
+            };
+            for (const FName& P : ColorParams)
+            {
+                MID->SetVectorParameterValue(P, BodyTint);
+            }
+            MID->SetScalarParameterValue(TEXT("Metallic"), 0.7f);
+            MID->SetScalarParameterValue(TEXT("Roughness"), 0.25f);
+            BoostNightPaintEmissive(MID, VehicleLook);
+        }
+    };
+
+    if (USkeletalMeshComponent* Skel = GetMesh())
+    {
+        const int32 Num = Skel->GetNumMaterials();
+        int32 BodySlots = 0;
+        for (int32 i = 0; i < Num; ++i)
+        {
+            UMaterialInterface* Base = Skel->GetMaterial(i);
+            const FString Name = Base ? Base->GetName() : FString();
+            const bool bBody = Name.IsEmpty()
+                || Name.Contains(TEXT("Body"))
+                || Name.Contains(TEXT("Paint"))
+                || Name.Contains(TEXT("CarPaint"))
+                || Name.Contains(TEXT("DefaultMaterial"))
+                || Name.Contains(TEXT("WorldGrid"));
+            if (bBody || Num == 1)
+            {
+                TintBodyMID(Skel, i, BodyMI);
+                ++BodySlots;
+            }
+        }
+        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor bodySlots=%d bodyMI=%s pawn=%s"),
+            BodySlots, BodyMI ? *BodyMI->GetName() : TEXT("null"), *GetName());
+    }
+
+    for (UStaticMeshComponent* Comp : CarlaDoorMeshes)
+    {
+        if (!Comp) continue;
+        const FString CName = Comp->GetName();
+        const int32 Num = Comp->GetNumMaterials();
+        for (int32 i = 0; i < Num; ++i)
+        {
+            if (CName.Contains(TEXT("Glass")))
+            {
+                if (GlassMI) Comp->SetMaterial(i, GlassMI);
+            }
+            else if (CName.Contains(TEXT("Light")))
+            {
+                if (LightsMI) Comp->SetMaterial(i, LightsMI);
+            }
+            else
+            {
+                TintBodyMID(Comp, i, BodyMI);
+            }
+        }
+    }
+}
+
+
 void AChaosVehiclePawn::ApplyVehicleLook(EVehicleLook Look)
 {
     VehicleLook = Look;
@@ -1615,6 +1713,7 @@ void AChaosVehiclePawn::ApplyVehicleLook(EVehicleLook Look)
         UE_LOG(LogTemp, Log, TEXT("[raceGPS] paint MID %s slot %d tint %s clearcoat %.2f metallic %.2f"),
             *Name, i, *BodyTint.ToString(), ClearCoat, Metallic);
     }
+    ApplyChargerVisualMaterialFloor();
     EnsureShowcaseNightLights();
 }
 
@@ -1674,6 +1773,7 @@ void AChaosVehiclePawn::EnsureShowcaseNightLights()
     MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 350.f, 400.f);
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] showcase night lights on look=%d"), static_cast<int32>(VehicleLook));
 }
+
 
 
 
