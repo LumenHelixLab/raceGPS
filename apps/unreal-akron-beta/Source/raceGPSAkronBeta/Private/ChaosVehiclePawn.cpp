@@ -1003,6 +1003,9 @@ void AChaosVehiclePawn::WakeForDrive()
 
 void AChaosVehiclePawn::CloseVehicleDoors()
 {
+    // VISUAL FLOOR 2026-09-24: CARLA Charger doors are SEPARATE static meshes on the BP.
+    // This worktree has none imported — SetMorphTarget on door bone names cannot restore
+    // missing door geometry. See docs/superpowers/investigations/2026-09-24-charger-visual-floor.md
     USkeletalMeshComponent* Skel = GetMesh();
     if (!Skel)
     {
@@ -1568,9 +1571,11 @@ void AChaosVehiclePawn::EnsureShowcaseNightLights()
     // Approx Charger lamp positions (cm).
     // V16: 28000 lm / 42 m radius per headlight (x3 cars) painted the ground plane
     // solid white. Physical-scale values: visible pools, no blowout.
-    MakeLight(HeadlightL, TEXT("HeadlightL"), FVector(210.f, -70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 4500.f, 2400.f);
-    MakeLight(HeadlightR, TEXT("HeadlightR"), FVector(210.f,  70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 4500.f, 2400.f);
-    MakeLight(TaillightL, TEXT("TaillightL"), FVector(-210.f, -70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 1800.f, 900.f);
-    MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 1800.f, 900.f);
+    MakeLight(HeadlightL, TEXT("HeadlightL"), FVector(210.f, -70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 700.f, 600.f); // visual floor 2026-09-24: was 4500/2400 void blowout
+    MakeLight(HeadlightR, TEXT("HeadlightR"), FVector(210.f,  70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 700.f, 600.f);
+    MakeLight(TaillightL, TEXT("TaillightL"), FVector(-210.f, -70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 350.f, 400.f);
+    MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 350.f, 400.f);
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] showcase night lights on look=%d"), static_cast<int32>(VehicleLook));
 }
+
+

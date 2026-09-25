@@ -191,7 +191,7 @@ void AClevelandLookDirector::ApplySunset()
 	}
 	if (Post)
 	{
-		Post->EpicPreset.BloomIntensity = 1.85f;
+		Post->EpicPreset.BloomIntensity = 0.85f; // visual floor 2026-09-24: was 1.85 void flashbang
 		Post->EpicPreset.BloomThreshold = 0.70f;
 		Post->EpicPreset.Contrast = 1.14f;
 		Post->EpicPreset.Saturation = 1.22f;
@@ -318,3 +318,4 @@ void AClevelandLookDirector::LogFinalLook(const TCHAR* Tag) const
 		TEXT("[raceGPS Cleveland] look FINAL [%s]: hour=%.2f sunI=%.2f sunPitch=%.1f sunYaw=%.1f skyI=%.2f (Frame A X=east Y=north)"),
 		Tag, Hour, SunI, SunR.Pitch, SunR.Yaw, SkyI);
 }
+
