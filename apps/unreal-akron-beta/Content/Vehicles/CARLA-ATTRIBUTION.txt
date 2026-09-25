@@ -2,23 +2,29 @@ CARLA Asset Attribution (CC-BY 4.0)
 ====================================
 
 This game uses assets from CARLA: An Open Urban Driving Simulator
-Copyright © 2019-2026 Computer Vision Center (CVC), Universitat Autònoma de Barcelona (UAB)
+Copyright (c) 2019-2026 Computer Vision Center (CVC), Universitat Autonoma de Barcelona (UAB)
 Licensed under CC-BY 4.0: https://creativecommons.org/licenses/by/4.0/
 
-Imported content (story T5):
+Imported content (story T5 + visual-floor doors 2026-09-24):
 - Dodge Charger 2024 (SK_DodgeCharger2024 skeletal mesh, skeleton,
   Phys_DodgeCharger2024 physics asset, materials and textures), sourced from
   the official CARLA content repository, tag 0.10.0:
   https://bitbucket.org/carla-simulator/carla-content/src/0.10.0/
+- Door static meshes (same tag): SM_DodgeCharger2024_DoorFL / DoorFR /
+  DoorRL / DoorRR
 
 Imported files live under:
 - Content/Carla/Static/Car/4Wheeled/DodgeCharger2024/  (original CARLA package
-  layout preserved so cross-asset references resolve)
+  layout preserved so SoftObjectPaths and cross-asset references resolve;
+  door meshes are siblings of SK/SM, not under a Doors/ package path)
 - Content/Carla/Static/GenericMaterials/               (shared CARLA master
   materials / textures referenced by the vehicle materials)
+- Content/Carla/Static/Car/4Wheeled/DodgeCharger2024/Doors/README.md
+  (staging marker + BP attach checklist; no duplicate .uasset copies)
 
 The raceGPS hero Blueprint BP_DodgeCharger2024
 (Content/Vehicles/DodgeCharger2024/) references these CARLA assets.
+Door meshes are staged on disk; BP bone attach is an editor step (see Doors/README.md).
 
 License text: https://creativecommons.org/licenses/by/4.0/legalcode
 CARLA simulator: https://carla.org/ | https://github.com/carla-simulator/carla
