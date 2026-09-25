@@ -1,0 +1,22 @@
+{
+  "track_id": "fixture_minimal_v1",
+  "lap_count": 1,
+  "gates": [
+    {
+      "index": 0,
+      "name": "Start/Finish",
+      "lat": 41.51722,
+      "lon": -81.68306,
+      "s": 0.0,
+      "width_m": 10.0
+    },
+    {
+      "index": 1,
+      "name": "CP1",
+      "lat": 41.5175,
+      "lon": -81.6825,
+      "s": 55.0,
+      "width_m": 10.0
+    }
+  ]
+}

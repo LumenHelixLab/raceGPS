@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "base_commit": "b56b6c814c23423d13b7683607d0da5ba89130f2",
+  "tested_working_tree": true,
+  "python": {
+    "passed": 214,
+    "skipped": 5,
+    "failed": 0,
+    "skip_reason": "missing akron_raw.osm"
+  },
+  "node": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "log": "docs/evidence/d1/node-typecheck.txt"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "log": "docs/evidence/d1/node-build.txt"
+    },
+    {
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit_code": 0,
+      "log": "docs/evidence/d1/node-test.txt"
+    }
+  ],
+  "world_data_gate": {
+    "status": "failed",
+    "command": [
+      ".venv/bin/python",
+      "tools/validate-citypack.py",
+      "citypacks/akron-oh-beta-001"
+    ],
+    "exit_code": 1,
+    "errors": 1,
+    "warnings": 34
+  },
+  "unreal_gate": {
+    "status": "blocked",
+    "reason": "Unreal 5.7 not installed on this host",
+    "compile_executed": false,
+    "play_tested": false
+  },
+  "cleveland_citypack_present": false
+}

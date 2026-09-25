@@ -75,6 +75,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Cleveland|Env")
 	TObjectPtr<UProceduralMeshComponent> SkylineMesh;
 
+	/** Photographic downtown skyline backdrop (real Cleveland panorama, CC BY 2.0 Erik Drost). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Cleveland|Env")
+	TObjectPtr<UProceduralMeshComponent> SkylineBackdropMesh;
+
+	/** When true, use the photographic skyline backdrop instead of the box skyline. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env")
+	bool bUsePhotoSkylineBackdrop = true;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Cleveland|Env")
 	TObjectPtr<UProceduralMeshComponent> HangarMesh;
 
@@ -125,6 +133,8 @@ protected:
 	void BuildCones(const TSharedPtr<FJsonObject>& Dressing);
 	void BuildStartFinish(const TSharedPtr<FJsonObject>& Dressing);
 	void BuildSkyline(const TSharedPtr<FJsonObject>& Skyline);
+	/** Photographic skyline backdrop arc (real Cleveland panorama; replaces box skyline). */
+	void BuildSkylineBackdrop();
 	void BuildHangars(const TSharedPtr<FJsonObject>& Dressing);
 	void BuildRunwayTaxiwayDecals(const TSharedPtr<FJsonObject>& Dressing);
 

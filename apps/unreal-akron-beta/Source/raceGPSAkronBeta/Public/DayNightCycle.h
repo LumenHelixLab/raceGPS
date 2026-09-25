@@ -32,6 +32,13 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Atmosphere")
     TSoftObjectPtr<class UTextureCube> HDRIEnvironmentMap;
+    /** Floor directional intensity after sunset so Midnight is not a black void. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Atmosphere")
+    float NightMoonIntensity = 2.15f;
+
+    /** When true, night keeps a high moon directional (sun-below-horizon would unlit the world). */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Atmosphere")
+    bool bMoonAtNight = true;
 
     /** Floor directional intensity after sunset so Midnight Run is not a black void. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Atmosphere")
@@ -52,6 +59,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|Time")
     bool IsDaytime() const { return CurrentTimeOfDay >= 6.0f && CurrentTimeOfDay < 18.0f; }
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Time")
+    TObjectPtr<class USceneComponent> SceneRoot;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Time")
     TObjectPtr<class UDirectionalLightComponent> SunLight;

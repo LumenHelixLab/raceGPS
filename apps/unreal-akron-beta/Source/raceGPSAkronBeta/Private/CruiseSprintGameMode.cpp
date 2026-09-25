@@ -29,6 +29,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
+#include "Engine/GameViewportClient.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Widgets/Layout/SBorder.h"
+#include "Widgets/Layout/SBox.h"
+#include "Widgets/SBoxPanel.h"
+#include "Widgets/Text/STextBlock.h"
+#include "Widgets/Input/SButton.h"
 #include "EngineUtils.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -92,6 +99,9 @@ ACruiseSprintGameMode::ACruiseSprintGameMode(const FObjectInitializer& ObjectIni
 void ACruiseSprintGameMode::StartPlay()
 {
     Super::StartPlay();
+    CurrentState = ECruiseSprintState::Loading;
+    bCityReady = false;
+    StartupError.Empty();
 
     // Resolve the active city (config / cvar / command line; defaults to Akron) and
     // let it override the Akron-flavored defaults of the path properties below.
@@ -110,8 +120,19 @@ void ACruiseSprintGameMode::StartPlay()
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Could not resolve city layout for '%s'; falling back to Akron defaults"),
-            *UAkronXodrImporter::GetActiveCityId());
+        FailStartup(TEXT("This city is unavailable. Check the installed city packs, then restart."));
+        return;
+    }
+
+    for (const FString& RequiredPath : {CityLayout.ManifestPath, CityLayout.XodrPath,
+         CityLayout.RoutesPath, CityLayout.RoadGraphPath, CityLayout.BuildingsPath})
+    {
+        if (RequiredPath.IsEmpty() || !FPaths::FileExists(FPaths::ProjectDir() / RequiredPath))
+        {
+            UE_LOG(LogTemp, Error, TEXT("[raceGPS] Missing city input: %s"), *RequiredPath);
+            FailStartup(TEXT("This city installation is incomplete. Reinstall the city pack and try again."));
+            return;
+        }
     }
 
     // --- Baked-map detection (black-screen hotfix) ---------------------------
@@ -158,7 +179,7 @@ void ACruiseSprintGameMode::StartPlay()
             { TEXT("steer"), TEXT("Steering"), TEXT("Use A and D to steer left and right."), TEXT("Steer"), 0.0f, true },
             { TEXT("handbrake"), TEXT("Drifting"), TEXT("Press Space to use the handbrake for tight corners."), TEXT("Handbrake"), 0.0f, true },
             { TEXT("checkpoint"), TEXT("Checkpoints"), TEXT("Drive through the glowing gates to progress."), TEXT("Throttle"), 5.0f, false },
-            { TEXT("create"), TEXT("Create Your World"), TEXT("Open the menu and create your own race route!"), TEXT("Throttle"), 5.0f, false },
+            { TEXT("route"), TEXT("Learn the Course"), TEXT("Follow the course markers and practice your racing line."), TEXT("Throttle"), 5.0f, false },
             { TEXT("finish"), TEXT("Good Luck!"), TEXT("Complete the route as fast as you can."), TEXT("Throttle"), 3.0f, false }
         };
     }
@@ -215,7 +236,7 @@ void ACruiseSprintGameMode::StartPlay()
     }
 
     LoadCityData();
-    CurrentState = ECruiseSprintState::Loading;
+    if (CurrentState == ECruiseSprintState::Failed) return;
 
     if (bRunningBakedCityMap)
     {
@@ -232,6 +253,12 @@ void ACruiseSprintGameMode::StartPlay()
     RoadParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     ARoadMeshGenerator* RoadGen = GetWorld()->SpawnActor<ARoadMeshGenerator>(
         ARoadMeshGenerator::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, RoadParams);
+    StartupRoadGenerator = RoadGen;
+    if (!RoadGen)
+    {
+        FailStartup(TEXT("The course could not be loaded. Restart to try again."));
+        return;
+    }
     if (RoadGen)
     {
         RoadGen->XodrPath = !CityLayout.XodrPath.IsEmpty()
@@ -269,20 +296,8 @@ void ACruiseSprintGameMode::StartPlay()
     }
     }
 
-    // After road generation + brief load, transition to countdown
-    FTimerHandle LoadTimer;
-    GetWorld()->GetTimerManager().SetTimer(LoadTimer, [this]()
-    {
-        if (LoadingScreen)
-        {
-            LoadingScreen->SetProgress(1.0f);
-            LoadingScreen->SetStatusText(TEXT("Ready!"));
-            LoadingScreen->FinishLoading();
-        }
-        CurrentState = ECruiseSprintState::Countdown;
-        CountdownTimer = CountdownDuration;
-        OnRaceStateChanged(CurrentState);
-    }, 3.0f, false);
+    // Tick waits for actual road and collision generation, not a fixed delay.
+    StartupWaitSeconds = 0.0f;
 
     // --- Runtime self-diagnostics (racegps.Diagnostics) ---
     if (IsDiagnosticsEnabled())
@@ -307,6 +322,27 @@ void ACruiseSprintGameMode::StartPlay()
 void ACruiseSprintGameMode::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    if (CurrentState == ECruiseSprintState::Loading && StartupRoadGenerator)
+    {
+        StartupWaitSeconds += DeltaTime;
+        if (StartupRoadGenerator->bGenerationFailed || StartupWaitSeconds > 120.0f)
+        {
+            FailStartup(TEXT("The course could not finish loading. Restart to try again."));
+            return;
+        }
+        if (StartupRoadGenerator->bGenerationComplete)
+        {
+            if (StartupRoadGenerator->TotalRoadsGenerated == 0)
+            {
+                FailStartup(TEXT("This city has no drivable course. Restart after checking the city pack."));
+                return;
+            }
+            bCityReady = true;
+            if (LoadingScreen) LoadingScreen->FinishLoading();
+            StartRace();
+        }
+    }
 
     if (CurrentState == ECruiseSprintState::Countdown)
     {
@@ -394,13 +430,75 @@ bool ACruiseSprintGameMode::IsVersionCompatible(const FString& CityVersion) cons
     return GameParts[0] == CityParts[0] && GameParts[1] == CityParts[1];
 }
 
+void ACruiseSprintGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    if (StartupErrorPanel.IsValid())
+    {
+        if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
+            Viewport->RemoveViewportWidgetContent(StartupErrorPanel.ToSharedRef());
+        StartupErrorPanel.Reset();
+    }
+    Super::EndPlay(EndPlayReason);
+}
+
+void ACruiseSprintGameMode::FailStartup(const FString& Reason)
+{
+    StartupError = Reason;
+    bCityReady = false;
+    CurrentState = ECruiseSprintState::Failed;
+    if (LoadingScreen) LoadingScreen->FinishLoading();
+    if (APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+    {
+        PC->SetIgnoreMoveInput(true);
+        if (APawn* Pawn = PC->GetPawn()) Pawn->DisableInput(PC);
+        if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
+        {
+            SAssignNew(StartupErrorPanel, SBorder)
+            .HAlign(HAlign_Center).VAlign(VAlign_Center)
+            [
+                SNew(SBox).MaxDesiredWidth(640.0f)
+                [
+                    SNew(SVerticalBox)
+                    + SVerticalBox::Slot().AutoHeight().Padding(16.0f)
+                    [ SNew(STextBlock).Text(FText::FromString(TEXT("COURSE UNAVAILABLE"))) ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(16.0f)
+                    [ SNew(STextBlock).Text(FText::FromString(Reason)).AutoWrapText(true) ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(16.0f)
+                    [ SNew(SButton).Text(FText::FromString(TEXT("Restart")))
+                      .OnClicked_Lambda([this]()
+                      {
+                          UGameplayStatics::OpenLevel(this, FName(*UGameplayStatics::GetCurrentLevelName(this)));
+                          return FReply::Handled();
+                      }) ]
+                    + SVerticalBox::Slot().AutoHeight().Padding(16.0f)
+                    [ SNew(SButton).Text(FText::FromString(TEXT("Exit game")))
+                      .OnClicked_Lambda([this]()
+                      {
+                          UKismetSystemLibrary::QuitGame(this, UGameplayStatics::GetPlayerController(this, 0), EQuitPreference::Quit, false);
+                          return FReply::Handled();
+                      }) ]
+                ]
+            ];
+            Viewport->AddViewportWidgetContent(StartupErrorPanel.ToSharedRef(), 1000);
+            PC->SetInputMode(FInputModeUIOnly());
+            PC->bShowMouseCursor = true;
+        }
+    }
+    UE_LOG(LogTemp, Error, TEXT("[raceGPS] Startup failed: %s"), *Reason);
+    OnRaceStateChanged(CurrentState);
+}
+
 void ACruiseSprintGameMode::LoadCityData()
 {
     // Manifest path comes from the resolved layout when available.
     const FString ManifestPath = !CityLayout.ManifestPath.IsEmpty()
         ? CityLayout.ManifestPath
         : CityPackPath + ManifestFile;
-    UAkronXodrImporter::LoadManifest(ManifestPath, WorldOriginLat, WorldOriginLon);
+    if (!UAkronXodrImporter::LoadManifest(ManifestPath, WorldOriginLat, WorldOriginLon))
+    {
+        FailStartup(TEXT("City information could not be read. Reinstall the city pack."));
+        return;
+    }
 
     // Routes: single array file resolved from the manifest (both dialects), with the
     // legacy per-route directory as fallback.
@@ -414,6 +512,13 @@ void ACruiseSprintGameMode::LoadCityData()
     }
     UAkronXodrImporter::LoadSpawnPoints(ManifestPath, LoadedSpawns);
     UAkronXodrImporter::LoadPOIs(ManifestPath, LoadedPOIs);
+
+    if (!LoadedRoutes.IsValidIndex(SelectedRouteIndex) ||
+        LoadedRoutes[SelectedRouteIndex].Waypoints.Num() < 2 || LoadedSpawns.IsEmpty())
+    {
+        FailStartup(TEXT("This course has no usable route or starting grid. Restart after checking the city pack."));
+        return;
+    }
 
     // Version compatibility check
     FString FullManifestPath = FPaths::ProjectDir() / ManifestPath;
@@ -462,11 +567,10 @@ void ACruiseSprintGameMode::SpawnPlayerAtStart()
     if (LoadedSpawns.Num() == 0) return;
 
     FAkronSpawnPoint& Spawn = LoadedSpawns[0];
-    // Spawn.Location stores (lon, 0, -lat) in degrees (compiler convention),
-    // so Lat = -Location.Z, Lon = Location.X. GeoToWorld is now UE Z-up.
-    FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-        -Spawn.Location.Z, Spawn.Location.X, WorldOriginLat, WorldOriginLon);
-    WorldLoc.Z = 50.0f; // Slight lift off ground
+    // Legacy pack (lon,0,-lat): Lat=-Z, Lon=X. Prefer GeoToWorldFromPacked.
+    FVector WorldLoc = UAkronXodrImporter::GeoToWorldFromPacked(
+        Spawn.Location, WorldOriginLat, WorldOriginLon);
+    WorldLoc.Z = 50.0f; // 50 cm lift (SOURCE_TO_UNREAL_FRAME_v1: 1uu=1cm)
 
     if (Pawn)
     {
@@ -497,9 +601,9 @@ void ACruiseSprintGameMode::SpawnRouteSpline()
     TArray<FVector> WorldWaypoints;
     for (const FVector& Wp : Route.Waypoints)
     {
-        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-            -Wp.Z, Wp.X, WorldOriginLat, WorldOriginLon);
-        WorldLoc.Z = 50.0f;
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorldFromPacked(
+            Wp, WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 50.0f; // 50 cm lift
         WorldWaypoints.Add(WorldLoc);
     }
 
@@ -539,10 +643,9 @@ void ACruiseSprintGameMode::SpawnCheckpoints()
     int32 Spawned = 0;
     for (int32 i = 0; i < Route.CheckpointLocations.Num(); ++i)
     {
-        // CheckpointLocations store (lon, ?, -lat) in degrees.
-        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-            -Route.CheckpointLocations[i].Z, Route.CheckpointLocations[i].X, WorldOriginLat, WorldOriginLon);
-        WorldLoc.Z = 100.0f;
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorldFromPacked(
+            Route.CheckpointLocations[i], WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 100.0f; // 1 m lift in cm
 
         FActorSpawnParameters Params;
         Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -728,6 +831,7 @@ void ACruiseSprintGameMode::UpdateCountdown(float DeltaTime)
 
 void ACruiseSprintGameMode::StartRace()
 {
+    if (!bCityReady || CurrentState == ECruiseSprintState::Failed) return;
     CurrentState = ECruiseSprintState::Countdown;
     CountdownTimer = CountdownDuration;
     ElapsedTime = 0.0f;
@@ -879,6 +983,7 @@ void ACruiseSprintGameMode::FinishRace()
 
 void ACruiseSprintGameMode::RestartRace()
 {
+    if (!bCityReady || CurrentState == ECruiseSprintState::Failed) return;
     CurrentState = ECruiseSprintState::Countdown;
     CountdownTimer = CountdownDuration;
     ElapsedTime = 0.0f;
@@ -896,6 +1001,7 @@ void ACruiseSprintGameMode::RestartRace()
 
 void ACruiseSprintGameMode::StartRaceForAllPlayers()
 {
+    if (!bCityReady || CurrentState == ECruiseSprintState::Failed) return;
     // In multiplayer, host triggers this and it replicates to all clients
     if (HasAuthority())
     {

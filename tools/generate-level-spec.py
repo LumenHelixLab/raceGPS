@@ -12,31 +12,41 @@ import math
 from pathlib import Path
 
 
+FRAME_ID = "SOURCE_TO_UNREAL_FRAME_v1"
+METERS_TO_UU = 100.0
+METERS_PER_DEG_LAT = 111320.0  # single lat scale (G2); legacy 110540 deprecated
+
+
 def meters_per_degree_lon(origin_lat: float) -> float:
-    """Meters per degree of longitude at a given latitude (matches C++ MetersPerDegreeLon)."""
-    return 111320.0 * math.cos(math.radians(origin_lat))
+    """Meters per degree of longitude at origin latitude (SOURCE_TO_UNREAL_FRAME_v1)."""
+    return METERS_PER_DEG_LAT * math.cos(math.radians(origin_lat))
 
 
 def meters_per_degree_lat() -> float:
-    """Meters per degree of latitude (matches C++ MetersPerDegreeLat)."""
-    return 110540.0
+    """Meters per degree of latitude (SOURCE_TO_UNREAL_FRAME_v1)."""
+    return METERS_PER_DEG_LAT
 
 
 def geo_to_world(lat: float, lon: float, origin_lat: float, origin_lon: float) -> dict:
-    """Convert WGS84 lat/lon to UE5 world coordinates (matches C++ GeoToWorld)."""
+    """WGS84 -> Frame A UE world cm: Z-up, X=east, Y=north (SOURCE_TO_UNREAL_FRAME_v1).
+
+    Legacy Frame B (x=east m, y=up m, z=-north m) is deprecated for new emitters.
+    Bake bridge for old specs: tools/ue5-import-level-spec.py::_spec_to_ue.
+    """
     mpdlon = meters_per_degree_lon(origin_lat)
     mpdlat = meters_per_degree_lat()
-    x = (lon - origin_lon) * mpdlon
-    z = -(lat - origin_lat) * mpdlat
-    return {"x": round(x, 3), "y": 0.0, "z": round(z, 3)}
+    x = (lon - origin_lon) * mpdlon * METERS_TO_UU
+    y = (lat - origin_lat) * mpdlat * METERS_TO_UU
+    return {"x": round(x, 3), "y": round(y, 3), "z": 0.0}
 
 
 def heading_to_rotation(heading: float) -> dict:
-    """Convert compass heading to UE5 rotation (matches C++ direct usage)."""
-    return {"pitch": 0.0, "yaw": round(heading, 2), "roll": 0.0}
+    """Compass heading_deg (0=north CW) -> UE yaw (0=+X east): yaw_ue = 90 - compass."""
+    yaw = (90.0 - float(heading) + 180.0) % 360.0 - 180.0
+    return {"pitch": 0.0, "yaw": round(yaw, 2), "roll": 0.0}
 
 
-def compute_bounding_box(points: list[dict], padding: float = 500.0) -> dict:
+def compute_bounding_box(points: list[dict], padding: float = 500.0 * METERS_TO_UU) -> dict:
     """Compute axis-aligned bounding box from a list of {x,y,z} points."""
     if not points:
         return {"min_x": -1000, "min_y": -100, "min_z": -1000,
@@ -173,7 +183,7 @@ def main(citypack_dir: Path | None = None) -> int:
         for cp in r["checkpoints"]:
             all_points.append(cp["location"])
 
-    world_bounds = compute_bounding_box(all_points, padding=500.0)
+    world_bounds = compute_bounding_box(all_points, padding=500.0 * METERS_TO_UU)  # 500 m -> cm
 
     # Load optional M2 procedural world data
     water_data = None
@@ -195,6 +205,9 @@ def main(citypack_dir: Path | None = None) -> int:
             except: pass
 
     level_spec = {
+        "frame": FRAME_ID,
+        "units": "cm",
+        "axes": "Z-up X=east Y=north",
         "level_name": city_id.replace("_", " ").title().replace(" ", "") + "World",
         "city_id": manifest["city_id"],
         "origin": origin,

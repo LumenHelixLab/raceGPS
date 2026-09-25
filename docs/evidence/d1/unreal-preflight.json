@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "started_at": "20260907T192938056800Z",
+  "project": "/workspace/scratch/ce59bb710a7c/raceGPS/apps/unreal-akron-beta/raceGPSAkronBeta.uproject",
+  "host": "Linux",
+  "python": "3.12.13",
+  "configuration": "Development",
+  "archive": "/workspace/scratch/ce59bb710a7c/raceGPS/apps/unreal-akron-beta/Build/Linux/20260907T192938056800Z",
+  "status": "failed",
+  "steps": [],
+  "play_tested": false,
+  "source_commit": "b56b6c814c23423d13b7683607d0da5ba89130f2",
+  "source_dirty": true,
+  "error": "Unreal 5.7 not found; pass --engine or set RACEGPS_UE_ROOT on the Unreal host",
+  "finished_at": "2026-09-07T19:29:38.069169+00:00"
+}

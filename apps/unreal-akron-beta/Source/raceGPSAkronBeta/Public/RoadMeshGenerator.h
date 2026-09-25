@@ -41,6 +41,9 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "raceGPS|Roads")
     bool bGenerationComplete = false;
 
+    UPROPERTY(BlueprintReadOnly, Category = "raceGPS|Roads")
+    bool bGenerationFailed = false;
+
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;

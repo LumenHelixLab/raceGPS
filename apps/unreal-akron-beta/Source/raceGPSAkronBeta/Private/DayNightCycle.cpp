@@ -1,4 +1,5 @@
 #include "DayNightCycle.h"
+#include "Components/SceneComponent.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkyLightComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -13,13 +14,19 @@ ADayNightCycle::ADayNightCycle(const FObjectInitializer& ObjectInitializer)
 {
     PrimaryActorTick.bCanEverTick = true;
 
+    // CRITICAL: do NOT make SunLight the root. Static SkyAtmosphere/SkySphere/Clouds
+    // cannot attach to a Movable directional root (UE aborts attach -> black void sky).
+    SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
+    SceneRoot->SetMobility(EComponentMobility::Movable);
+    RootComponent = SceneRoot;
+
     SunLight = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("SunLight"));
     SunLight->SetMobility(EComponentMobility::Movable);
     SunLight->Intensity = 2.5f;
     SunLight->LightColor = FColor::White;
     SunLight->bAtmosphereSunLight = true;
     SunLight->AtmosphereSunLightIndex = 0;
-    RootComponent = SunLight;
+    SunLight->SetupAttachment(RootComponent);
 
     SkyLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SkyLight"));
     SkyLight->SetMobility(EComponentMobility::Movable);
@@ -27,7 +34,7 @@ ADayNightCycle::ADayNightCycle(const FObjectInitializer& ObjectInitializer)
     SkyLight->SetupAttachment(RootComponent);
 
     SkySphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SkySphere"));
-    SkySphere->SetMobility(EComponentMobility::Static);
+    SkySphere->SetMobility(EComponentMobility::Movable);
     SkySphere->SetupAttachment(RootComponent);
     SkySphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -36,28 +43,23 @@ ADayNightCycle::ADayNightCycle(const FObjectInitializer& ObjectInitializer)
     {
         SkySphere->SetStaticMesh(SphereMesh.Object);
         SkySphere->SetRelativeScale3D(FVector(10000.0f, 10000.0f, 10000.0f));
-        // Opaque engine sphere at 10km will occlude a camera outside it (intro cam is ~24km).
-        // SkyAtmosphere is the actual sky; keep this mesh out of the game view.
-        SkySphere->SetVisibility(false);
-        SkySphere->SetHiddenInGame(true);
-        SkySphere->SetCastShadow(false);
     }
 
-    // UE5 SkyAtmosphere — only created if engine supports it
+    // UE5 SkyAtmosphere - Movable so attach to scene root succeeds at runtime
     SkyAtmosphere = CreateDefaultSubobject<USkyAtmosphereComponent>(TEXT("SkyAtmosphere"));
     if (SkyAtmosphere)
     {
         SkyAtmosphere->SetupAttachment(RootComponent);
-        SkyAtmosphere->SetMobility(EComponentMobility::Static);
+        SkyAtmosphere->SetMobility(EComponentMobility::Movable);
         SkyAtmosphere->TransformMode = ESkyAtmosphereTransformMode::PlanetTopAtAbsoluteWorldOrigin;
     }
 
-    // Volumetric Clouds — only created if engine supports it
+    // Volumetric Clouds
     VolumetricClouds = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricClouds"));
     if (VolumetricClouds)
     {
         VolumetricClouds->SetupAttachment(RootComponent);
-        VolumetricClouds->SetMobility(EComponentMobility::Static);
+        VolumetricClouds->SetMobility(EComponentMobility::Movable);
         VolumetricClouds->bUsePerSampleAtmosphericLightTransmittance = true;
     }
 }
@@ -65,12 +67,6 @@ ADayNightCycle::ADayNightCycle(const FObjectInitializer& ObjectInitializer)
 void ADayNightCycle::BeginPlay()
 {
     Super::BeginPlay();
-    if (SkySphere)
-    {
-        SkySphere->SetVisibility(false);
-        SkySphere->SetHiddenInGame(true);
-        SkySphere->SetCastShadow(false);
-    }
     CurrentTimeOfDay = StartTimeOfDay;
     UpdateSunRotation();
     UpdateSkyColor();
@@ -139,28 +135,30 @@ void ADayNightCycle::UpdateSunRotation()
     SunRot.Roll = 0.0f;
 
     const bool bNight = !IsDaytime();
+    // G4 / Cleveland: below-horizon solar pitch unlits the world once competing lights are suppressed.
+    // Keep a high moon directional so SkyAtmosphere and ground receive light (Frame A unchanged).
     if (bNight && bMoonAtNight)
     {
-        // 22:00 solar pitch is ~+69 (sun below horizon, light pointing at the sky).
-        // With competing directional lights suppressed that leaves the world unlit = RGB 0,0,0.
-        // Keep a high moon directional so SkyAtmosphere and the ground actually receive light.
         SunRot.Pitch = -46.0f;
-        SunRot.Yaw = 205.0f;
+        // Prefer a stable moon azimuth near NE so downtown (south of Burke) is sidelit, not backlight-only.
+        SunRot.Yaw = 35.0f;
     }
 
     SunLight->SetWorldRotation(SunRot);
-    SunLight->SetVisibility(true);
 
     const float DayIntensity = 2.5f;
     const float MoonFloor = FMath::Max(NightMoonIntensity, 1.80f);
     if (bNight)
     {
-        SunLight->SetIntensity(MoonFloor);
-        SunLight->SetLightColor(FLinearColor(0.74f, 0.84f, 1.0f));
+        SunLight->SetIntensity(bMoonAtNight ? MoonFloor : 0.05f);
+        if (bMoonAtNight)
+        {
+            SunLight->SetLightColor(FLinearColor(0.74f, 0.84f, 1.0f));
+        }
     }
     else
     {
-        SunLight->SetIntensity(DayIntensity);
+        SunLight->SetIntensity(FMath::Lerp(SunLight->Intensity, DayIntensity, 0.1f));
     }
 
     if (SkyAtmosphere && bUseSkyAtmosphere)
@@ -203,19 +201,16 @@ void ADayNightCycle::UpdateSkyAtmosphere()
 
 void ADayNightCycle::UpdateVolumetricClouds()
 {
-    if (!VolumetricClouds)
+    if (!VolumetricClouds || !bUseVolumetricClouds)
         return;
 
-    if (!bUseVolumetricClouds)
-    {
-        // V8: hide broken night cloud sheet (reads as mottled water/noise).
-        VolumetricClouds->SetVisibility(false);
-        VolumetricClouds->SetHiddenInGame(true);
-        return;
-    }
+    // Adjust cloud density/opacity based on time
+    float Elevation = GetSunElevation();
+    float NightOpacity = 0.3f;
+    float DayOpacity = 0.8f;
+    float Opacity = FMath::Lerp(NightOpacity, DayOpacity, FMath::Clamp((Elevation + 10.0f) / 20.0f, 0.0f, 1.0f));
 
-    VolumetricClouds->SetVisibility(true);
-    VolumetricClouds->SetHiddenInGame(false);
+    // Scale cloud coverage using the altitude offset
     VolumetricClouds->LayerBottomAltitude = 5.0f;
     VolumetricClouds->LayerHeight = 8.0f;
 }
@@ -246,8 +241,7 @@ FLinearColor ADayNightCycle::GetSkyColor(float Hour) const
         float T = (Hour - 18.0f) / 2.0f;
         return FLinearColor::LerpUsingHSV(FLinearColor(0.8f, 0.4f, 0.2f), FLinearColor(0.02f, 0.02f, 0.1f), T);
     }
-    // Visible midnight navy — not near-black. Applied to SkyLight via UpdateSkyColor.
-    return FLinearColor(0.04f, 0.06f, 0.14f); // V8 deeper night, less flat navy wash
+    return FLinearColor(0.02f, 0.02f, 0.1f);
 }
 
 float ADayNightCycle::GetSunElevation() const

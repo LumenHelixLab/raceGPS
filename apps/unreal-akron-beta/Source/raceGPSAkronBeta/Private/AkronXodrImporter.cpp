@@ -6,6 +6,7 @@
 #include "Misc/Parse.h"
 #include "HAL/IConsoleManager.h"
 #include "HAL/FileManager.h"
+#include "HAL/PlatformProperties.h"
 #include "Dom/JsonObject.h"
 #include "Dom/JsonValue.h"
 #include "Serialization/JsonSerializer.h"
@@ -137,7 +138,10 @@ bool UAkronXodrImporter::ResolveCityLayout(FRaceGPSCityLayout& OutLayout)
     const bool bHasPackDirOverride = GConfig &&
         GConfig->GetString(TEXT("RaceGPS.CitySelection"), TEXT("CitypackDir"), ConfigValue, GGameIni) &&
         !ConfigValue.IsEmpty();
-    OutLayout.CitypackDir = bHasPackDirOverride ? ConfigValue : (FString(TEXT("../../citypacks")) / OutLayout.CityId);
+    // Cooked loose data is staged under ProjectDir; editor data lives at repo root.
+    const FString DefaultPackRoot = FPlatformProperties::RequiresCookedData()
+        ? TEXT("citypacks") : TEXT("../../citypacks");
+    OutLayout.CitypackDir = bHasPackDirOverride ? ConfigValue : (DefaultPackRoot / OutLayout.CityId);
 
     // Manifest: <pack>/*_semantic_manifest.json (filename does not always embed the city id).
     if (!FindSingleFileBySuffix(OutLayout.CitypackDir, TEXT("_semantic_manifest.json"), OutLayout.ManifestPath))
@@ -235,7 +239,8 @@ bool UAkronXodrImporter::ResolveCityLayout(FRaceGPSCityLayout& OutLayout)
     }
     else
     {
-        const FString GeneratedDir = TEXT("../../generated");
+        const FString GeneratedDir = FPlatformProperties::RequiresCookedData()
+            ? TEXT("generated") : TEXT("../../generated");
         const FString FullGeneratedDir = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / GeneratedDir);
         TArray<FString> SpecFiles;
         IFileManager::Get().FindFiles(SpecFiles, *(FullGeneratedDir / TEXT("*_LevelSpec.json")), true, false);
@@ -290,45 +295,59 @@ bool UAkronXodrImporter::ResolveCityLayout(FRaceGPSCityLayout& OutLayout)
     return true;
 }
 
-float UAkronXodrImporter::MetersPerDegreeLon(float Lat)
+double UAkronXodrImporter::MetersPerDegreeLon(double Lat)
 {
-    float Rad = FMath::DegreesToRadians(Lat);
-    return 111320.0f * FMath::Cos(Rad);
+    const double Rad = FMath::DegreesToRadians(Lat);
+    return static_cast<double>(MetersPerDegreeLatConst) * FMath::Cos(Rad);
 }
 
-float UAkronXodrImporter::MetersPerDegreeLat()
+double UAkronXodrImporter::MetersPerDegreeLat()
 {
-    return 110540.0f;
+    // SOURCE_TO_UNREAL_FRAME_v1: single lat scale (111320). Legacy 110540 forbidden for new code.
+    return MetersPerDegreeLatConst;
 }
 
-// Sprint-2 scale decision: real-world scale everywhere — 1 uu = 1 cm.
-// Compiler/spec data is meters; every meter value crossing into the world
-// multiplies by this. Keep in sync with the bake choke point
-// (tools/ue5-import-level-spec.py::_spec_to_ue).
-constexpr float kMetersToUU = UAkronXodrImporter::MetersToUU;
+// SOURCE_TO_UNREAL_FRAME_v1: 1 uu = 1 cm. Pack/compiler lengths are meters.
+constexpr double kMetersToUU = UAkronXodrImporter::MetersToUU;
 
-FVector UAkronXodrImporter::GeoToWorld(float Lat, float Lon, float OriginLat, float OriginLon)
+FVector UAkronXodrImporter::GeoToWorld(double Lat, double Lon, double OriginLat, double OriginLon)
 {
-    // Standard UE Z-up: X = east, Y = north, Z = up. The T10 bake remaps
-    // compiler data (x, y, z) -> UE (x, -z, y) into exactly this convention
-    // (tools/ue5-import-level-spec.py::_spec_to_ue), so runtime code must use
-    // the same. Callers add height via +Z afterwards.
-    const float MetersPerLon = MetersPerDegreeLon(OriginLat);
-    const float MetersPerLat = MetersPerDegreeLat();
-    const float X = (Lon - OriginLon) * MetersPerLon * kMetersToUU;
-    const float Y = (Lat - OriginLat) * MetersPerLat * kMetersToUU;
-    return FVector(X, Y, 0.0f);
+    // Frame A / SOURCE_TO_UNREAL_FRAME_v1: Z-up, X=east, Y=north, cm.
+    // Double precision until after the origin subtraction: float32 rounds lon ~-81.7
+    // to ~7.6e-6 deg (~30 cm), which breaks the +/-1 cm frame tolerance.
+    const double MetersPerLon = MetersPerDegreeLon(OriginLat);
+    const double MetersPerLat = MetersPerDegreeLat();
+    const double X = (Lon - OriginLon) * MetersPerLon * kMetersToUU;
+    const double Y = (Lat - OriginLat) * MetersPerLat * kMetersToUU;
+    return FVector(X, Y, 0.0);
 }
 
 FVector UAkronXodrImporter::XodrToWorld(float X, float Y, float OriginLat, float OriginLon)
 {
-    // OpenDRIVE: X=east, Y=north  ->  UE Z-up: X=east, Y=north, Z=up.
-    // Same convention as GeoToWorld; origin already baked into XODR local
-    // coords, so no remap is needed beyond passing the axes through.
-    // XODR local coords are meters -> cm.
+    // OpenDRIVE meters X=east Y=north -> UE Frame A cm (same axes).
     (void)OriginLat;
     (void)OriginLon;
     return FVector(X * kMetersToUU, Y * kMetersToUU, 0.0f);
+}
+
+float UAkronXodrImporter::CompassHeadingDegToUeYaw(float CompassHeadingDeg)
+{
+    // Compass 0=north CW; UE yaw 0=+X east, +90=+Y north.
+    return FMath::UnwindDegrees(90.0f - CompassHeadingDeg);
+}
+
+void UAkronXodrImporter::UnpackPackedGeoDegrees(const FVector& PackedLon0NegLat, float& OutLat, float& OutLon)
+{
+    // Legacy packing only: FVector(lon, 0, -lat). Do not use for new emitters.
+    OutLon = PackedLon0NegLat.X;
+    OutLat = -PackedLon0NegLat.Z;
+}
+
+FVector UAkronXodrImporter::GeoToWorldFromPacked(const FVector& PackedLon0NegLat, double OriginLat, double OriginLon)
+{
+    float Lat = 0.0f, Lon = 0.0f;
+    UnpackPackedGeoDegrees(PackedLon0NegLat, Lat, Lon);
+    return GeoToWorld(Lat, Lon, OriginLat, OriginLon);
 }
 
 bool UAkronXodrImporter::ImportXodr(const FString& XodrPath, TArray<FAkronRoadSegment>& OutRoads)
@@ -743,8 +762,9 @@ void UAkronXodrImporter::ParseSpawnArray(const TArray<TSharedPtr<FJsonValue>>& S
             (*Obj)->TryGetNumberField(TEXT("lat"), Lat);
             (*Obj)->TryGetNumberField(TEXT("lon"), Lon);
             (*Obj)->TryGetNumberField(TEXT("heading"), Heading);
+            // LEGACY pack (lon,0,-lat); forbidden for new emitters — see SOURCE_TO_UNREAL_FRAME_v1.
             Sp.Location = FVector(static_cast<float>(Lon), 0.0f, -static_cast<float>(Lat));
-            Sp.Rotation = FRotator(0.0f, static_cast<float>(Heading), 0.0f);
+            Sp.Rotation = FRotator(0.0f, CompassHeadingDegToUeYaw(static_cast<float>(Heading)), 0.0f);
             OutSpawns.Add(Sp);
         }
     }

@@ -63,3 +63,14 @@ Tolerance in `tests/test_cleveland_circuit.py` is **5%** of 3389 m.
 - OpenStreetMap BKL aeroways (ODbL)
 
 Regenerate pack files: `python3 scripts/build_cleveland_circuit.py` from this showcase tree.
+
+---
+
+## G3 gate note (worktree `raceGPS-grokbot-cleveland`)
+
+**Status: PROVISIONAL / certification blocked.** Full G3 certification remains blocked pending a dated georeferenced 2006 course plan (see `docs/evidence/grokbot/G3-prep/BURKE_SOURCE_AUDIT.md`). This document describes an OSM reconstruction of the 1997-2007 / 2.106 mi family — claim level OBSERVED / REPRODUCED_LOCALLY only. Do **not** claim a surveyed 2006 racing line.
+
+Canonical pack path in this worktree: `citypacks/cleveland/burke_gp_1997/`. Apps tree path is a junction to that directory. Pinned contemporary OSM under `data/sources/cleveland-burke/` is context-only.
+
+Frame contract: `docs/contracts/SOURCE_TO_UNREAL_FRAME_v1.md` (Frame A).
+

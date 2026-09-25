@@ -103,6 +103,10 @@ AClevelandEnvironmentActor::AClevelandEnvironmentActor()
 	ConeMesh = MakeMesh(TEXT("ConeMesh"));
 	MarkingMesh = MakeMesh(TEXT("MarkingMesh"));
 	SkylineMesh = MakeMesh(TEXT("SkylineMesh"));
+	SkylineBackdropMesh = MakeMesh(TEXT("SkylineBackdropMesh"));
+	// Backdrop is view-only: no collision, no shadow casting, never occludes the track.
+	SkylineBackdropMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SkylineBackdropMesh->SetCastShadow(false);
 	HangarMesh = MakeMesh(TEXT("HangarMesh"));
 
 	HangarPropISM = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("HangarPropISM"));
@@ -502,7 +506,11 @@ bool AClevelandEnvironmentActor::LoadAndBuild()
 		BuildHangars(Dressing);
 		BuildRunwayTaxiwayDecals(Dressing);
 	}
-	if (bSky)
+	if (bUsePhotoSkylineBackdrop)
+	{
+		BuildSkylineBackdrop();
+	}
+	else if (bSky)
 	{
 		BuildSkyline(Skyline);
 	}
@@ -1086,6 +1094,71 @@ void AClevelandEnvironmentActor::BuildSkyline(const TSharedPtr<FJsonObject>& Sky
 	CommitSection(SkylineMesh, 1, VertsG, TrisG, NormalsG, UVG, TEXT("Building_Glass"));
 	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland env: skyline buildings=%d named_towers=%d (Karla additive silhouette south of Burke)"),
 		LastSkylineBuildingCount, LastNamedTowerCount);
+}
+
+void AClevelandEnvironmentActor::BuildSkylineBackdrop()
+{
+	// Photographic backdrop, the classic racing-game skyline technique (GT/Forza use
+	// photo panorama cards/cylinders for distant cities). Real Cleveland night panorama
+	// (CC BY 2.0, Erik Drost - see Content/SourceImages/CREDITS.md).
+	//
+	// Geography: downtown Cleveland (41.499, -81.694) sits SSW of the Burke origin
+	// (41.51722, -81.68306): ~2.0km south, ~1.0km west => compass bearing ~205 deg.
+	// Frame A world: X=east, Y=north, so the arc is centered on that bearing and
+	// faces the circuit.
+	UMaterialInterface* Mat = LoadObject<UMaterialInterface>(nullptr,
+		TEXT("/Game/Materials/M_SkylineBackdrop.M_SkylineBackdrop"));
+	if (!Mat)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland env: M_SkylineBackdrop missing; falling back to box skyline"));
+		return;
+	}
+
+	constexpr double CenterBearingDeg = 205.0; // downtown SSW of Burke
+	constexpr double HalfSpanDeg = 55.0;       // 110 deg of coverage
+	constexpr float RadiusCm = 260000.f;       // 2.6 km
+	constexpr float HeightCm = 60000.f;        // 600 m; building band lands ~0..350 m
+	constexpr float BaseZCm = -8000.f;         // photo waterline sits at grade
+	constexpr int32 Segments = 64;
+
+	TArray<FVector> Verts;
+	TArray<int32> Tris;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	Verts.Reserve((Segments + 1) * 2);
+	Normals.Reserve((Segments + 1) * 2);
+	UVs.Reserve((Segments + 1) * 2);
+
+	for (int32 i = 0; i <= Segments; ++i)
+	{
+		const double Frac = static_cast<double>(i) / Segments;
+		const double BearingDeg = CenterBearingDeg - HalfSpanDeg + 2.0 * HalfSpanDeg * Frac;
+		const double Rad = FMath::DegreesToRadians(BearingDeg);
+		// Compass bearing -> world: x = R sin(bearing), y = R cos(bearing)
+		const float X = RadiusCm * static_cast<float>(FMath::Sin(Rad));
+		const float Y = RadiusCm * static_cast<float>(FMath::Cos(Rad));
+		const FVector Inward(-FMath::Sin(Rad), -FMath::Cos(Rad), 0.0); // faces circuit
+
+		Verts.Add(FVector(X, Y, BaseZCm));
+		Verts.Add(FVector(X, Y, BaseZCm + HeightCm));
+		Normals.Add(Inward);
+		Normals.Add(Inward);
+		UVs.Add(FVector2D(static_cast<float>(Frac), 0.f));
+		UVs.Add(FVector2D(static_cast<float>(Frac), 1.f));
+	}
+	for (int32 i = 0; i < Segments; ++i)
+	{
+		const int32 B0 = i * 2, T0 = i * 2 + 1, B1 = i * 2 + 2, T1 = i * 2 + 3;
+		Tris.Add(B0); Tris.Add(T0); Tris.Add(B1);
+		Tris.Add(B1); Tris.Add(T0); Tris.Add(T1);
+	}
+
+	TArray<FLinearColor> EmptyColors;
+	TArray<FProcMeshTangent> EmptyTangents;
+	SkylineBackdropMesh->CreateMeshSection_LinearColor(0, Verts, Tris, Normals, UVs, EmptyColors, EmptyTangents, false);
+	SkylineBackdropMesh->SetMaterial(0, Mat);
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland env: photo skyline backdrop built (radius %.0f m, span %.0f deg)"),
+		RadiusCm / 100.f, 2.0 * HalfSpanDeg);
 }
 
 UMaterialInstanceDynamic* AClevelandEnvironmentActor::MakeLookMID(const TCHAR* SlotName, bool bMidnightRun, bool bGlass)

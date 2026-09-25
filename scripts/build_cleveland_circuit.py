@@ -647,6 +647,15 @@ def main():
         "elevation_m_amsl": ELEV_M,
         "series": "Champ Car / CART",
         "branding_guardrail": "Product title is raceGPS: Cleveland Historic Circuit. Do not use event title-sponsor names in UI, HUD, or pack display_name. This citypack is not affiliated with any historical race sponsor.",
+        "status": "PROVISIONAL",
+        "certification": "blocked",
+        "certification_reason": "Dated georeferenced 2006 course plan MISSING (see docs/evidence/grokbot/G3-prep/BURKE_SOURCE_AUDIT.md). OSM reconstruction of 1997-2007 / 2.106 mi family, not a surveyed racing line.",
+        "claim_level": "OBSERVED",
+        "not_claimed": ["certified_2006_racing_line", "surveyed_geometry", "photoreal_skyline", "1982_layout"],
+        "frame_contract": "docs/contracts/SOURCE_TO_UNREAL_FRAME_v1.md (Frame A: Z-up, X=east Y=north, 1uu=1cm; geo math retains double precision).",
+        "osm_context_source": "data/sources/cleveland-burke/ (pinned contemporary OSM; context-only, not a 2006 line)",
+        "gate": "G3 PASS_PROVISIONAL",
+
         "layout_notes": "1997–2007 configuration: official 2.106 mi / 10 turns / clockwise / flat airport circuit. 1990 permanently bypassed the bumpy 1982 T1/T2 left-right; the main straight was extended to old T3, which became T1 (the vortex). 1997 remeasured the same geometry to 2.106 mi. Pit lane is the old 1982 T1/T2 segment (extended pit exit) — modeled as metadata only, not a separate XODR road. Do not represent this pack as the 1982 ~2.48 mi layout.",
         "pit_lane": {
             "modeled_in_xodr": False,
@@ -701,4 +710,4 @@ def main():
 
 if __name__ == "__main__":
     info = main()
-    Path("/tmp/cleveland_build_info.json").write_text(json.dumps(info, indent=2, default=str))
+    (PACK / "build_info.json").write_text(json.dumps(info, indent=2, default=str) + "\n")

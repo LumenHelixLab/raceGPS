@@ -12,6 +12,7 @@ class AClevelandLookDirector;
 class ACameraActor;
 class AChaosVehiclePawn;
 class ACheckpointGate;
+class ANeonHUD;
 
 /**
  * Cleveland Historic Circuit showcase. Extends the existing CruiseSprint / race
@@ -94,11 +95,18 @@ public:
 	UFUNCTION(Exec)
 	void ClevelandForceFinish();
 
+	/** Unattended proof: same path as PollRestartInput R key. */
+	UFUNCTION(Exec)
+	void ClevelandRestartShowcase();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 	void BindHud();
+	void UpdateHud();
+	void PollRestartInput();
+	ANeonHUD* ResolveNeonHud() const;
 	int32 LoadCheckpointCount() const;
 	FString ResolveCityPackPath(const FString& FileName) const;
 	void StartSkylineIntro(APlayerController* PC);
@@ -139,8 +147,15 @@ protected:
 	bool bDumpedDriveDiag = false;
 	bool bPlaytestStillCaptured = false;
 	bool bSawPositiveSpeed = false;
+	/** -ClevelandProofFinishR: after Racing, call ClevelandForceFinish then RestartShowcase (R path). */
+	bool bProofFinishR = false;
+	bool bProofFinishIssued = false;
+	bool bProofRestartIssued = false;
+	float ProofRacingElapsed = 0.f;
+	float ProofRestartDelay = 0.f;
 	bool bStuckQuitIssued = false;
 
 	UPROPERTY()
 	TArray<TObjectPtr<ACheckpointGate>> ShowcaseGates;
 };
+

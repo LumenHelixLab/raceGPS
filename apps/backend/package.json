@@ -8,7 +8,11 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "node --import tsx --test tests/*.test.ts",
+    "predev": "npm run build --workspace @racegps/protocol && npm run build --workspace @racegps/race-engine",
+    "pretest": "npm run build --workspace @racegps/protocol && npm run build --workspace @racegps/race-engine",
+    "pretypecheck": "npm run build --workspace @racegps/protocol && npm run build --workspace @racegps/race-engine",
+    "prebuild": "npm run build --workspace @racegps/protocol && npm run build --workspace @racegps/race-engine"
   },
   "dependencies": {
     "@racegps/protocol": "0.1.0",
@@ -16,7 +20,8 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "nanoid": "^5.0.7",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "@racegps/race-engine": "0.1.0"
   },
   "devDependencies": {
     "@types/cookie": "^0.6.0",

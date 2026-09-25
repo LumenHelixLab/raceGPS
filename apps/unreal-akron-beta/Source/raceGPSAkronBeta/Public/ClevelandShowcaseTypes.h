@@ -102,7 +102,7 @@ struct RACEGPSAKRONBETA_API FRaceAIControlGains
 	float KCurve = 25.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
-	float LookAheadMeters = 12.f;
+	float LookAheadMeters = 18.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
 	float LookAheadSpeedGain = 0.08f;
@@ -114,23 +114,23 @@ struct RACEGPSAKRONBETA_API FRaceAIControlGains
 	float BrakeTauKmh = 20.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
-	float RecoverySpeedKmh = 5.f;
+	float RecoverySpeedKmh = 18.f; // G5: crawl at hairpin ~5km/h must still trigger
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
 	float RecoveryThrottleThresh = 0.50f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
-	float RecoveryStuckDelaySec = 1.50f;
+	float RecoveryStuckDelaySec = 0.75f;
 
 	/** Max |CTE| in centimeters before recovery. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
 	float RecoveryMaxCteCm = 800.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
-	float RecoverySteerBrakeSec = 1.20f;
+	float RecoverySteerBrakeSec = 0.35f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
-	float RecoveryReverseSec = 1.80f;
+	float RecoveryReverseSec = 0.35f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|AI")
 	float MaxLateralOffsetCm = 250.f;

@@ -12,6 +12,8 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CruiseSprintGameMode.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Misc/CommandLine.h"
 #include "Animation/AnimInstance.h"
 #include "PhysicsEngine/BodyInstance.h"
 
@@ -1003,23 +1005,37 @@ void AChaosVehiclePawn::WakeForDrive()
 
 void AChaosVehiclePawn::CloseVehicleDoors()
 {
+    // VISUAL FLOOR 2026-09-24: CARLA Charger doors are SEPARATE static meshes.
+    // Morph/AnimBP flags cannot restore missing door geometry — attach SMs instead.
+    EnsureCarlaChargerDoors();
     USkeletalMeshComponent* Skel = GetMesh();
     if (!Skel)
     {
         return;
     }
-    TArray<FName> Bones;
-    Skel->GetBoneNames(Bones);
+    static const FName DoorBones[] = {
+        TEXT("Door_FL"), TEXT("Door_FR"), TEXT("Door_RL"), TEXT("Door_RR"),
+        TEXT("Door_Front_Left"), TEXT("Door_Front_Right"),
+        TEXT("Door_Back_Left"), TEXT("Door_Back_Right"),
+        TEXT("Door_Rear_Left"), TEXT("Door_Rear_Right")
+    };
     int32 Closed = 0;
-    for (const FName& Bone : Bones)
+    for (const FName& Bone : DoorBones)
     {
-        const FString N = Bone.ToString();
-        if (!N.Contains(TEXT("door"), ESearchCase::IgnoreCase))
+        if (Skel->GetBoneIndex(Bone) == INDEX_NONE)
         {
             continue;
         }
-        Skel->SetMorphTarget(Bone, 0.f, true);
+        // UE5.7: no SetBoneRotationByName on USkeletalMeshComponent; door SMs carry pose.
         ++Closed;
+    }
+    for (UStaticMeshComponent* DoorMesh : CarlaDoorMeshes)
+    {
+        if (DoorMesh)
+        {
+            DoorMesh->SetRelativeRotation(FRotator::ZeroRotator);
+            DoorMesh->SetVisibility(true);
+        }
     }
     if (UAnimInstance* Anim = Skel->GetAnimInstance())
     {
@@ -1035,10 +1051,96 @@ void AChaosVehiclePawn::CloseVehicleDoors()
             }
         }
     }
-    if (Closed > 0)
+    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: CloseVehicleDoors bones=%d doorMeshes=%d on %s"),
+        Closed, CarlaDoorMeshes.Num(), *GetName());
+}
+
+void AChaosVehiclePawn::EnsureCarlaChargerDoors()
+{
+    USkeletalMeshComponent* Skel = GetMesh();
+    if (!Skel)
     {
-        UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: closed %d door bones on %s"), Closed, *GetName());
+        return;
     }
+    if (CarlaDoorMeshes.Num() > 0)
+    {
+        return; // already attached
+    }
+
+    struct FDoorAttach
+    {
+        const TCHAR* MeshPath;
+        const TCHAR* CompName;
+        const TCHAR* BonePrimary;
+        const TCHAR* BoneAlt;
+    };
+    // Paths match CARLA 0.10.0 package names under Content/Carla/Static/...
+    static const FDoorAttach Parts[] = {
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorFL.SM_DodgeCharger2024_DoorFL"),
+          TEXT("CarlaDoorFL"), TEXT("Door_FL"), TEXT("Door_Front_Left") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorFR.SM_DodgeCharger2024_DoorFR"),
+          TEXT("CarlaDoorFR"), TEXT("Door_FR"), TEXT("Door_Front_Right") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorRL.SM_DodgeCharger2024_DoorRL"),
+          TEXT("CarlaDoorRL"), TEXT("Door_RL"), TEXT("Door_Back_Left") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorRR.SM_DodgeCharger2024_DoorRR"),
+          TEXT("CarlaDoorRR"), TEXT("Door_RR"), TEXT("Door_Back_Right") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_Lights.SM_DodgeCharger2024_Lights"),
+          TEXT("CarlaLights"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt_Dodge2024.SM_GlassExt_Dodge2024"),
+          TEXT("CarlaGlassExt"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt2_Dodge2024.SM_GlassExt2_Dodge2024"),
+          TEXT("CarlaGlassExt2"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt1_Dodge2024.SM_GlassInt1_Dodge2024"),
+          TEXT("CarlaGlassInt1"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt2_Dodge2024.SM_GlassInt2_Dodge2024"),
+          TEXT("CarlaGlassInt2"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+    };
+
+    int32 Attached = 0;
+    int32 Missing = 0;
+    for (const FDoorAttach& Part : Parts)
+    {
+        UStaticMesh* PartMesh = LoadObject<UStaticMesh>(nullptr, Part.MeshPath);
+        if (!PartMesh)
+        {
+            ++Missing;
+            UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: missing CARLA part %s"), Part.MeshPath);
+            continue;
+        }
+        FName Socket = Part.BonePrimary;
+        if (Skel->GetBoneIndex(Socket) == INDEX_NONE)
+        {
+            Socket = Part.BoneAlt;
+        }
+        if (Skel->GetBoneIndex(Socket) == INDEX_NONE)
+        {
+            Socket = NAME_None; // attach to mesh root
+        }
+        UStaticMeshComponent* Comp = NewObject<UStaticMeshComponent>(this, Part.CompName);
+        Comp->SetStaticMesh(PartMesh);
+        Comp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Comp->SetGenerateOverlapEvents(false);
+        Comp->SetCanEverAffectNavigation(false);
+        Comp->SetMobility(EComponentMobility::Movable);
+        if (Socket.IsNone())
+        {
+            Comp->SetupAttachment(Skel);
+        }
+        else
+        {
+            Comp->SetupAttachment(Skel, Socket);
+        }
+        Comp->SetRelativeLocation(FVector::ZeroVector);
+        Comp->SetRelativeRotation(FRotator::ZeroRotator);
+        Comp->SetRelativeScale3D(FVector::OneVector);
+        Comp->RegisterComponent();
+        Comp->SetVisibility(true);
+        CarlaDoorMeshes.Add(Comp);
+        ++Attached;
+    }
+    UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: EnsureCarlaChargerDoors attached=%d missing=%d pawn=%s"),
+        Attached, Missing, *GetName());
+    ApplyChargerVisualMaterialFloor();
 }
 
 void AChaosVehiclePawn::DumpDriveState(const TCHAR* Tag)
@@ -1224,21 +1326,30 @@ void AChaosVehiclePawn::UpdateCameraView()
 
 void AChaosVehiclePawn::UpdateClevelandShowcaseChaseFraming()
 {
-    if (!SpringArm)
+    if (!SpringArm || !bClevelandShowcaseChaseFraming)
     {
         return;
     }
-    // Pivot on the car. Look-at is WEST + SOUTH of the pawn so downtown stays in frame
-    // regardless of pawn yaw (runway is roughly ENE/WSW; inherit-yaw rear chase looks
-    // at lake/runway and never the city).
-    const FVector Pivot = GetActorLocation() + FVector(0.0f, 0.0f, 60.0f);
-    // Mild WSW+south look: keep cars centered, downtown on the right horizon.
-    // V13.1: slight UP look — upper frustum is sky, not T10 roof cloud.
-    const FVector LookAt = Pivot + FVector(-8500.0f, -15000.0f, 8.0f);
-    FRotator WorldRot = (LookAt - Pivot).Rotation();
-    WorldRot.Roll = 0.0f;
-    WorldRot.Pitch = FMath::Clamp(WorldRot.Pitch, -4.5f, 0.10f);
-    SpringArm->SetWorldRotation(WorldRot);
+    if (bShowcaseHeroCam)
+    {
+        // V15 WORLD-SOUTH hero framing (auto-lap showcase): pivot on the car, look
+        // west+south so downtown stays in frame regardless of pawn yaw. Downtown is
+        // lit/attached in the reconciled build, so this no longer frames a void.
+        const FVector Pivot = GetActorLocation() + FVector(0.0f, 0.0f, 60.0f);
+        const FVector LookAt = Pivot + FVector(-8500.0f, -15000.0f, 8.0f);
+        FRotator WorldRot = (LookAt - Pivot).Rotation();
+        WorldRot.Roll = 0.0f;
+        WorldRot.Pitch = FMath::Clamp(WorldRot.Pitch, -4.5f, 0.10f);
+        SpringArm->SetWorldRotation(WorldRot);
+        return;
+    }
+    // V16: race follow — SpringArm inherits yaw; keep a stable mild dive on the car.
+    const FRotator Rel = SpringArm->GetRelativeRotation();
+    const float DesiredPitch = -12.0f;
+    if (!FMath::IsNearlyEqual(Rel.Pitch, DesiredPitch, 0.05f) || !FMath::IsNearlyZero(Rel.Roll, 0.05f))
+    {
+        SpringArm->SetRelativeRotation(FRotator(DesiredPitch, 0.0f, 0.0f));
+    }
 }
 
 void AChaosVehiclePawn::ApplyClevelandShowcaseChaseFraming()
@@ -1247,27 +1358,47 @@ void AChaosVehiclePawn::ApplyClevelandShowcaseChaseFraming()
     {
         return;
     }
+    // Framing mode: hero (world-south skyline, V15 pixel-proven) for auto-lap showcase;
+    // race-follow (behind car, V16 G5/G6-proven) for human driving.
+    // -ClevelandAutoLap / -ClevelandHeroCam select hero; default is race-follow.
+    bShowcaseHeroCam = FParse::Param(FCommandLine::Get(), TEXT("ClevelandAutoLap"))
+        || FParse::Param(FCommandLine::Get(), TEXT("ClevelandHeroCam"));
     bClevelandShowcaseChaseFraming = true;
     SpringArm->bUsePawnControlRotation = false;
     SpringArm->bInheritPitch = false;
     SpringArm->bInheritRoll = false;
-    SpringArm->bInheritYaw = false;
-    SpringArm->SetUsingAbsoluteRotation(true);
-    SpringArm->TargetArmLength = 1880.0f;
-    SpringArm->SocketOffset = FVector(0.0f, 200.0f, 36.0f);
-    // V13: magazine-flat chase — skyline on horizon, less overhead HISM roof cloud.
-    SpringArm->TargetOffset = FVector(-220.0f, -560.0f, 18.0f);
-    SpringArm->bDoCollisionTest = false;
-    SpringArm->ProbeSize = 16.0f;
-    ChaseCamera->SetFieldOfView(66.0f);
+    if (bShowcaseHeroCam)
+    {
+        SpringArm->bInheritYaw = false;
+        SpringArm->SetUsingAbsoluteRotation(true);
+        SpringArm->TargetArmLength = 1880.0f;
+        SpringArm->SocketOffset = FVector(0.0f, 200.0f, 36.0f);
+        SpringArm->TargetOffset = FVector(-220.0f, -560.0f, 18.0f);
+        SpringArm->bDoCollisionTest = false;
+        SpringArm->ProbeSize = 16.0f;
+        ChaseCamera->SetFieldOfView(66.0f);
+    }
+    else
+    {
+        SpringArm->bInheritYaw = true;
+        SpringArm->SetUsingAbsoluteRotation(false);
+        SpringArm->TargetArmLength = 680.0f;
+        SpringArm->SocketOffset = FVector(0.0f, 0.0f, 140.0f);
+        SpringArm->TargetOffset = FVector(40.0f, 0.0f, 35.0f);
+        SpringArm->bDoCollisionTest = false;
+        SpringArm->ProbeSize = 16.0f;
+        SpringArm->SetRelativeRotation(FRotator(-12.0f, 0.0f, 0.0f));
+        ChaseCamera->SetFieldOfView(75.0f);
+    }
     ChaseCamera->bUsePawnControlRotation = false;
     ActiveCameraIndex = 0;
     UpdateCameraView();
     UpdateClevelandShowcaseChaseFraming();
     const FRotator ArmW = SpringArm->GetComponentRotation();
     const FRotator PawnW = GetActorRotation();
-    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: applied showcase chase framing V15 WORLD-SOUTH arm=1880 FOV=66 pawnYaw=%.1f armYaw=%.1f armPitch=%.1f (downtown -Y, 3-car hero)"),
-        PawnW.Yaw, ArmW.Yaw, ArmW.Pitch);
+    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: applied chase framing %s arm=%.0f FOV=%.0f pawnYaw=%.1f armYaw=%.1f armPitch=%.1f"),
+        bShowcaseHeroCam ? TEXT("V15 HERO world-south") : TEXT("V16 RACE-FOLLOW"),
+        SpringArm->TargetArmLength, ChaseCamera->FieldOfView, PawnW.Yaw, ArmW.Yaw, ArmW.Pitch);
 }
 
 float AChaosVehiclePawn::GetSpeedKmh() const
@@ -1420,10 +1551,108 @@ void AChaosVehiclePawn::ApplyHellcatTune()
     }
 }
 
+
+void AChaosVehiclePawn::ApplyChargerVisualMaterialFloor()
+{
+    // V17 visual floor: CARLA M_CarPaint_Master_New fails SM6 compile (missing Triplanar MF).
+    // MI_DodgeCharger2024_BodyWork* instances that master -> DefaultMaterial hollow look.
+    // Prefer M_NightCarPaint if present; else Engine BasicShapeMaterial (always compiles).
+    UMaterialInterface* BodyMI = LoadObject<UMaterialInterface>(nullptr,
+        TEXT("/Game/Materials/M_NightCarPaint.M_NightCarPaint"));
+    if (!BodyMI)
+    {
+        BodyMI = LoadObject<UMaterialInterface>(nullptr,
+            TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
+        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor using M_NightCarPaint"));
+    }
+
+    UMaterialInterface* GlassMI = LoadObject<UMaterialInterface>(nullptr,
+        TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Materials/MI_GlassExt_Charger2024.MI_GlassExt_Charger2024"));
+    if (!GlassMI)
+    {
+        GlassMI = LoadObject<UMaterialInterface>(nullptr,
+            TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Materials/M_Glass_Vehicles.M_Glass_Vehicles"));
+    }
+    UMaterialInterface* LightsMI = LoadObject<UMaterialInterface>(nullptr,
+        TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Materials/MI_VehicleLights_Charger2020.MI_VehicleLights_Charger2020"));
+
+    auto TintBodyMID = [this](UPrimitiveComponent* Comp, int32 Slot, UMaterialInterface* Base)
+    {
+        if (!Comp || !Base) return;
+        Comp->SetMaterial(Slot, Base);
+        if (UMaterialInstanceDynamic* MID = Comp->CreateAndSetMaterialInstanceDynamic(Slot))
+        {
+            static const FName ColorParams[] = {
+                TEXT("Base_color"), TEXT("Base_color_flakes"), TEXT("BaseColor"), TEXT("Base Color"),
+                TEXT("Color"), TEXT("PaintColor"), TEXT("Tint"), TEXT("Albedo")
+            };
+            for (const FName& P : ColorParams)
+            {
+                MID->SetVectorParameterValue(P, BodyTint);
+            }
+            MID->SetScalarParameterValue(TEXT("Metallic"), 0.7f);
+            MID->SetScalarParameterValue(TEXT("Roughness"), 0.25f);
+            BoostNightPaintEmissive(MID, VehicleLook);
+        }
+    };
+
+    if (USkeletalMeshComponent* Skel = GetMesh())
+    {
+        const int32 Num = Skel->GetNumMaterials();
+        int32 BodySlots = 0;
+        for (int32 i = 0; i < Num; ++i)
+        {
+            UMaterialInterface* Base = Skel->GetMaterial(i);
+            const FString Name = Base ? Base->GetName() : FString();
+            const bool bBody = Name.IsEmpty()
+                || Name.Contains(TEXT("Body"))
+                || Name.Contains(TEXT("Paint"))
+                || Name.Contains(TEXT("CarPaint"))
+                || Name.Contains(TEXT("DefaultMaterial"))
+                || Name.Contains(TEXT("WorldGrid"));
+            if (bBody || Num == 1)
+            {
+                TintBodyMID(Skel, i, BodyMI);
+                ++BodySlots;
+            }
+        }
+        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor bodySlots=%d bodyMI=%s pawn=%s"),
+            BodySlots, BodyMI ? *BodyMI->GetName() : TEXT("null"), *GetName());
+    }
+
+    for (UStaticMeshComponent* Comp : CarlaDoorMeshes)
+    {
+        if (!Comp) continue;
+        const FString CName = Comp->GetName();
+        const int32 Num = Comp->GetNumMaterials();
+        for (int32 i = 0; i < Num; ++i)
+        {
+            if (CName.Contains(TEXT("Glass")))
+            {
+                if (GlassMI) Comp->SetMaterial(i, GlassMI);
+            }
+            else if (CName.Contains(TEXT("Light")))
+            {
+                if (LightsMI) Comp->SetMaterial(i, LightsMI);
+            }
+            else
+            {
+                TintBodyMID(Comp, i, BodyMI);
+            }
+        }
+    }
+}
+
+
 void AChaosVehiclePawn::ApplyVehicleLook(EVehicleLook Look)
 {
     VehicleLook = Look;
     EnsureCarlaChargerMesh();
+    EnsureCarlaChargerDoors();
     switch (Look)
     {
     case EVehicleLook::Hellcat:
@@ -1515,6 +1744,7 @@ void AChaosVehiclePawn::ApplyVehicleLook(EVehicleLook Look)
         UE_LOG(LogTemp, Log, TEXT("[raceGPS] paint MID %s slot %d tint %s clearcoat %.2f metallic %.2f"),
             *Name, i, *BodyTint.ToString(), ClearCoat, Metallic);
     }
+    ApplyChargerVisualMaterialFloor();
     EnsureShowcaseNightLights();
 }
 
@@ -1568,9 +1798,13 @@ void AChaosVehiclePawn::EnsureShowcaseNightLights()
     // Approx Charger lamp positions (cm).
     // V16: 28000 lm / 42 m radius per headlight (x3 cars) painted the ground plane
     // solid white. Physical-scale values: visible pools, no blowout.
-    MakeLight(HeadlightL, TEXT("HeadlightL"), FVector(210.f, -70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 4500.f, 2400.f);
-    MakeLight(HeadlightR, TEXT("HeadlightR"), FVector(210.f,  70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 4500.f, 2400.f);
-    MakeLight(TaillightL, TEXT("TaillightL"), FVector(-210.f, -70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 1800.f, 900.f);
-    MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 1800.f, 900.f);
+    MakeLight(HeadlightL, TEXT("HeadlightL"), FVector(210.f, -70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 700.f, 600.f); // visual floor 2026-09-24: was 4500/2400 void blowout
+    MakeLight(HeadlightR, TEXT("HeadlightR"), FVector(210.f,  70.f, 55.f), FLinearColor(1.0f, 0.96f, 0.85f), 700.f, 600.f);
+    MakeLight(TaillightL, TEXT("TaillightL"), FVector(-210.f, -70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 350.f, 400.f);
+    MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 350.f, 400.f);
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] showcase night lights on look=%d"), static_cast<int32>(VehicleLook));
 }
+
+
+
+

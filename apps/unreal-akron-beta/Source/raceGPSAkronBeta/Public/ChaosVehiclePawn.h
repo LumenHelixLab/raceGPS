@@ -64,6 +64,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
     void CloseVehicleDoors();
 
+    /** Attach CARLA door/glass/lights static meshes to Door_* bones (runtime; avoids editor BP edit). */
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle|Look")
+    void EnsureCarlaChargerDoors();
+
+    /** V17: force Charger-local / engine paint so broken CARLA master never shows. */
+    void ApplyChargerVisualMaterialFloor();
+
     void DumpDriveState(const TCHAR* Tag);
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|Vehicle")
@@ -252,8 +259,14 @@ private:
 
     UPROPERTY()
     TObjectPtr<class UPointLightComponent> TaillightR;
+
+    /** Runtime-attached CARLA door / glass / lights static meshes (visual floor). */
+    UPROPERTY()
+    TArray<TObjectPtr<class UStaticMeshComponent>> CarlaDoorMeshes;
     void UpdateClevelandShowcaseChaseFraming();
     bool bClevelandShowcaseChaseFraming = false;
+    /** true = V15 world-south skyline hero cam (auto-lap showcase); false = V16 behind-car race follow (human). */
+    bool bShowcaseHeroCam = false;
     void InitChaosVehicleMovement();
     /** Fill torque curve / mech / gears BEFORE Chaos CreateVehicle (empty curve disables mech). */
     void EnsureEngineDriveConfig();

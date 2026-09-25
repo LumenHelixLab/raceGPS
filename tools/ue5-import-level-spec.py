@@ -24,6 +24,39 @@ try:
 except ImportError:
     HAS_UNREAL = False
 
+_ACTIVE_SPEC_FRAME = None
+
+
+
+FRAME_V1 = "SOURCE_TO_UNREAL_FRAME_v1"
+METERS_TO_UU = 100.0
+
+
+def _spec_to_ue(location: dict, frame: str | None = None):
+    """Level-spec coords -> UE Vector (cm, Frame A).
+
+    Legacy Frame B (no frame / legacy_level_spec_B): x=east m, y=up m, z=-north m
+        -> UE (x*100, -z*100, y*100)
+
+    SOURCE_TO_UNREAL_FRAME_v1: already Z-up cm X=east Y=north — pass through.
+    Keep in sync with docs/contracts/SOURCE_TO_UNREAL_FRAME_v1.md and
+    UAkronXodrImporter::MetersToUU / GeoToWorld.
+    """
+    if frame == FRAME_V1:
+        return unreal.Vector(location["x"], location["y"], location["z"]) if HAS_UNREAL else location
+    # Legacy B -> A bake bridge
+    if HAS_UNREAL:
+        return unreal.Vector(
+            location["x"] * METERS_TO_UU,
+            -location["z"] * METERS_TO_UU,
+            location["y"] * METERS_TO_UU,
+        )
+    return {
+        "x": location["x"] * METERS_TO_UU,
+        "y": -location["z"] * METERS_TO_UU,
+        "z": location["y"] * METERS_TO_UU,
+    }
+
 
 def _find_blueprint(path: str):
     """Load a Blueprint class if available, otherwise return None."""
@@ -35,24 +68,12 @@ def _find_blueprint(path: str):
     return path
 
 
-def _spec_to_ue(location: dict):
-    """Level-spec data coords -> UE coords.
-
-    The spec pipeline uses x=east m, y=up m (always 0), z=-north m. UE is
-    Z-up with a horizontal X/Y ground plane, so map data (x, y, z) onto UE
-    (x, -z, y): east stays X, north becomes +Y, up becomes +Z. Without this
-    remap, spec actors land in a vertical X/Z curtain (T10).
-
-    Sprint-2 scale decision: 1 uu = 1 cm, spec data is meters -> x100.
-    Keep in sync with UAkronXodrImporter::MetersToUU.
-    """
-    return unreal.Vector(location["x"] * 100.0, -location["z"] * 100.0, location["y"] * 100.0)
-
-
 def _spawn_actor(actor_class, location: dict, rotation: dict, label: str):
     """Spawn an actor in the level or print the command."""
     if HAS_UNREAL:
-        loc = _spec_to_ue(location)
+        loc = _spec_to_ue(location, globals().get("_ACTIVE_SPEC_FRAME"))
+        # unreal.Rotator binds POSITIONAL args alphabetically (pitch, roll, yaw) ->
+        # always pass keywords, else pitch/roll swap and lighting points straight up (2e441b6).
         rot = unreal.Rotator(roll=rotation["roll"], pitch=rotation["pitch"], yaw=rotation["yaw"])
         actor = unreal.EditorLevelLibrary.spawn_actor_from_class(actor_class, loc, rot)
         if actor:
@@ -92,7 +113,7 @@ def _add_spline_points(actor, points: list[dict], label: str):
             comp.clear_spline_points()
             for pt in points:
                 comp.add_spline_point(
-                    _spec_to_ue(pt),
+                    _spec_to_ue(pt, globals().get("_ACTIVE_SPEC_FRAME")),
                     unreal.SplineCoordinateSpace.WORLD,
                 )
         return
@@ -125,6 +146,8 @@ def main() -> int:
         return 1
 
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    global _ACTIVE_SPEC_FRAME
+    _ACTIVE_SPEC_FRAME = spec.get("frame")  # None/legacy => Frame B bake bridge
 
     if not HAS_UNREAL:
         print("#" * 70)

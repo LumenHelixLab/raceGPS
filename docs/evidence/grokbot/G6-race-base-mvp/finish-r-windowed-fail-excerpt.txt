@@ -1,0 +1,12 @@
+LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -ClevelandSkipIntro -ClevelandAutoDrive -log -windowed -ResX=1600 -ResY=900
+[2026.09.25-03.21.17:466][  0]LogTemp: raceGPS Cleveland: flags playtest=0 autodive=1 skipIntro=1 proofFinishR=0
+[2026.09.25-03.21.17:471][  0]LogTemp: raceGPS Cleveland: HUD bind ok title=raceGPS  -  Cleveland Historic Circuit  (0/3) place=0 cp=0/12
+[2026.09.25-03.21.17:568][  0]LogTemp: raceGPS Cleveland: player auto-drive armed (AI-as-player, PC still possesses)
+[2026.09.25-03.21.17:582][  0]LogTemp: raceGPS Cleveland: HUD bind ok title=raceGPS  -  Cleveland Historic Circuit  (3/3) place=3 cp=0/12
+[2026.09.25-03.21.17:582][  0]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Countdown
+[2026.09.25-03.21.21:398][ 82]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Racing
+[2026.09.25-03.21.21:400][ 82]LogTemp: Warning: raceGPS Cleveland: race live - released handbrake/wake on 3 pawns autodive=1
+[2026.09.25-03.21.21:401][ 82]LogTemp: Warning: raceGPS Cleveland drive-dump release autoDriver thr=0.00 brake=0.00 steer=0.00 rec=ERaceRecoveryState::None live=1
+[2026.09.25-03.21.23:246][146]LogWindows: FPlatformMisc::RequestExit(0, UGameEngine::Tick.ViewportClosed)
+[2026.09.25-03.21.23:246][146]LogWindows: FPlatformMisc::RequestExitWithStatus(0, 0, UGameEngine::Tick.ViewportClosed)
+[2026.09.25-03.21.23:246][146]LogCore: Engine exit requested (reason: Win RequestExit)

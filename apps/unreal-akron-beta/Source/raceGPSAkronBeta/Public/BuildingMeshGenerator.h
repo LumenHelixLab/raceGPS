@@ -70,7 +70,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Buildings")
     int32 GetGeneratedCount() const { return GeneratedCount; }
 
-    /** World-space box tower used by Cleveland Karla silhouette (named landmarks). */
+    /** World-space box tower used by Cleveland landmark silhouette (named towers). */
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Buildings")
     int32 AddWorldBoxBuilding(const FString& Name, const FString& Type, FVector Center, FVector2D HalfExtentsXY, float HeightCm, float YawDeg);
 

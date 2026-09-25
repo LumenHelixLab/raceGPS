@@ -1,8 +1,6 @@
 #include "ClevelandLookDirector.h"
 #include "DayNightCycle.h"
 #include "PostProcessController.h"
-#include "VisualQualitySettings.h"
-#include "ClevelandEnvironmentActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
@@ -10,6 +8,7 @@
 #include "Engine/ReflectionCapture.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkyLightComponent.h"
+#include "ClevelandEnvironmentActor.h"
 #include "Engine/SkyLight.h"
 #include "Components/SkyAtmosphereComponent.h"
 #include "Engine/ExponentialHeightFog.h"
@@ -29,118 +28,342 @@
 
 AClevelandLookDirector::AClevelandLookDirector()
 {
-    PrimaryActorTick.bCanEverTick = false;
-    Mode = EClevelandVisualMode::MidnightRun;
+	PrimaryActorTick.bCanEverTick = false;
+	Mode = EClevelandVisualMode::Sunset;
 }
 
 void AClevelandLookDirector::BeginPlay()
 {
-    Super::BeginPlay();
-    ApplyVisualMode(Mode);
+	Super::BeginPlay();
+	ApplyVisualMode(Mode);
+}
+
+bool AClevelandLookDirector::TryParsePresetName(const FString& Name, EClevelandVisualMode& OutMode)
+{
+	const FString N = Name.TrimStartAndEnd().ToLower();
+	if (N == TEXT("sunset"))
+	{
+		OutMode = EClevelandVisualMode::Sunset;
+		return true;
+	}
+	if (N == TEXT("twilight"))
+	{
+		OutMode = EClevelandVisualMode::Twilight;
+		return true;
+	}
+	if (N == TEXT("midnight") || N == TEXT("midnightrun"))
+	{
+		OutMode = EClevelandVisualMode::Midnight;
+		return true;
+	}
+	return false;
+}
+
+FString AClevelandLookDirector::PresetDisplayName(EClevelandVisualMode InMode)
+{
+	switch (InMode)
+	{
+	case EClevelandVisualMode::Sunset: return TEXT("Sunset");
+	case EClevelandVisualMode::Twilight: return TEXT("Twilight");
+	case EClevelandVisualMode::Midnight: return TEXT("Midnight");
+	default: return TEXT("Unknown");
+	}
 }
 
 void AClevelandLookDirector::EnsureCycleAndPost()
 {
-    UWorld* World = GetWorld();
-    if (!World)
-    {
-        return;
-    }
-    Cycle = Cast<ADayNightCycle>(UGameplayStatics::GetActorOfClass(World, ADayNightCycle::StaticClass()));
-    if (!Cycle)
-    {
-        Cycle = World->SpawnActor<ADayNightCycle>(ADayNightCycle::StaticClass());
-    }
-    Post = Cast<APostProcessController>(UGameplayStatics::GetActorOfClass(World, APostProcessController::StaticClass()));
-    if (!Post)
-    {
-        Post = World->SpawnActor<APostProcessController>(APostProcessController::StaticClass());
-    }
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+	Cycle = Cast<ADayNightCycle>(UGameplayStatics::GetActorOfClass(World, ADayNightCycle::StaticClass()));
+	if (!Cycle)
+	{
+		Cycle = World->SpawnActor<ADayNightCycle>(ADayNightCycle::StaticClass());
+	}
+	Post = Cast<APostProcessController>(UGameplayStatics::GetActorOfClass(World, APostProcessController::StaticClass()));
+	if (!Post)
+	{
+		Post = World->SpawnActor<APostProcessController>(APostProcessController::StaticClass());
+	}
 }
 
 void AClevelandLookDirector::SuppressCompetingLights() const
 {
-    UWorld* World = GetWorld();
-    if (!World)
-    {
-        return;
-    }
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
 
-    int32 DisabledDir = 0;
-    TArray<AActor*> DirLights;
-    UGameplayStatics::GetAllActorsOfClass(World, ADirectionalLight::StaticClass(), DirLights);
-    for (AActor* LightActor : DirLights)
-    {
-        if (!LightActor)
-        {
-            continue;
-        }
-        TArray<UDirectionalLightComponent*> Comps;
-        LightActor->GetComponents<UDirectionalLightComponent>(Comps);
-        for (UDirectionalLightComponent* Comp : Comps)
-        {
-            if (!Comp)
-            {
-                continue;
-            }
-            if (Cycle && Comp == Cycle->SunLight)
-            {
-                continue;
-            }
-            Comp->SetVisibility(false);
-            Comp->SetIntensity(0.f);
-            ++DisabledDir;
-        }
-    }
+	int32 DisabledDir = 0;
+	TArray<AActor*> DirLights;
+	UGameplayStatics::GetAllActorsOfClass(World, ADirectionalLight::StaticClass(), DirLights);
+	for (AActor* LightActor : DirLights)
+	{
+		if (!LightActor)
+		{
+			continue;
+		}
+		TArray<UDirectionalLightComponent*> Comps;
+		LightActor->GetComponents<UDirectionalLightComponent>(Comps);
+		for (UDirectionalLightComponent* Comp : Comps)
+		{
+			if (!Comp)
+			{
+				continue;
+			}
+			if (Cycle && Comp == Cycle->SunLight)
+			{
+				continue;
+			}
+			Comp->SetVisibility(false);
+			Comp->SetIntensity(0.f);
+			++DisabledDir;
+		}
+	}
 
-    int32 DisabledCaptures = 0;
-    TArray<AActor*> Captures;
-    UGameplayStatics::GetAllActorsOfClass(World, AReflectionCapture::StaticClass(), Captures);
-    for (AActor* Capture : Captures)
-    {
-        if (!Capture)
-        {
-            continue;
-        }
-        Capture->SetActorHiddenInGame(true);
-        Capture->SetActorEnableCollision(false);
-        if (USceneComponent* Root = Capture->GetRootComponent())
-        {
-            Root->SetVisibility(false, true);
-        }
-        ++DisabledCaptures;
-    }
+	int32 DisabledCaptures = 0;
+	TArray<AActor*> Captures;
+	UGameplayStatics::GetAllActorsOfClass(World, AReflectionCapture::StaticClass(), Captures);
+	for (AActor* Capture : Captures)
+	{
+		if (!Capture)
+		{
+			continue;
+		}
+		Capture->SetActorHiddenInGame(true);
+		Capture->SetActorEnableCollision(false);
+		++DisabledCaptures;
+	}
 
-    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland look: suppressed extra directional lights=%d reflection captures=%d"),
-        DisabledDir, DisabledCaptures);
+	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] look: suppressed extra directional lights=%d reflection captures=%d"),
+		DisabledDir, DisabledCaptures);
 }
 
 void AClevelandLookDirector::ApplyEpicConsoleVars() const
 {
-    if (!GEngine)
-    {
-        return;
-    }
-    UWorld* World = GetWorld();
-    GEngine->Exec(World, TEXT("DisableAllScreenMessages"));
-    GEngine->Exec(World, TEXT("r.VolumetricCloud 1"));
-    GEngine->Exec(World, TEXT("r.SkyAtmosphere 1"));
-    GEngine->Exec(World, TEXT("r.ShadowQuality 5"));
-    GEngine->Exec(World, TEXT("sg.ShadowQuality 4"));
-    GEngine->Exec(World, TEXT("r.BloomQuality 5"));
-    GEngine->Exec(World, TEXT("r.ReflectionMethod 1"));
-    GEngine->Exec(World, TEXT("r.DynamicGlobalIlluminationMethod 1"));
-    GEngine->Exec(World, TEXT("r.Tonemapper.Quality 5"));
-    GEngine->Exec(World, TEXT("r.DefaultFeature.Bloom 1"));
-    GEngine->Exec(World, TEXT("r.DefaultFeature.AutoExposure 1"));
-    GEngine->Exec(World, TEXT("r.EyeAdaptationQuality 2"));
-    GEngine->Exec(World, TEXT("r.Histogram.Min -4"));
-    GEngine->Exec(World, TEXT("r.Histogram.Max 4"));
-    GEngine->Exec(World, TEXT("r.ViewDistanceScale 1.5"));
-    GEngine->Exec(World, TEXT("r.SceneColorFringeQuality 1"));
-    GEngine->Exec(World, TEXT("r.MotionBlurQuality 4"));
-    UVisualQualitySettings::ApplyTier(EVisualQualityTier::Epic);
+	if (!GEngine)
+	{
+		return;
+	}
+	UWorld* World = GetWorld();
+	GEngine->Exec(World, TEXT("DisableAllScreenMessages"));
+	GEngine->Exec(World, TEXT("r.SkyAtmosphere 1"));
+	GEngine->Exec(World, TEXT("r.ShadowQuality 5"));
+	GEngine->Exec(World, TEXT("r.BloomQuality 5"));
+	GEngine->Exec(World, TEXT("r.ReflectionMethod 1"));
+	GEngine->Exec(World, TEXT("r.DynamicGlobalIlluminationMethod 1"));
+	GEngine->Exec(World, TEXT("r.Tonemapper.Quality 5"));
+	GEngine->Exec(World, TEXT("r.DefaultFeature.Bloom 1"));
+	GEngine->Exec(World, TEXT("r.DefaultFeature.AutoExposure 1"));
+	GEngine->Exec(World, TEXT("r.EyeAdaptationQuality 2"));
 }
+
+void AClevelandLookDirector::ApplyVisualMode(EClevelandVisualMode InMode)
+{
+	Mode = InMode;
+	EnsureCycleAndPost();
+	ApplyEpicConsoleVars();
+	SuppressCompetingLights();
+	switch (Mode)
+	{
+	case EClevelandVisualMode::Sunset:
+		ApplySunset();
+		break;
+	case EClevelandVisualMode::Twilight:
+		ApplyTwilight();
+		break;
+	case EClevelandVisualMode::Midnight:
+	default:
+		ApplyMidnight();
+		break;
+	}
+	ApplyLookToEnvironment();
+	EnsureLightingFailsafe();
+	LogFinalLook(*PresetDisplayName(Mode));
+}
+
+void AClevelandLookDirector::ApplySunset()
+{
+	// Declared: 18:45 local. DayNightCycle geometric sunset ~18:00 (Pitch~0, Yaw~270 west).
+	// 18:45 => SunAngle≈191.25, Pitch≈+15.6 (model), Yaw≈281.25 — low western sun, warm grade.
+	if (Cycle)
+	{
+		Cycle->bMoonAtNight = false;
+		Cycle->bPaused = true;
+		Cycle->bUseSkyAtmosphere = true;
+		Cycle->bUseVolumetricClouds = true;
+		Cycle->SetTimeOfDay(18.75f);
+		if (Cycle->SunLight)
+		{
+			Cycle->SunLight->SetIntensity(4.20f); // V16: readable car sides at Sunset
+			Cycle->SunLight->SetLightColor(FLinearColor(1.0f, 0.62f, 0.32f));
+			Cycle->SunLight->SetVisibility(true);
+		}
+		if (Cycle->SkyLight)
+		{
+			Cycle->SkyLight->SetIntensity(2.40f); // V16: fill black void / underlit cars
+			Cycle->SkyLight->SetLightColor(FLinearColor(1.0f, 0.82f, 0.62f));
+			Cycle->SkyLight->RecaptureSky();
+		}
+	}
+	if (Post)
+	{
+		Post->EpicPreset.BloomIntensity = 0.85f; // visual floor 2026-09-24: was 1.85 void flashbang
+		Post->EpicPreset.BloomThreshold = 0.70f;
+		Post->EpicPreset.Contrast = 1.14f;
+		Post->EpicPreset.Saturation = 1.22f;
+		Post->EpicPreset.ChromaticAberrationIntensity = 0.05f;
+		Post->EpicPreset.VignetteIntensity = 0.30f;
+		Post->EpicPreset.SceneColorTintR = 1.12f;
+		Post->EpicPreset.SceneColorTintG = 0.95f;
+		Post->EpicPreset.SceneColorTintB = 0.82f;
+		Post->EpicPreset.AutoExposureBias = 0.55f; // visual floor V16: lift void crush
+		Post->ApplyPresetForTier(EVisualQualityTier::Epic);
+	}
+	if (GEngine)
+	{
+		GEngine->Exec(GetWorld(), TEXT("r.VolumetricCloud 1"));
+	}
+	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] Sunset applied V16 (18:45 warm western sun, sky fill + race chase)"));
+}
+
+void AClevelandLookDirector::ApplyTwilight()
+{
+	// Declared: 20:00 local. SunAngle=210, Pitch≈+40 model / below practical horizon feel, cool blue hour.
+	if (Cycle)
+	{
+		Cycle->bMoonAtNight = true;
+		Cycle->NightMoonIntensity = 1.55f;
+		Cycle->bPaused = true;
+		Cycle->bUseSkyAtmosphere = true;
+		Cycle->bUseVolumetricClouds = false;
+		Cycle->SetTimeOfDay(20.0f);
+		if (Cycle->SunLight)
+		{
+			Cycle->SunLight->SetIntensity(1.70f);
+			Cycle->SunLight->SetLightColor(FLinearColor(0.72f, 0.78f, 1.0f));
+			Cycle->SunLight->SetVisibility(true);
+		}
+		if (Cycle->SkyLight)
+		{
+			Cycle->SkyLight->SetIntensity(1.60f);
+			Cycle->SkyLight->SetLightColor(FLinearColor(0.55f, 0.62f, 0.88f));
+		}
+	}
+	if (Post)
+	{
+		Post->EpicPreset.BloomIntensity = 0.90f;
+		Post->EpicPreset.BloomThreshold = 0.95f;
+		Post->EpicPreset.Contrast = 1.10f;
+		Post->EpicPreset.Saturation = 1.10f;
+		Post->EpicPreset.ChromaticAberrationIntensity = 0.05f;
+		Post->EpicPreset.VignetteIntensity = 0.34f;
+		Post->EpicPreset.SceneColorTintR = 0.92f;
+		Post->EpicPreset.SceneColorTintG = 0.95f;
+		Post->EpicPreset.SceneColorTintB = 1.08f;
+		Post->EpicPreset.AutoExposureBias = 0.55f;
+		Post->ApplyPresetForTier(EVisualQualityTier::Epic);
+	}
+	if (GEngine)
+	{
+		GEngine->Exec(GetWorld(), TEXT("r.VolumetricCloud 0"));
+	}
+	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] Twilight applied (20:00 blue hour, dry surface unchanged)"));
+}
+
+void AClevelandLookDirector::ApplyMidnight()
+{
+	// Declared: 22:00 local. Moon directional (bMoonAtNight) — matches showcase MidnightRun hour.
+	if (Cycle)
+	{
+		Cycle->bMoonAtNight = true;
+		Cycle->NightMoonIntensity = 2.35f;
+		Cycle->bPaused = true;
+		Cycle->bUseSkyAtmosphere = true;
+		Cycle->bUseVolumetricClouds = false;
+		Cycle->SetTimeOfDay(22.0f);
+		if (Cycle->SunLight)
+		{
+			Cycle->SunLight->SetIntensity(2.40f);
+			Cycle->SunLight->SetLightColor(FLinearColor(0.82f, 0.86f, 1.0f));
+			Cycle->SunLight->SetVisibility(true);
+		}
+		if (Cycle->SkyLight)
+		{
+			Cycle->SkyLight->SetIntensity(2.20f);
+			Cycle->SkyLight->SetLightColor(FLinearColor(0.70f, 0.74f, 0.86f));
+			Cycle->SkyLight->RecaptureSky();
+		}
+	}
+	if (Post)
+	{
+		Post->EpicPreset.BloomIntensity = 0.55f;
+		Post->EpicPreset.BloomThreshold = 1.10f;
+		Post->EpicPreset.Contrast = 1.12f;
+		Post->EpicPreset.Saturation = 1.18f;
+		Post->EpicPreset.ChromaticAberrationIntensity = 0.06f;
+		Post->EpicPreset.VignetteIntensity = 0.28f;
+		Post->EpicPreset.SceneColorTintR = 1.02f;
+		Post->EpicPreset.SceneColorTintG = 0.98f;
+		Post->EpicPreset.SceneColorTintB = 0.96f;
+		Post->EpicPreset.AutoExposureBias = 1.15f;
+		Post->EpicPreset.AutoExposureMinBrightness = 0.55f;
+		Post->EpicPreset.FilmGrainIntensity = 0.018f;
+		Post->EpicPreset.MotionBlurAmount = 0.22f;
+		Post->EpicPreset.LensFlareIntensity = 0.25f;
+		Post->ApplyPresetForTier(EVisualQualityTier::Epic);
+	}
+	// V15 night toolbox (showcase-proven): fog+lamps, sky fix, city glow, wet ground,
+	// wet apron, sprawl HISM hidden, Cesium quieted.
+	EnsureNightFogAndLamps();
+	ApplyNightSkyFix();
+	ApplyNightCityHISMGlow();
+	HideSprawlBuildingHISM();
+	ApplyNightGroundWetness();
+	EnsureBurkeWetApron();
+	QuietCesiumTilesets();
+	if (Cycle && Cycle->SunLight)
+	{
+		Cycle->SunLight->bAtmosphereSunLight = true;
+		Cycle->SunLight->DynamicShadowDistanceMovableLight = 40000.f;
+	}
+	if (GEngine)
+	{
+		GEngine->Exec(GetWorld(), TEXT("r.VolumetricCloud 0"));
+		GEngine->Exec(GetWorld(), TEXT("r.SkyAtmosphere 1"));
+		GEngine->Exec(GetWorld(), TEXT("r.BloomQuality 5"));
+		GEngine->Exec(GetWorld(), TEXT("r.Tonemapper.Quality 5"));
+		GEngine->Exec(GetWorld(), TEXT("r.DefaultFeature.AutoExposure 1"));
+		GEngine->Exec(GetWorld(), TEXT("r.EyeAdaptationQuality 2"));
+		GEngine->Exec(GetWorld(), TEXT("r.ViewDistanceScale 1.35"));
+	}
+	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] Midnight applied (22:00 moon directional + V15 night toolbox, dry surface unchanged)"));
+}
+
+void AClevelandLookDirector::LogFinalLook(const TCHAR* Tag) const
+{
+	const float Hour = Cycle ? Cycle->GetTimeOfDay() : -1.f;
+	float SunI = -1.f;
+	float SkyI = -1.f;
+	FRotator SunR = FRotator::ZeroRotator;
+	if (Cycle && Cycle->SunLight)
+	{
+		SunI = Cycle->SunLight->Intensity;
+		SunR = Cycle->SunLight->GetComponentRotation();
+	}
+	if (Cycle && Cycle->SkyLight)
+	{
+		SkyI = Cycle->SkyLight->Intensity;
+	}
+	UE_LOG(LogTemp, Log,
+		TEXT("[raceGPS Cleveland] look FINAL [%s]: hour=%.2f sunI=%.2f sunPitch=%.1f sunYaw=%.1f skyI=%.2f (Frame A X=east Y=north)"),
+		Tag, Hour, SunI, SunR.Pitch, SunR.Yaw, SkyI);
+}
+
+// ===== V15 night toolbox (union from feature/cleveland-showcase-demo) =====
 
 void AClevelandLookDirector::ApplyLookToEnvironment() const
 {
@@ -152,143 +375,10 @@ void AClevelandLookDirector::ApplyLookToEnvironment() const
     if (AClevelandEnvironmentActor* Env = Cast<AClevelandEnvironmentActor>(
             UGameplayStatics::GetActorOfClass(World, AClevelandEnvironmentActor::StaticClass())))
     {
-        Env->ApplyLookMode(Mode == EClevelandVisualMode::MidnightRun);
+        Env->ApplyLookMode(Mode == EClevelandVisualMode::Midnight);
     }
 }
 
-void AClevelandLookDirector::ApplyVisualMode(EClevelandVisualMode InMode)
-{
-    Mode = InMode;
-    EnsureCycleAndPost();
-    ApplyEpicConsoleVars();
-    SuppressCompetingLights();
-    if (Mode == EClevelandVisualMode::MidnightRun)
-    {
-        ApplyMidnightRun();
-    }
-    else
-    {
-        ApplySunnyDay();
-    }
-    ApplyLookToEnvironment();
-    EnsureLightingFailsafe();
-    LogFinalLook(Mode == EClevelandVisualMode::MidnightRun ? TEXT("MidnightRun") : TEXT("SunnyDay"));
-}
-
-void AClevelandLookDirector::ApplySunnyDay()
-{
-    if (Cycle)
-    {
-        Cycle->bMoonAtNight = false;
-        Cycle->SetTimeOfDay(15.0f);
-        Cycle->bPaused = true;
-        Cycle->bUseSkyAtmosphere = true;
-        Cycle->bUseVolumetricClouds = true;
-        if (Cycle->SunLight)
-        {
-            Cycle->SunLight->SetIntensity(2.6f);
-            Cycle->SunLight->SetLightColor(FLinearColor(1.0f, 0.97f, 0.90f));
-            Cycle->SunLight->SetVisibility(true);
-        }
-        if (Cycle->SkyLight)
-        {
-            Cycle->SkyLight->SetIntensity(1.15f);
-            Cycle->SkyLight->SetLightColor(FLinearColor(0.78f, 0.86f, 1.0f));
-        }
-    }
-    if (Post)
-    {
-        Post->EpicPreset.BloomIntensity = 1.65f;
-        Post->EpicPreset.BloomThreshold = 0.75f;
-        Post->EpicPreset.Contrast = 1.12f;
-        Post->EpicPreset.Saturation = 1.18f;
-        Post->EpicPreset.ChromaticAberrationIntensity = 0.06f;
-        Post->EpicPreset.VignetteIntensity = 0.28f;
-        Post->EpicPreset.SceneColorTintR = 1.05f;
-        Post->EpicPreset.SceneColorTintG = 1.00f;
-        Post->EpicPreset.SceneColorTintB = 0.94f;
-        Post->EpicPreset.AutoExposureBias = 0.12f;
-        Post->EpicPreset.FilmGrainIntensity = 0.015f;
-        Post->EpicPreset.MotionBlurAmount = 0.40f;
-        Post->ApplyPresetForTier(EVisualQualityTier::Epic);
-    }
-    if (GEngine)
-    {
-        GEngine->Exec(GetWorld(), TEXT("r.VolumetricCloud 1"));
-        GEngine->Exec(GetWorld(), TEXT("r.SkyAtmosphere 1"));
-        GEngine->Exec(GetWorld(), TEXT("r.BloomQuality 5"));
-    }
-    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland look: SunnyDay applied (15:00 volumetric, competing lights off)"));
-}
-
-void AClevelandLookDirector::ApplyMidnightRun()
-{
-    if (Cycle)
-    {
-        Cycle->bMoonAtNight = true;
-        Cycle->NightMoonIntensity = 2.35f;
-        Cycle->bPaused = true;
-        Cycle->bUseSkyAtmosphere = true;
-        // V8: volumetric clouds at night read as mottled water/noise on the upper sky.
-        Cycle->bUseVolumetricClouds = false;
-        // SetTimeOfDay calls UpdateSunRotation: with bMoonAtNight the directional stays
-        // a high moon instead of +69 below-horizon (the black-screen cause).
-        Cycle->SetTimeOfDay(22.0f);
-        if (Cycle->SunLight)
-        {
-            Cycle->SunLight->SetIntensity(2.40f);
-            Cycle->SunLight->SetLightColor(FLinearColor(0.82f, 0.86f, 1.0f));
-            Cycle->SunLight->SetVisibility(true);
-            Cycle->SunLight->bAtmosphereSunLight = true;
-            Cycle->SunLight->DynamicShadowDistanceMovableLight = 40000.f;
-        }
-        if (Cycle->SkyLight)
-        {
-            Cycle->SkyLight->SetIntensity(2.20f);
-            Cycle->SkyLight->SetLightColor(FLinearColor(0.70f, 0.74f, 0.86f));
-            Cycle->SkyLight->SetVisibility(true);
-            Cycle->SkyLight->RecaptureSky();
-        }
-    }
-    if (Post)
-    {
-        // Mutate EpicPreset then ApplyPresetForTier so BuildSettings actually ships the night grade.
-        Post->EpicPreset.BloomIntensity = 0.55f;
-        Post->EpicPreset.BloomThreshold = 1.10f; // V15: stop wet-apron bloom blowout
-        Post->EpicPreset.Contrast = 1.12f;
-        Post->EpicPreset.Saturation = 1.18f;
-        Post->EpicPreset.ChromaticAberrationIntensity = 0.06f;
-        Post->EpicPreset.VignetteIntensity = 0.28f;
-        Post->EpicPreset.SceneColorTintR = 1.02f;
-        Post->EpicPreset.SceneColorTintG = 0.98f;
-        Post->EpicPreset.SceneColorTintB = 0.96f; // V13: warmer grade, less navy ground
-        Post->EpicPreset.AutoExposureBias = 1.15f;
-        Post->EpicPreset.AutoExposureMinBrightness = 0.55f;
-        Post->EpicPreset.FilmGrainIntensity = 0.018f;
-        Post->EpicPreset.MotionBlurAmount = 0.22f;
-        Post->EpicPreset.LensFlareIntensity = 0.25f;
-        Post->ApplyPresetForTier(EVisualQualityTier::Epic);
-    }
-    EnsureNightFogAndLamps();
-    ApplyNightSkyFix();
-    ApplyNightCityHISMGlow();
-    HideSprawlBuildingHISM();
-    ApplyNightGroundWetness();
-    EnsureBurkeWetApron();
-    QuietCesiumTilesets();
-    if (GEngine)
-    {
-        GEngine->Exec(GetWorld(), TEXT("r.VolumetricCloud 0"));
-        GEngine->Exec(GetWorld(), TEXT("r.SkyAtmosphere 1"));
-        GEngine->Exec(GetWorld(), TEXT("r.BloomQuality 5"));
-        GEngine->Exec(GetWorld(), TEXT("r.Tonemapper.Quality 5"));
-        GEngine->Exec(GetWorld(), TEXT("r.DefaultFeature.AutoExposure 1"));
-        GEngine->Exec(GetWorld(), TEXT("r.EyeAdaptationQuality 2"));
-        // V15: sprawl HISMs are hidden; keep far downtown band + Karla drawable.
-        GEngine->Exec(GetWorld(), TEXT("r.ViewDistanceScale 1.35"));
-    }
-    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland look: MidnightRun V15 applied (no Cesium, hide T10 roof sprawl, wet apron, horizon lock)"));
-}
 
 void AClevelandLookDirector::EnsureLightingFailsafe() const
 {
@@ -338,6 +428,7 @@ void AClevelandLookDirector::EnsureLightingFailsafe() const
         GEngine->Exec(World, TEXT("r.SkyAtmosphere 1"));
     }
 }
+
 
 void AClevelandLookDirector::EnsureNightFogAndLamps()
 {
@@ -440,19 +531,6 @@ void AClevelandLookDirector::EnsureNightFogAndLamps()
         NightFog ? TEXT("yes") : TEXT("NO"), NightLamps.Num());
 }
 
-void AClevelandLookDirector::LogFinalLook(const TCHAR* Tag) const
-{
-    const float SunI = (Cycle && Cycle->SunLight) ? Cycle->SunLight->Intensity : -1.f;
-    const FRotator SunR = (Cycle && Cycle->SunLight) ? Cycle->SunLight->GetComponentRotation() : FRotator::ZeroRotator;
-    const float SkyI = (Cycle && Cycle->SkyLight) ? Cycle->SkyLight->Intensity : -1.f;
-    const float Bias = Post ? Post->EpicPreset.AutoExposureBias : 0.f;
-    const float Hour = Cycle ? Cycle->GetTimeOfDay() : -1.f;
-    UE_LOG(LogTemp, Warning,
-        TEXT("raceGPS Cleveland look FINAL [%s]: hour=%.2f sunI=%.2f sunPitch=%.1f skyI=%.2f exposureBias=%.2f skylight=%s atmosphere=%s"),
-        Tag, Hour, SunI, SunR.Pitch, SkyI, Bias,
-        (Cycle && Cycle->SkyLight) ? TEXT("yes") : TEXT("NO"),
-        (Cycle && Cycle->SkyAtmosphere) ? TEXT("yes") : TEXT("NO"));
-}
 
 void AClevelandLookDirector::ApplyNightSkyFix() const
 {
@@ -528,6 +606,7 @@ void AClevelandLookDirector::ApplyNightSkyFix() const
     }
     UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland look: V8 sky fix — volumetric clouds OFF (hidden comps=%d), SkyAtmosphere kept"), HiddenClouds);
 }
+
 
 void AClevelandLookDirector::ApplyNightCityHISMGlow() const
 {
@@ -792,6 +871,7 @@ void AClevelandLookDirector::ApplyNightCityHISMGlow() const
     }
 }
 
+
 void AClevelandLookDirector::ApplyNightGroundWetness() const
 {
     // V11: runway/taxiway shouldn't read as flat navy void — dark wet asphalt + markings.
@@ -858,6 +938,7 @@ void AClevelandLookDirector::ApplyNightGroundWetness() const
 }
 
 
+
 void AClevelandLookDirector::QuietCesiumTilesets() const
 {
     // Chris paused ion Connect. Plugin may stay enabled; do not tick/load tilesets (401 spam).
@@ -901,6 +982,7 @@ void AClevelandLookDirector::QuietCesiumTilesets() const
     }
     UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland look: V15 Cesium tilesets quieted=%d (no ion load)"), Quieted);
 }
+
 
 void AClevelandLookDirector::EnsureBurkeWetApron()
 {
@@ -956,6 +1038,7 @@ void AClevelandLookDirector::EnsureBurkeWetApron()
     BurkeWetApron->SetActorHiddenInGame(false);
     UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland look: V15 Burke wet apron spawned (1.6x2.2km M_NightAsphalt, matte-wet)"));
 }
+
 
 void AClevelandLookDirector::HideSprawlBuildingHISM()
 {

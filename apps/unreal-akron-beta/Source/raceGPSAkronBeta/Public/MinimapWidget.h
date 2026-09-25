@@ -26,6 +26,7 @@ public:
     class UImage* MinimapCanvas;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|HUD")
+    /** World radius in meters (converted to cm/UU when mapping Frame A world positions). */
     float MinimapRadiusMeters = 500.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|HUD")

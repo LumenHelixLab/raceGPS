@@ -59,6 +59,27 @@ apps/unreal-akron-beta/Temp/
 apps/unreal-akron-beta/citypacks/
 apps/unreal-akron-beta/cesium-request-cache.sqlite*
 *.log.bak*
+apps/unreal-akron-beta/Build/
+apps/unreal-akron-beta/Saved/
+apps/unreal-akron-beta/Binaries/
+apps/unreal-akron-beta/Intermediate/
 
 # Diagnostic captures
 generated/diag_*.png
+
+# Reproducible local compiler outputs; retain only pinned inputs and evidence.
+build-evidence/
+!data/sources/cleveland-burke/snapshot.osm
+.venv-grokbot/
+
+# G3: Cleveland Burke provisional pack is source-controlled (canonical path).
+# Keep apps/unreal-akron-beta/citypacks/ ignored — local junction via scripts/link_cleveland_citypack.ps1.
+!citypacks/cleveland/
+!citypacks/cleveland/**
+
+# Keep grokbot gate evidence logs (override logs/ and *.log ignores)
+!docs/evidence/grokbot/
+!docs/evidence/grokbot/**/
+!docs/evidence/grokbot/**/*.log
+!docs/evidence/grokbot/**/*.txt
+!docs/evidence/grokbot/**/*.md

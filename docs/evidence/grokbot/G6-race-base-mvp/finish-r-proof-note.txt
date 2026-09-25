@@ -1,0 +1,48 @@
+# G6 finish+R live proof — 2026-09-24 ~23:19 ET (omni)
+
+Worktree: C:\projects\raceGPS-grokbot-cleveland
+Branch: grokbot/cleveland-integration
+Machine: omni (14689435-c6b8-4643-bec2-a7b74d7e5dae)
+Session: nullrhi -game Sunset + SkipIntro + AutoDrive + ProofFinishR (NO AutoLap/Playtest)
+PID: 30244
+
+## Why ForceFinish (not driven lap)
+Prior AutoDrive attempts (windowed + nullrhi) showed cars stuck at Racing release:
+- drive-dump all slots speed=0.00 thr=0.00 / autoDriver thr=0.00
+- soft=0 cp=0 while log flooded with per-frame `[raceGPS] Lap started`
+- Windowed sessions also died via ViewportClosed (~20s); Vehicle Arcade cleared field; nullrhi-only used for this proof per steering.
+Vehicle feel / throttle is Vehicle Arcade lane — not chased here.
+
+## Method
+1. Minimal assist: `-ClevelandProofFinishR` calls Exec `ClevelandForceFinish` after ~3s Racing, then R-path `RestartShowcase` (same log as PollRestartInput).
+2. Also added Exec `ClevelandRestartShowcase` (same R path).
+3. playtest=0 so RequestExit gate stays human (no AutoLap).
+
+## PASS/FAIL
+
+| Step | Result | Evidence |
+|------|--------|----------|
+| 1. Sunset human flags (no AutoLap) | PASS | `flags playtest=0 autodive=1 skipIntro=1 proofFinishR=1` ; cmdline has no ClevelandAutoLap |
+| 2. Complete lap / EndRace | PASS* | *via Exec ClevelandForceFinish (AutoDrive stuck documented). `EndRace place=1/3 nextCP=1 time=3.00` |
+| 3. Finish HUD | PASS | `HUD finish shown place=1ST time=3.00 (R=RestartShowcase)` |
+| 4. R → RestartShowcase, no RequestExit | PASS | `RestartShowcase via R` + `RestartShowcase (no RequestExit)` ; no `playtest EndRace complete - RequestExit` |
+| 5. Evidence + commit | PASS | this note + finish-r-proof-excerpt.txt |
+| 6. Soft CTE spoil lap? | N/A | soft_snaps=0 (cars never moved); no soften applied |
+
+## Exact quotes
+```
+flags playtest=0 autodive=1 skipIntro=1 proofFinishR=1
+drive-dump release ... speed=0.00 ... thr=0.00 ... autoDriver thr=0.00
+ProofFinishR invoking Exec ClevelandForceFinish (AutoDrive unattended; expect stuck thr/speed 0)
+EndRace place=1/3 nextCP=1 time=3.00
+HUD finish shown place=1ST time=3.00 (R=RestartShowcase)
+human EndRace - stay in session, RestartShowcase on R
+RestartShowcase via R
+RestartShowcase (no RequestExit)
+```
+
+## Code soften
+None (CTE). Proof assist only: ClevelandProofFinishR + Exec ClevelandRestartShowcase.
+
+## Readiness
+UnrealEditor cleared (NO_UNREAL_RUNNING). Parent may release omni editor to Vehicle Arcade for V17 paint 38df7c7 rebuild + Sunset.
