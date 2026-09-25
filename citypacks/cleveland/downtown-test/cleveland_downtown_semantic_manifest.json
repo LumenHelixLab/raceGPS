@@ -1,0 +1,35 @@
+{
+  "city_id": "cleveland-downtown-test",
+  "display_name": "Cleveland Downtown (test)",
+  "version": "0.1.0",
+  "game_version_min": "0.1.0",
+  "game_version_max": "0.2.0",
+  "origin": {
+    "lat": 41.5,
+    "lon": -81.6925
+  },
+  "bounds": {
+    "west": -81.7,
+    "south": 41.495,
+    "east": -81.685,
+    "north": 41.505
+  },
+  "opendrive_file": "cleveland_downtown.xodr",
+  "routes": "cleveland_downtown_routes.json",
+  "road_graph": "cleveland_downtown_road_graph.json",
+  "spawn_points": "cleveland_downtown_spawn_points.json",
+  "pois": "cleveland_downtown_pois.json",
+  "buildings": "cleveland_downtown_buildings.json",
+  "gameplay_layer": "cleveland_downtown_gameplay_layer.json",
+  "route_count": 1,
+  "poi_count": 0,
+  "spawn_point_count": 1,
+  "building_count": 0,
+  "offline": true,
+  "carla_required": false,
+  "cesium_required": false,
+  "streetmap_required": false,
+  "pipeline": "tools/akron-semantic-compiler (fetch_osm + road_graph + osm_to_xodr)",
+  "notes": "Downtown OSM smoke pack for RoadMeshGenerator / AkronXodrImporter. No StreetMap plugin.",
+  "pack_dir": "citypacks/cleveland/downtown-test"
+}
