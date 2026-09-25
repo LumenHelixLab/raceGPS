@@ -1,0 +1,36 @@
+# G6 race-base MVP review — commit 20bada7 (2026-09-24 ~23:00 ET)
+
+Reviewer: grokbot executor on omni (worktree C:\projects\raceGPS-grokbot-cleveland, branch grokbot/cleveland-integration).
+HEAD: 20bada7d2e96d78ab4036a2b17206b068d09dd13 feat(cleveland): race-base MVP session HUD + human finish/restart
+
+## Verdicts
+1. Commit present as HEAD — PASS
+2a. BindHud → NeonHUD (time/CP/place/countdown/finish) + HUDClass=NeonHUD — PASS (code + smoke HUD bind)
+2b. LaunchClevelandRace.bat human default NO -ClevelandAutoLap; playtest/nullrhi KEEP — PASS
+2c. EndRace → ShowRaceFinished; R→RestartShowcase (gated bShowcaseEnded); RequestExit ONLY bPlaytestLap — PASS (code-path; smoke lacks finish/R)
+2d. Soft AI recovery vs aggressive AutoLap snap — PASS (code + smoke soft mode; no aggressive snaps in human smoke)
+3. Smoke excerpt — PARTIAL live proof (see below)
+4. Gaps closed — none required (implementation already in 20bada7). Worktree clean of review patches. GlobalDefaultGameMode remains CruiseSprint (DefaultEngine.ini:195).
+
+## Smoke proven vs not
+Proven (excerpt + raceGPSAkronBeta-smoke.log):
+- Human flags: playtest=0 autodive=0 skipIntro=1; cmdline has no -ClevelandAutoLap
+- HUD bind ok (place/cp)
+- AI soft recovery (human, no aggressive teleport) slots 1+2
+- Countdown → Racing transition
+- Soft recovery snaps present; aggressive_snaps=0 soft_snaps=9 in full smoke log
+- Exit via ViewportClosed (~58s), not playtest RequestExit
+
+Not proven in smoke:
+- EndRace / ShowRaceFinished / HUD finish log
+- R → RestartShowcase
+- Human path staying alive after finish (no RequestExit)
+- Visual on-screen HUD pixels
+
+## Remaining open
+- Live finish+R human playtest (or playtest bat to prove EndRace+RequestExit)
+- Soft CTE snaps still frequent for slot=2 in ~1min smoke; aggressive +25m correctly gated — optional further soften only if product wants quieter human AI
+
+## Live finish+R proof (follow-up)
+See finish-r-proof-note.txt + finish-r-proof-excerpt.txt (2026-09-24 ~23:19 ET).
+Verdict: PASS with ForceFinish assist — AutoDrive stuck thr/speed 0 on nullrhi; human RequestExit gate validated (playtest=0); R→RestartShowcase logged; no playtest RequestExit.

@@ -1,0 +1,43 @@
+Log file: C:\Users\cgp22\AppData\Local\UnrealBuildTool\Log.txt
+Parsing headers for raceGPSAkronBetaEditor
+  Running Internal UnrealHeaderTool C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Intermediate\Build\Win64\raceGPSAkronBetaEditor\Development\raceGPSAkronBetaEditor.uhtmanifest -WarningsAsErrors -installed
+UHT processed raceGPSAkronBetaEditor in 1.5444083 seconds (3 files written)
+Building raceGPSAkronBetaEditor...
+Using Visual Studio 2022 14.44.35226 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207) and Windows 10.0.26100.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from raceGPSAkronBeta unity file: AchievementSystem.cpp, AkronHUD.cpp, AkronXodrImporter.cpp, BuildingMeshGenerator.cpp, ChampionshipManager.cpp, ChaosVehiclePawn.cpp, CheckpointGate.cpp, ClevelandEnvironmentActor.cpp, ClevelandLookDirector.cpp, ClevelandShowcaseGameMode.cpp, ClevelandSoloGameMode.cpp, CompassWidget.cpp, ConsoleCommands.cpp, ContributionCaptureComponent.cpp, CourseCreatorWidget.cpp, CruiseSprintGameMode.cpp, DayNightCycle.cpp, DeveloperConsole.cpp, DriftScoreSystem.cpp, FrameDiagnosticActor.cpp, GhostVehicle.cpp, GhostVehicleSystem.cpp, LANBrowserWidget.cpp, LANSessionManager.cpp, LeaderboardSystem.cpp, LeaderboardWidget.cpp, LoadingScreenWidget.cpp, MainMenuGameMode.cpp, MainMenuWidget.cpp, MinimapRenderer.cpp, MinimapWidget.cpp, NeonHUD.cpp, NotificationManager.cpp, OnboardingManager.cpp, PauseMenuWidget.cpp, PhotoModeController.cpp, PlayerProfileSaveGame.cpp, PostProcessController.cpp, PostRaceStatsWidget.cpp, PreflightSystem.cpp, RaceAIDriverController.cpp, raceGPSAkronBeta.cpp, RaceGPSBackendClient.cpp, raceGPSGameInstance.cpp, RaceGPSMaterialProvider.cpp, RaceGPSVehicleWheels.cpp, RaceGridManager.cpp, RaceReplayManager.cpp, RaceReplayPlayer.cpp, RaceReplayRecorder.cpp, RaceScoringSystem.cpp, RaceSessionManager.cpp, RaceTimerSystem.cpp, RacingLineComponent.cpp, RoadMeshGenerator.cpp, RouteSplineActor.cpp, RuntimeCityLoader.cpp, SettingsAutoConfigurator.cpp, SettingsSystem.cpp, SettingsWidget.cpp, StreetFurnitureSpawner.cpp, TrafficAISpawner.cpp, TrafficSpawner.cpp, TrafficVehicle.cpp, TutorialSystem.cpp, TutorialWidget.cpp, UnlockSystem.cpp, VehicleAudioComponent.cpp, VehicleSelectionWidget.cpp, VisualQualitySettings.cpp, WeatherSystem.cpp, WorldContentInstaller.cpp, FrameContractTests.cpp, raceGPSGameplayTests.cpp
+Determining max actions to execute in parallel (10 physical cores, 20 logical cores)
+  Executing up to 10 processes, one per physical core
+  Requested 1.5 GB memory per action, 13.78 GB available: limiting max parallel actions to 9
+Using Unreal Build Accelerator local executor to run 23 action(s)
+  Storage capacity 40Gb
+---- Starting trace: 260924_231820 ----
+UbaServer - Listening on 0.0.0.0:1345
+[1/23] Compile [x64] ClevelandSoloGameMode.cpp
+[2/23] Compile [x64] ClevelandShowcaseGameMode.cpp
+[3/23] Compile [x64] ConsoleCommands.cpp
+[4/23] Compile [x64] CompassWidget.cpp
+[5/23] Compile [x64] ChaosVehiclePawn.cpp
+[6/23] Compile [x64] CourseCreatorWidget.cpp
+[7/23] Compile [x64] DeveloperConsole.cpp
+[8/23] Compile [x64] Module.raceGPSAkronBeta.1.cpp
+[9/23] Compile [x64] MinimapWidget.cpp
+[10/23] Compile [x64] CruiseSprintGameMode.cpp
+[11/23] Compile [x64] RaceAIDriverController.cpp
+[12/23] Compile [x64] Module.raceGPSAkronBeta.5.cpp
+[13/23] Compile [x64] Module.raceGPSAkronBeta.2.cpp
+[14/23] Compile [x64] RaceReplayManager.cpp
+[15/23] Compile [x64] RaceSessionManager.cpp
+[16/23] Compile [x64] SettingsSystem.cpp
+[17/23] Compile [x64] TrafficSpawner.cpp
+[18/23] Compile [x64] SettingsWidget.cpp
+[19/23] Compile [x64] VehicleAudioComponent.cpp
+[20/23] Compile [x64] RaceGridManager.cpp
+[21/23] Link [x64] UnrealEditor-raceGPSAkronBeta.lib
+[22/23] Link [x64] UnrealEditor-raceGPSAkronBeta.dll
+[23/23] WriteMetadata raceGPSAkronBetaEditor.target [NoUba]
+
+Trace written to file C:/Users/cgp22/AppData/Local/UnrealBuildTool/Log.uba with size 8.9kb
+Total time in Unreal Build Accelerator local executor: 16.77 seconds
+
+Result: Succeeded
+Total execution time: 19.88 seconds

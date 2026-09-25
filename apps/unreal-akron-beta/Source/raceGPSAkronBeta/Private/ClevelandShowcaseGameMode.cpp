@@ -459,6 +459,32 @@ void AClevelandShowcaseGameMode::Tick(float DeltaSeconds)
 	{
 		EndRace();
 	}
+	// Unattended finish+R proof (nullrhi): AutoDrive may be stuck thr/speed 0 — use Exec ForceFinish then R path.
+	if (bProofFinishR && !bPlaytestLap)
+	{
+		const bool bRacingNow = SessionManager && SessionManager->GetCurrentState() == ERaceSessionState::Racing;
+		if (bRacingNow)
+		{
+			ProofRacingElapsed += DeltaSeconds;
+		}
+		if (!bProofFinishIssued && bRacingNow && ProofRacingElapsed >= 3.f)
+		{
+			bProofFinishIssued = true;
+			UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: ProofFinishR invoking Exec ClevelandForceFinish (AutoDrive unattended; expect stuck thr/speed 0)"));
+			ClevelandForceFinish();
+			ProofRestartDelay = 1.5f;
+		}
+		if (bProofFinishIssued && !bProofRestartIssued && bShowcaseEnded)
+		{
+			ProofRestartDelay -= DeltaSeconds;
+			if (ProofRestartDelay <= 0.f)
+			{
+				bProofRestartIssued = true;
+				UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: RestartShowcase via R"));
+				RestartShowcase();
+			}
+		}
+	}
 }
 
 void AClevelandShowcaseGameMode::CaptureStill(const TCHAR* Phase)
@@ -764,14 +790,15 @@ void AClevelandShowcaseGameMode::ApplyPlaytestFlags()
 	bPlaytestLap = FParse::Param(Cmd, TEXT("ClevelandAutoLap")) || FParse::Param(Cmd, TEXT("ClevelandPlaytest"));
 	bSkipIntro = bPlaytestLap || FParse::Param(Cmd, TEXT("ClevelandSkipIntro"));
 	bAutoDrivePlayer = bPlaytestLap || FParse::Param(Cmd, TEXT("ClevelandAutoDrive"));
+	bProofFinishR = FParse::Param(Cmd, TEXT("ClevelandProofFinishR"));
 	if (bSkipIntro)
 	{
 		IntroHoldSeconds = 0.35f;
 		IntroBlendSeconds = 0.20f;
 		HeroCaptureDelaySeconds = 0.10f;
 	}
-	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: flags playtest=%d autodive=%d skipIntro=%d"),
-		bPlaytestLap ? 1 : 0, bAutoDrivePlayer ? 1 : 0, bSkipIntro ? 1 : 0);
+		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: flags playtest=%d autodive=%d skipIntro=%d proofFinishR=%d"),
+		bPlaytestLap ? 1 : 0, bAutoDrivePlayer ? 1 : 0, bSkipIntro ? 1 : 0, bProofFinishR ? 1 : 0);
 }
 
 float AClevelandShowcaseGameMode::CanonicalizeSplineS(float S, float Length) const
@@ -979,3 +1006,10 @@ void AClevelandShowcaseGameMode::ClevelandForceFinish()
 	EndRace();
 	WritePlaytestReport(TEXT("force_finish"));
 }
+
+void AClevelandShowcaseGameMode::ClevelandRestartShowcase()
+{
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: RestartShowcase via R"));
+	RestartShowcase();
+}
+
