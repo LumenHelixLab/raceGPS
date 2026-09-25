@@ -12,6 +12,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CruiseSprintGameMode.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "PhysicsEngine/BodyInstance.h"
 
@@ -1003,26 +1004,37 @@ void AChaosVehiclePawn::WakeForDrive()
 
 void AChaosVehiclePawn::CloseVehicleDoors()
 {
-    // VISUAL FLOOR 2026-09-24: CARLA Charger doors are SEPARATE static meshes on the BP.
-    // This worktree has none imported — SetMorphTarget on door bone names cannot restore
-    // missing door geometry. See docs/superpowers/investigations/2026-09-24-charger-visual-floor.md
+    // VISUAL FLOOR 2026-09-24: CARLA Charger doors are SEPARATE static meshes.
+    // Morph/AnimBP flags cannot restore missing door geometry — attach SMs instead.
+    EnsureCarlaChargerDoors();
     USkeletalMeshComponent* Skel = GetMesh();
     if (!Skel)
     {
         return;
     }
-    TArray<FName> Bones;
-    Skel->GetBoneNames(Bones);
+    static const FName DoorBones[] = {
+        TEXT("Door_FL"), TEXT("Door_FR"), TEXT("Door_RL"), TEXT("Door_RR"),
+        TEXT("Door_Front_Left"), TEXT("Door_Front_Right"),
+        TEXT("Door_Back_Left"), TEXT("Door_Back_Right"),
+        TEXT("Door_Rear_Left"), TEXT("Door_Rear_Right")
+    };
     int32 Closed = 0;
-    for (const FName& Bone : Bones)
+    for (const FName& Bone : DoorBones)
     {
-        const FString N = Bone.ToString();
-        if (!N.Contains(TEXT("door"), ESearchCase::IgnoreCase))
+        if (Skel->GetBoneIndex(Bone) == INDEX_NONE)
         {
             continue;
         }
-        Skel->SetMorphTarget(Bone, 0.f, true);
+        // UE5.7: no SetBoneRotationByName on USkeletalMeshComponent; door SMs carry pose.
         ++Closed;
+    }
+    for (UStaticMeshComponent* DoorMesh : CarlaDoorMeshes)
+    {
+        if (DoorMesh)
+        {
+            DoorMesh->SetRelativeRotation(FRotator::ZeroRotator);
+            DoorMesh->SetVisibility(true);
+        }
     }
     if (UAnimInstance* Anim = Skel->GetAnimInstance())
     {
@@ -1038,10 +1050,95 @@ void AChaosVehiclePawn::CloseVehicleDoors()
             }
         }
     }
-    if (Closed > 0)
+    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: CloseVehicleDoors bones=%d doorMeshes=%d on %s"),
+        Closed, CarlaDoorMeshes.Num(), *GetName());
+}
+
+void AChaosVehiclePawn::EnsureCarlaChargerDoors()
+{
+    USkeletalMeshComponent* Skel = GetMesh();
+    if (!Skel)
     {
-        UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: closed %d door bones on %s"), Closed, *GetName());
+        return;
     }
+    if (CarlaDoorMeshes.Num() > 0)
+    {
+        return; // already attached
+    }
+
+    struct FDoorAttach
+    {
+        const TCHAR* MeshPath;
+        const TCHAR* CompName;
+        const TCHAR* BonePrimary;
+        const TCHAR* BoneAlt;
+    };
+    // Paths match CARLA 0.10.0 package names under Content/Carla/Static/...
+    static const FDoorAttach Parts[] = {
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorFL.SM_DodgeCharger2024_DoorFL"),
+          TEXT("CarlaDoorFL"), TEXT("Door_FL"), TEXT("Door_Front_Left") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorFR.SM_DodgeCharger2024_DoorFR"),
+          TEXT("CarlaDoorFR"), TEXT("Door_FR"), TEXT("Door_Front_Right") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorRL.SM_DodgeCharger2024_DoorRL"),
+          TEXT("CarlaDoorRL"), TEXT("Door_RL"), TEXT("Door_Back_Left") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorRR.SM_DodgeCharger2024_DoorRR"),
+          TEXT("CarlaDoorRR"), TEXT("Door_RR"), TEXT("Door_Back_Right") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_Lights.SM_DodgeCharger2024_Lights"),
+          TEXT("CarlaLights"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt_Dodge2024.SM_GlassExt_Dodge2024"),
+          TEXT("CarlaGlassExt"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt2_Dodge2024.SM_GlassExt2_Dodge2024"),
+          TEXT("CarlaGlassExt2"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt1_Dodge2024.SM_GlassInt1_Dodge2024"),
+          TEXT("CarlaGlassInt1"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+        { TEXT("/Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt2_Dodge2024.SM_GlassInt2_Dodge2024"),
+          TEXT("CarlaGlassInt2"), TEXT("Vehicle_Base"), TEXT("VehicleBase") },
+    };
+
+    int32 Attached = 0;
+    int32 Missing = 0;
+    for (const FDoorAttach& Part : Parts)
+    {
+        UStaticMesh* PartMesh = LoadObject<UStaticMesh>(nullptr, Part.MeshPath);
+        if (!PartMesh)
+        {
+            ++Missing;
+            UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: missing CARLA part %s"), Part.MeshPath);
+            continue;
+        }
+        FName Socket = Part.BonePrimary;
+        if (Skel->GetBoneIndex(Socket) == INDEX_NONE)
+        {
+            Socket = Part.BoneAlt;
+        }
+        if (Skel->GetBoneIndex(Socket) == INDEX_NONE)
+        {
+            Socket = NAME_None; // attach to mesh root
+        }
+        UStaticMeshComponent* Comp = NewObject<UStaticMeshComponent>(this, Part.CompName);
+        Comp->SetStaticMesh(PartMesh);
+        Comp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Comp->SetGenerateOverlapEvents(false);
+        Comp->SetCanEverAffectNavigation(false);
+        Comp->SetMobility(EComponentMobility::Movable);
+        if (Socket.IsNone())
+        {
+            Comp->SetupAttachment(Skel);
+        }
+        else
+        {
+            Comp->SetupAttachment(Skel, Socket);
+        }
+        Comp->SetRelativeLocation(FVector::ZeroVector);
+        Comp->SetRelativeRotation(FRotator::ZeroRotator);
+        Comp->SetRelativeScale3D(FVector::OneVector);
+        Comp->RegisterComponent();
+        Comp->SetVisibility(true);
+        CarlaDoorMeshes.Add(Comp);
+        ++Attached;
+    }
+    UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: EnsureCarlaChargerDoors attached=%d missing=%d pawn=%s"),
+        Attached, Missing, *GetName());
 }
 
 void AChaosVehiclePawn::DumpDriveState(const TCHAR* Tag)
@@ -1427,6 +1524,7 @@ void AChaosVehiclePawn::ApplyVehicleLook(EVehicleLook Look)
 {
     VehicleLook = Look;
     EnsureCarlaChargerMesh();
+    EnsureCarlaChargerDoors();
     switch (Look)
     {
     case EVehicleLook::Hellcat:
@@ -1577,5 +1675,6 @@ void AChaosVehiclePawn::EnsureShowcaseNightLights()
     MakeLight(TaillightR, TEXT("TaillightR"), FVector(-210.f,  70.f, 60.f), FLinearColor(1.0f, 0.08f, 0.05f), 350.f, 400.f);
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] showcase night lights on look=%d"), static_cast<int32>(VehicleLook));
 }
+
 
 

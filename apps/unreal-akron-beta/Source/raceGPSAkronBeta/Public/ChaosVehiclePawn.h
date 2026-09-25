@@ -64,6 +64,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
     void CloseVehicleDoors();
 
+    /** Attach CARLA door/glass/lights static meshes to Door_* bones (runtime; avoids editor BP edit). */
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle|Look")
+    void EnsureCarlaChargerDoors();
+
     void DumpDriveState(const TCHAR* Tag);
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|Vehicle")
@@ -252,6 +256,10 @@ private:
 
     UPROPERTY()
     TObjectPtr<class UPointLightComponent> TaillightR;
+
+    /** Runtime-attached CARLA door / glass / lights static meshes (visual floor). */
+    UPROPERTY()
+    TArray<TObjectPtr<class UStaticMeshComponent>> CarlaDoorMeshes;
     void UpdateClevelandShowcaseChaseFraming();
     bool bClevelandShowcaseChaseFraming = false;
     void InitChaosVehicleMovement();
