@@ -34,3 +34,6 @@ Not proven in smoke:
 ## Live finish+R proof (follow-up)
 See finish-r-proof-note.txt + finish-r-proof-excerpt.txt (2026-09-24 ~23:19 ET).
 Verdict: PASS with ForceFinish assist — AutoDrive stuck thr/speed 0 on nullrhi; human RequestExit gate validated (playtest=0); R→RestartShowcase logged; no playtest RequestExit.
+
+## Gate 1 windowed Sunset (2026-09-24 ~23:21 ET) — FAIL-CLOSED
+See finish-r-windowed-fail-note.txt. ViewportClosed ~2s after Racing despite focus-keeper; no EndRace/HUD/R. Did not fall back to nullrhi. Needs Chris/box_help to keep window open.
