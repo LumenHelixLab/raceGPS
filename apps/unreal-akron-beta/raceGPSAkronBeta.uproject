@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"EngineAssociation": "5.7",
 	"Category": "",
-	"Description": "raceGPS Akron Beta — Commercial-grade Unreal driving slice",
+	"Description": "raceGPS Akron Beta - Commercial-grade Unreal driving slice",
 	"Modules": [
 		{
 			"Name": "raceGPSAkronBeta",
@@ -12,6 +12,11 @@
 				"Engine",
 				"ChaosVehicles"
 			]
+		},
+		{
+			"Name": "raceGPSPack",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

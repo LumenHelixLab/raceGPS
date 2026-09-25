@@ -32,7 +32,8 @@ public class raceGPSAkronBeta : ModuleRules
             "Niagara",
             "NiagaraCore",
             "HTTP",
-            "WebSockets"
+            "WebSockets",
+            "raceGPSPack"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]
