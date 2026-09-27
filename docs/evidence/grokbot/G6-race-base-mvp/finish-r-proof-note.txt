@@ -1,3 +1,5 @@
+=== BANNER (2026-09-25 Prototyper): This NullRHI/ForceFinish path is NOT Gate 1 PASS. See GATE1-RESUME-PLAYBOOK.md and G6 README. ===
+
 # G6 finish+R live proof — 2026-09-24 ~23:19 ET (omni)
 
 Worktree: C:\projects\raceGPS-grokbot-cleveland
@@ -46,3 +48,4 @@ None (CTE). Proof assist only: ClevelandProofFinishR + Exec ClevelandRestartShow
 
 ## Readiness
 UnrealEditor cleared (NO_UNREAL_RUNNING). Parent may release omni editor to Vehicle Arcade for V17 paint 38df7c7 rebuild + Sunset.
+
