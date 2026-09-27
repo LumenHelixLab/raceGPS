@@ -82,3 +82,7 @@ build-evidence/
 !docs/evidence/grokbot/**/*.log
 !docs/evidence/grokbot/**/*.txt
 !docs/evidence/grokbot/**/*.md
+
+# Root agent scratch (patch scripts, commit-msg drafts)
+/Temp/
+

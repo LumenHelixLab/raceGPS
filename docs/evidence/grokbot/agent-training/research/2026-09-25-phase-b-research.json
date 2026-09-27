@@ -1,0 +1,233 @@
+{
+  "phase": "B",
+  "checked_date": "2026-09-25",
+  "method": {
+    "parallel_cli": false,
+    "blocker": "parallel-cli not on PATH; used WebSearch, WebFetch, user-GitHub-xai MCP",
+    "no_clones": true,
+    "no_marketplace_buys": true,
+    "no_ue_install": true,
+    "http_checked": true
+  },
+  "counts": {
+    "keeper_table_rows": 22,
+    "primary_keepers_target_met": true,
+    "kills": 6,
+    "urls_in_pack": 30,
+    "keepers_core": 17
+  },
+  "urls_in_pack": [
+    "https://carla.readthedocs.io/en/latest/adv_opendrive/",
+    "https://carla.readthedocs.io/en/latest/core_map/",
+    "https://carla.readthedocs.io/en/latest/tuto_G_openstreetmap/",
+    "https://dev.epicgames.com/community/learning/tutorials/1w4K/unreal-engine-bp-gettting-started-with-enhanced-input",
+    "https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/WaterBody.html?application_version=5.7",
+    "https://dev.epicgames.com/documentation/unreal-engine/API/Plugins/ChaosVehicles/UChaosVehicleMovementComponent",
+    "https://dev.epicgames.com/documentation/unreal-engine/city-sample",
+    "https://dev.epicgames.com/documentation/unreal-engine/creating-user-interfaces-with-umg-and-slate-in-unreal-engine",
+    "https://dev.epicgames.com/documentation/unreal-engine/how-to-set-up-vehicles-in-unreal-engine",
+    "https://dev.epicgames.com/documentation/unreal-engine/player-controllers-in-unreal-engine",
+    "https://forums.unrealengine.com/t/why-does-my-packaged-game-instantly-quit/277996",
+    "https://gfx-hub.cc/game-development/unreal-engine-asset/45893-unreal-engine-asset-advanced-vehicle-system-v424-425.html",
+    "https://github.com/ChrisVifzack/unreal-simple-racer",
+    "https://github.com/DanialKama/VehicularCombat",
+    "https://github.com/Kooroshoo/EndlessRacer-4.24",
+    "https://github.com/MrRobinOfficial/Unreal-NebulousVehicle",
+    "https://github.com/ScrappyCocco/UETrafficGame",
+    "https://github.com/ScrappyCocco/UETrafficGame/wiki",
+    "https://github.com/carla-simulator/carla",
+    "https://github.com/myoozy/KinetiForge-Vehicle-System",
+    "https://github.com/tiagorlampert/CHAOS",
+    "https://users.cs.northwestern.edu/~hunicke/MDA.pdf",
+    "https://www.asam.net/standards/detail/opendrive",
+    "https://www.evenant.com/articles/painting-environment-concepts-in-no-time",
+    "https://www.fab.com/listings/90911f6b-d960-4138-aa4d-283058895980",
+    "https://www.fab.com/listings/e1457ad1-297b-4a70-aecb-5c6716d9494f",
+    "https://www.reddit.com/r/unrealengine/comments/1aco1jp/chaos_vehicle_arcade_racing/",
+    "https://www.reddit.com/r/unrealengine/comments/1dpewlt/which_setting_causes_the_viewport_to_pause_when/",
+    "https://www.reddit.com/r/unrealengine/comments/tqf9kj/performance_issues_when_game_window_is_not_in/",
+    "https://www.reddit.com/r/unrealengine/comments/xj3977/chaos_vehicle_arcade_settings/"
+  ],
+  "keepers_core": [
+    {
+      "id": "A1",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/how-to-set-up-vehicles-in-unreal-engine",
+      "license": "Epic docs",
+      "tracks": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "A2",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/player-controllers-in-unreal-engine",
+      "license": "Epic docs",
+      "tracks": [
+        0,
+        3
+      ]
+    },
+    {
+      "id": "A2b",
+      "url": "https://dev.epicgames.com/community/learning/tutorials/1w4K/unreal-engine-bp-gettting-started-with-enhanced-input",
+      "license": "Epic community",
+      "tracks": [
+        0,
+        3
+      ]
+    },
+    {
+      "id": "CHAOS_API",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/API/Plugins/ChaosVehicles/UChaosVehicleMovementComponent",
+      "license": "Epic API",
+      "tracks": [
+        2
+      ]
+    },
+    {
+      "id": "UMG",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/creating-user-interfaces-with-umg-and-slate-in-unreal-engine",
+      "license": "Epic docs",
+      "tracks": [
+        3
+      ]
+    },
+    {
+      "id": "WATER",
+      "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/python-api/class/WaterBody.html?application_version=5.7",
+      "license": "Epic docs",
+      "tracks": [
+        1
+      ]
+    },
+    {
+      "id": "A5",
+      "url": "https://carla.readthedocs.io/en/latest/adv_opendrive/",
+      "license": "CARLA docs; code MIT",
+      "tracks": [
+        1
+      ]
+    },
+    {
+      "id": "A5b",
+      "url": "https://www.asam.net/standards/detail/opendrive",
+      "license": "ASAM free spec",
+      "tracks": [
+        1
+      ]
+    },
+    {
+      "id": "CARLA_MAP",
+      "url": "https://carla.readthedocs.io/en/latest/core_map/",
+      "license": "CARLA docs",
+      "tracks": [
+        1
+      ]
+    },
+    {
+      "id": "CARLA_OSM",
+      "url": "https://carla.readthedocs.io/en/latest/tuto_G_openstreetmap/",
+      "license": "CARLA docs",
+      "tracks": [
+        1
+      ]
+    },
+    {
+      "id": "B1",
+      "url": "https://github.com/ChrisVifzack/unreal-simple-racer",
+      "license": "MIT",
+      "ue": "5.1",
+      "tracks": [
+        3,
+        0,
+        2
+      ]
+    },
+    {
+      "id": "B2",
+      "url": "https://github.com/ScrappyCocco/UETrafficGame",
+      "license": "MIT",
+      "ue": "5.5",
+      "tracks": [
+        3,
+        2
+      ]
+    },
+    {
+      "id": "B3",
+      "url": "https://github.com/myoozy/KinetiForge-Vehicle-System",
+      "license": "MIT",
+      "ue": "5.3",
+      "tracks": [
+        2
+      ]
+    },
+    {
+      "id": "B3b",
+      "url": "https://github.com/MrRobinOfficial/Unreal-NebulousVehicle",
+      "license": "MIT",
+      "tracks": [
+        2
+      ]
+    },
+    {
+      "id": "B3c",
+      "url": "https://github.com/DanialKama/VehicularCombat",
+      "license": "MIT",
+      "ue": "5.1",
+      "tracks": [
+        2,
+        3
+      ]
+    },
+    {
+      "id": "MDA",
+      "url": "https://users.cs.northwestern.edu/~hunicke/MDA.pdf",
+      "license": "academic free PDF",
+      "tracks": [
+        0
+      ]
+    },
+    {
+      "id": "ART",
+      "url": "https://www.evenant.com/articles/painting-environment-concepts-in-no-time",
+      "license": "free article",
+      "tracks": [
+        0,
+        1
+      ]
+    }
+  ],
+  "kills": [
+    {
+      "name": "R-Tune Vehicle Physics 2.0 Pro (Fab)",
+      "url": "https://www.fab.com/listings/90911f6b-d960-4138-aa4d-283058895980",
+      "why": "paid Fab proprietary"
+    },
+    {
+      "name": "Advanced Vehicle System (Fab)",
+      "url": "https://www.fab.com/listings/e1457ad1-297b-4a70-aecb-5c6716d9494f",
+      "why": "paid Fab"
+    },
+    {
+      "name": "GFX-HUB cracked AVS-class mirror",
+      "url": "https://gfx-hub.cc/game-development/unreal-engine-asset/45893-unreal-engine-asset-advanced-vehicle-system-v424-425.html",
+      "why": "pirated assets"
+    },
+    {
+      "name": "Kooroshoo/EndlessRacer-4.24",
+      "url": "https://github.com/Kooroshoo/EndlessRacer-4.24",
+      "why": "stale UE4.24"
+    },
+    {
+      "name": "Epic City Sample greenfield",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/city-sample",
+      "why": "off-scope huge city sample"
+    },
+    {
+      "name": "tiagorlampert/CHAOS RAT",
+      "url": "https://github.com/tiagorlampert/CHAOS",
+      "why": "malware name collision with Chaos physics"
+    }
+  ]
+}
