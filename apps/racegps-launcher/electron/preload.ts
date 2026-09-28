@@ -12,6 +12,10 @@ contextBridge.exposeInMainWorld("racegps", {
   launchWorkshop: (): Promise<{ ok: boolean; detail: string }> =>
     ipcRenderer.invoke("launch:workshop"),
   openLogs: (): Promise<void> => ipcRenderer.invoke("logs:open"),
-  runWorkshopCli: (argv: string[]): Promise<{ code: number; stdout: string; stderr: string }> =>
+  openPath: (target: string): Promise<{ ok: boolean; detail: string }> =>
+    ipcRenderer.invoke("shell:openPath", target),
+  runWorkshopCli: (
+    argv: string[],
+  ): Promise<{ code: number; stdout: string; stderr: string; logPath: string }> =>
     ipcRenderer.invoke("workshop:cli", argv),
 });

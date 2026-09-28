@@ -13,9 +13,15 @@ declare global {
       launchRace: () => Promise<{ ok: boolean; detail: string }>;
       launchWorkshop: () => Promise<{ ok: boolean; detail: string }>;
       openLogs: () => Promise<void>;
+      openPath: (target: string) => Promise<{ ok: boolean; detail: string }>;
       runWorkshopCli: (
         argv: string[],
-      ) => Promise<{ code: number; stdout: string; stderr: string }>;
+      ) => Promise<{
+        code: number;
+        stdout: string;
+        stderr: string;
+        logPath: string;
+      }>;
     };
   }
 }
