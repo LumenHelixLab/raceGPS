@@ -40,8 +40,9 @@ Do **not** robocopy between folders. Do **not** push `integration/reconciled` or
 
 ## Sequence
 1. **DONE (this pass):** clean ignore + one focused grokbot commit (docs/training/burke keepers)
-2. **Next:** cherry-pick / selective copy showcase keepers into grokbot after conflict check
+2. **DONE (this pass):** skyline mat/tex/SourceImages/Python copied; EnvActor/doors/G2-G3 already matched tip — see `2026-09-27-SHOWCASE-KEEPERS-LANDED.md`
 3. **Hold:** promote reconcile → origin or merge to `master` until Track A Sunset keep-alive evidence is filed
 
 ## Gate 1 reminder
 NullRHI / ForceFinish is **not** Gate 1 PASS. Attended windowed Sunset → Racing keep-alive + ViewportClosed dig still open.
+
