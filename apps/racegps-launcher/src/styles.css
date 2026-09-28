@@ -1,0 +1,17 @@
+/* ui-kit has no package exports for tokens.css — use relative path */
+@import "../../../packages/ui-kit/tokens.css";
+
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  background: #0b0f14;
+  color: #e8eef7;
+}
+
+body {
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
