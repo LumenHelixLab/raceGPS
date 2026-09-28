@@ -1,0 +1,11 @@
+............s........................................................... [ 32%]
+........................................................................ [ 65%]
+...........s.s..s.s..................................................... [ 98%]
+...                                                                      [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_bridge_handling.py:215: akron_raw.osm not available
+SKIPPED [1] tests/test_universal_compiler.py:48: akron_raw.osm not available
+SKIPPED [1] tests/test_universal_compiler.py:75: akron_raw.osm not available
+SKIPPED [1] tests/test_universal_compiler.py:118: akron_raw.osm not available
+SKIPPED [1] tests/test_universal_compiler.py:140: akron_raw.osm not available
+214 passed, 5 skipped in 9.33s

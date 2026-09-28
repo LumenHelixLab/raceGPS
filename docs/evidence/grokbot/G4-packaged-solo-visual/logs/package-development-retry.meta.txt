@@ -1,0 +1,2 @@
+start=2026-09-24T19:05:45.0161609-04:00 note=SetActorLabel WITH_EDITOR guard
+end=2026-09-24T19:16:50.0837576-04:00 result=HARD_CAP_KILLED note=shader compile still running after ~10m; LaunchCleveland is G4 playable path; package nice-to-have not G5 blocker

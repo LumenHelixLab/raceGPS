@@ -68,7 +68,7 @@ void ANeonHUD::DrawRaceInfo()
     float PanelX = 30.0f;
     float PanelY = 30.0f;
     float PanelW = 320.0f;
-    float PanelH = 220.0f;
+    float PanelH = 260.0f;
 
     DrawNeonPanel(PanelX, PanelY, PanelW, PanelH, NeonCyan);
 
@@ -88,6 +88,15 @@ void ANeonHUD::DrawRaceInfo()
     FCanvasTextItem CpItem(FVector2D(X, Y), FText::FromString(CpStr), MainFont, NeonMagenta);
     CpItem.Scale = FVector2D(Scale, Scale);
     Canvas->DrawItem(CpItem);
+
+    // Place
+    Y += 40.0f * Scale;
+    const int32 PlaceShow = FMath::Max(PlayerPlace, 0);
+    const int32 FieldShow = FMath::Max(FieldSize, 1);
+    FString PlaceStr = FString::Printf(TEXT("PLACE  %d / %d"), PlaceShow, FieldShow);
+    FCanvasTextItem PlaceItem(FVector2D(X, Y), FText::FromString(PlaceStr), MainFont, NeonYellow);
+    PlaceItem.Scale = FVector2D(Scale, Scale);
+    Canvas->DrawItem(PlaceItem);
 
     // Speed
     Y += 40.0f * Scale;
@@ -163,9 +172,9 @@ void ANeonHUD::DrawFinishedScreen()
 
     // Medal
     FLinearColor MedalColor = NeonCyan;
-    if (FinishedMedal == TEXT("GOLD")) MedalColor = NeonYellow;
-    else if (FinishedMedal == TEXT("SILVER")) MedalColor = FLinearColor(0.75f, 0.75f, 0.75f);
-    else if (FinishedMedal == TEXT("BRONZE")) MedalColor = FLinearColor(0.8f, 0.5f, 0.2f);
+    if (FinishedMedal == TEXT("GOLD") || FinishedMedal.StartsWith(TEXT("1"))) MedalColor = NeonYellow;
+    else if (FinishedMedal == TEXT("SILVER") || FinishedMedal.StartsWith(TEXT("2"))) MedalColor = FLinearColor(0.75f, 0.75f, 0.75f);
+    else if (FinishedMedal == TEXT("BRONZE") || FinishedMedal.StartsWith(TEXT("3"))) MedalColor = FLinearColor(0.8f, 0.5f, 0.2f);
 
     float MedalScale = 3.0f;
     FString MedalStr = FinishedMedal;
@@ -255,4 +264,17 @@ void ANeonHUD::ShowRaceFinished(float FinalTime, const FString& Medal)
     bShowFinished = true;
     FinishedTime = FinalTime;
     FinishedMedal = Medal;
+}
+
+void ANeonHUD::SetPlace(int32 Place, int32 InFieldSize)
+{
+    PlayerPlace = Place;
+    FieldSize = InFieldSize;
+}
+
+void ANeonHUD::ClearFinished()
+{
+    bShowFinished = false;
+    FinishedMedal.Empty();
+    FinishedTime = 0.0f;
 }

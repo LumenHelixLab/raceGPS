@@ -2,6 +2,7 @@
 """Generic semantic road graph builder from OSM data."""
 
 import xml.etree.ElementTree as ET
+import math
 from pathlib import Path
 from typing import Any
 
@@ -49,8 +50,12 @@ def build_road_graph(osm_path: Path, origin_lat: float = 0.0, origin_lon: float 
     for elem in root:
         if elem.tag == "node":
             nid = elem.get("id")
-            lat = float(elem.get("lat", 0))
-            lon = float(elem.get("lon", 0))
+            if elem.get("lat") is None or elem.get("lon") is None:
+                raise ValueError(f"OSM node {nid} has no coordinates; a metadata-only extract is not geometry")
+            lat = float(elem.get("lat"))
+            lon = float(elem.get("lon"))
+            if not math.isfinite(lat) or not math.isfinite(lon) or not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                raise ValueError(f"OSM node {nid} has invalid coordinates")
             nodes[nid] = (lat, lon)
         elif elem.tag == "way":
             tags = {t.get("k"): t.get("v") for t in elem if t.tag == "tag"}
@@ -66,7 +71,8 @@ def build_road_graph(osm_path: Path, origin_lat: float = 0.0, origin_lon: float 
     roads = []
     node_to_ways: dict[str, list[str]] = {}
     road_layers: dict[str, int] = {}
-    for w in ways:
+    road_endpoints = {}
+    for w in sorted(ways, key=lambda w: w["id"]):
         if "highway" not in w["tags"]:
             continue
 
@@ -74,14 +80,27 @@ def build_road_graph(osm_path: Path, origin_lat: float = 0.0, origin_lon: float 
         if highway in ("footway", "cycleway", "path", "steps", "corridor", "track"):
             continue
 
+        missing = [nid for nid in w["nodes"] if nid not in nodes]
+        if missing:
+            raise ValueError(f"Road {w['id']} references missing nodes: {missing[:5]}")
         points = []
         for nid in w["nodes"]:
             if nid in nodes:
                 points.append({"lat": nodes[nid][0], "lon": nodes[nid][1]})
-            node_to_ways.setdefault(nid, []).append(w["id"])
 
         if len(points) < 2:
             continue
+        for nid in set(w["nodes"]):
+            node_to_ways.setdefault(nid, []).append(w["id"])
+        road_endpoints[w["id"]] = {w["nodes"][0], w["nodes"][-1]}
+
+        oneway = w["tags"].get("oneway", "").lower()
+        one_way = oneway in ("yes", "true", "1", "-1") or (
+            not oneway and w["tags"].get("junction") == "roundabout")
+        node_ids = list(w["nodes"])
+        if oneway == "-1":
+            points.reverse()
+            node_ids.reverse()
 
         width_map = {
             "motorway": 14, "motorway_link": 10, "trunk": 12, "trunk_link": 9,
@@ -104,9 +123,10 @@ def build_road_graph(osm_path: Path, origin_lat: float = 0.0, origin_lon: float 
             "name": w["tags"].get("name", ""),
             "highway": highway,
             "points": points,
+            "node_ids": node_ids,
             "width": width_map.get(highway, 7),
             "lane_count": lane_count,
-            "one_way": w["tags"].get("oneway", "no") == "yes",
+            "one_way": one_way,
             "max_speed": _parse_maxspeed(w["tags"].get("maxspeed", "")),
             "surface": w["tags"].get("surface", "asphalt"),
             "layer": layer,
@@ -119,8 +139,16 @@ def build_road_graph(osm_path: Path, origin_lat: float = 0.0, origin_lon: float 
     # Roads at different layers (e.g. a bridge over a surface street) share a
     # node in OSM but do not physically connect, so they must not junction.
     intersections = []
-    for nid, way_ids in node_to_ways.items():
+    for nid, way_ids in sorted(node_to_ways.items()):
         if len(way_ids) >= 2 and nid in nodes:
+            # A shared endpoint can be a deck-to-approach transition. Never
+            # infer a junction merely from proximity or an interior crossing.
+            if all(nid in road_endpoints[wid] for wid in way_ids):
+                intersections.append({"node_id": nid, "lat": nodes[nid][0],
+                    "lon": nodes[nid][1], "road_ids": sorted(way_ids),
+                    "layer": min(road_layers[wid] for wid in way_ids),
+                    "layer_transition": len({road_layers[wid] for wid in way_ids}) > 1})
+                continue
             by_layer: dict[int, list[str]] = {}
             for wid in way_ids:
                 by_layer.setdefault(road_layers.get(wid, 0), []).append(wid)

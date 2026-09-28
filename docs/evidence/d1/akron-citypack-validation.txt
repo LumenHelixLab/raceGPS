@@ -1,0 +1,62 @@
+
+Snapped connectivity (akron_road_graph.json, tol 2.0 m): 24031 component(s), 71656 endpoints
+Near-miss junctions: 1015 endpoint pair(s) within 2.0 m but not exactly connected
+Intersection connectivity: 52 component(s) across 35828 roads / 44644 intersections; 32 road(s) in no intersection
+
+Road geometry (akron_road_graph.json): 35828 roads checked
+  duplicate consecutive points:  0 (in 0 roads)
+  zero-length segments:          0 (in 0 roads)
+  out-of-range coordinates:      0
+  out-of-bounds roads:           63
+  degenerate (near-zero length): 0
+  sparse (segment gap > 500 m):  6
+
+Routes: 2 checked
+  Route akron_cruise_sprint_001: 6.15 km, 175 points
+  Route akron_cruise_sprint_002: 3.78 km, 125 points
+
+Check summary:
+  xodr           errors=0  warnings=0
+  connectivity   errors=1  warnings=22
+  geometry       errors=0  warnings=12
+  routes         errors=0  warnings=0
+  TOTAL          errors=1  warnings=34
+
+WARNINGS (34):
+  - 32 road(s) not referenced by any intersection
+  - 1015 near-miss endpoint pair(s) within 2.0 m but not exactly connected (possible broken junctions)
+  -   near-miss: road 1395026813 <-> road 1395058775: 0.23 m apart
+  -   near-miss: road 709839698 <-> road 709839708: 0.34 m apart
+  -   near-miss: road 1126361997 <-> road 1127941793: 0.35 m apart
+  -   near-miss: road 1256709838 <-> road 1341583839: 0.36 m apart
+  -   near-miss: road 1248232426 <-> road 1248232467: 0.36 m apart
+  -   near-miss: road 1357855662 <-> road 1359149544: 0.37 m apart
+  -   near-miss: road 1343520275 <-> road 1343560435: 0.39 m apart
+  -   near-miss: road 1248232406 <-> road 1248232462: 0.39 m apart
+  -   near-miss: road 1351639734 <-> road 1351639778: 0.40 m apart
+  -   near-miss: road 1357868868 <-> road 1358188308: 0.42 m apart
+  -   near-miss: road 1259719678 <-> road 1259719702: 0.43 m apart
+  -   near-miss: road 1259719690 <-> road 1259719714: 0.43 m apart
+  -   near-miss: road 709840745 <-> road 709840747: 0.44 m apart
+  -   near-miss: road 1357563724 <-> road 1357855593: 0.44 m apart
+  -   near-miss: road 1342188158 <-> road 1342478025: 0.44 m apart
+  -   near-miss: road 1491244195 <-> road 1491244197: 0.44 m apart
+  -   near-miss: road 1266849460 <-> road 1300296604: 0.45 m apart
+  -   near-miss: road 1126369335 <-> road 1127941779: 0.46 m apart
+  -   near-miss: road 1251271048 <-> road 1253661286: 0.46 m apart
+  -   near-miss: road 1342242736 <-> road 1344425076: 0.46 m apart
+  - 63 road(s) extend outside declared bounds
+  - Road 21390183: 16 point(s) outside declared bounds
+  - Road 21392504: 44 point(s) outside declared bounds
+  - Road 21394221: 7 point(s) outside declared bounds
+  - Road 21399250: 5 point(s) outside declared bounds
+  - Road 21402065: 4 point(s) outside declared bounds
+  - 6 road(s) with segment gaps over 500 m
+  - Road 21392504: max segment gap 643 m exceeds 500 m (sparse coordinates?)
+  - Road 21419241: max segment gap 899 m exceeds 500 m (sparse coordinates?)
+  - Road 91612090: max segment gap 504 m exceeds 500 m (sparse coordinates?)
+  - Road 94158588: max segment gap 530 m exceeds 500 m (sparse coordinates?)
+  - Road 121341646: max segment gap 688 m exceeds 500 m (sparse coordinates?)
+
+ERRORS (1):
+  - Road graph has 52 disconnected components (via intersections topology)

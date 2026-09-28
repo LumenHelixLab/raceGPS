@@ -15,6 +15,7 @@ public class raceGPSAkronBeta : ModuleRules
             "InputCore",
             "ChaosVehicles",
             "ChaosVehiclesCore",
+            "AIModule",
             "EnhancedInput",
             "UMG",
             "Slate",
@@ -31,7 +32,8 @@ public class raceGPSAkronBeta : ModuleRules
             "Niagara",
             "NiagaraCore",
             "HTTP",
-            "WebSockets"
+            "WebSockets",
+            "raceGPSPack"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]

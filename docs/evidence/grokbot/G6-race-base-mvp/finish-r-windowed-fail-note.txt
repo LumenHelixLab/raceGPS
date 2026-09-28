@@ -1,0 +1,49 @@
+# G6 finish+R WINDOWED human Sunset — FAIL-CLOSED (2026-09-24 ~23:21 ET)
+
+Gate 1 / Prototyper + Unreal PM: nullrhi does NOT count. Real windowed Sunset required.
+
+## Launch
+- Kill all UnrealEditor → confirmed NO_UNREAL_RUNNING
+- Single Start-Process interactive session (Session 1 / Console)
+- Args = LaunchClevelandRace.bat Sunset default + approved assist only:
+  `-game -ClevelandPreset=Sunset -ClevelandSkipIntro -ClevelandAutoDrive -log -windowed -ResX=1600 -ResY=900`
+- NO -ClevelandAutoLap, NO -nullrhi, NO -ClevelandProofFinishR
+- PID 7932; UnrealEditor count=1
+- Focus-keeper loop (SetForegroundWindow / BringWindowToTop every 2s; never CloseMainWindow)
+
+## What happened
+Reached Countdown → Racing (~3s after flags), then **ViewportClosed ~2s after Racing** — process exited before any EndRace / checkpoint / soft snap.
+
+```
+flags playtest=0 autodive=1 skipIntro=1 proofFinishR=0
+Race state changed to: ERaceSessionState::Racing
+FPlatformMisc::RequestExit(0, UGameEngine::Tick.ViewportClosed)
+```
+
+Same failure mode as prior windowed attempts (~20s or less). External/window close — not playtest RequestExit (playtest=0).
+
+## PASS/FAIL (Gate 1 windowed)
+
+| Step | Result |
+|------|--------|
+| 1. LaunchClevelandRace.bat Sunset windowed (no AutoLap/nullrhi) | PASS (launched) |
+| 2. Complete lap → EndRace | **FAIL** — ViewportClosed before EndRace |
+| 3. Finish HUD | FAIL (never reached) |
+| 4. R → RestartShowcase, no RequestExit | FAIL (never reached) |
+| 5. Evidence | PASS — this note + finish-r-windowed-fail-excerpt.txt + finish-r-windowed-viewportclosed.log |
+| Soft CTE | N/A (died before snaps) |
+
+## Fail-closed
+Per steering: **did NOT fall back to nullrhi**. Windowed human Sunset proof is BLOCKED until the viewport stays open.
+
+## Ask parent / Chris
+Please `request_box_help` or keep the raceGPSAkronBeta Sunset `-game` window open on omni (do not close / Alt+F4). Something is closing the viewport within seconds of Racing despite focus-keeper. Once the window can stay alive >1 lap, re-run the same bat+assist path for EndRace → HUD → SendKeys R.
+
+## Evidence paths
+- docs/evidence/grokbot/G6-race-base-mvp/finish-r-windowed-fail-excerpt.txt
+- docs/evidence/grokbot/G6-race-base-mvp/finish-r-windowed-viewportclosed.log
+- docs/evidence/grokbot/G6-race-base-mvp/finish-r-windowed-fail-note.txt (this file)
+- docs/evidence/grokbot/G6-race-base-mvp/finish-r-focuskeeper.txt
+
+## Note on prior nullrhi commit 8af0355
+That commit documented ForceFinish+R on nullrhi; Gate 1 now rejects nullrhi. This FAIL supersedes it for the human Sunset acceptance criterion.

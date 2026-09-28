@@ -1,0 +1,8 @@
+LogWindowsTouchpad: Display: CacheForceMaxTouchpadSensitivityMode SetMaxTouchpadSensitivity
+LogLiveCodingServer: Display: Registered process C:\Program Files\Epic Games\UE_5.7\Engine\Binaries\Win64\UnrealEditor.exe (PID: 22880)
+LogLiveCodingServer: Display: Loading module C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Binaries\Win64\UnrealEditor-raceGPSAkronBeta.dll (2.417 MB)
+LogLiveCodingServer: Display: Loading module C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Binaries\Win64\UnrealEditor-raceGPSPack.dll (0.126 MB)
+LogLiveCodingServer: Display: Loading module C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Binaries\Win64\UnrealEditor-raceGPSWorkshop.dll (0.062 MB)
+LogLiveCodingServer: Display: Loading module C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Binaries\Win64\UnrealEditor-raceGPSRace.dll (0.062 MB)
+LogLiveCodingServer: Display: Loaded 4 module(s), 629 lazy load module(s), and 194 reserved page ranges (0.000s, 98 translation units)
+LogLiveCodingServer: Display: Live coding ready - Save changes and press Ctrl+Alt+F11 to re-compile code

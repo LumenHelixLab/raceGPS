@@ -1,77 +1,51 @@
-name: UE5 Build & Package
+name: UE5 Build & Package (operator gate)
 
+# A public PR must not execute arbitrary code on the provisioned Unreal host.
+# Portable checks run separately. Dispatch this gate on a reviewed branch.
 on:
-  push:
-    branches: [master, main]
-    tags: ['v*']
-  pull_request:
-    branches: [master, main]
+  workflow_dispatch:
+    inputs:
+      configuration:
+        type: choice
+        options: [Development, Shipping]
+        default: Development
+        description: Build configuration
+
+permissions:
+  contents: read
 
 jobs:
-  python-tests:
-    name: Python Tools & Compiler Tests
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install Python deps
-        run: |
-          pip install pytest
-          pip install -r tools/akron-semantic-compiler/requirements.txt
-          pip install -r tools/universal-city-compiler/requirements.txt
-
-      - name: Run pytest
-        run: python -m pytest tests/ -v
-
-      - name: Test universal compiler CLI
-        run: python tools/universal-city-compiler/cli.py --help
-
   ue5-build:
-    name: UE5 Project Build
-    runs-on: windows-latest
-    needs: python-tests
+    runs-on: [self-hosted, Windows, X64, racegps, ue5-5.7]
+    timeout-minutes: 180
+    env:
+      RACEGPS_UE_ROOT: ${{ vars.RACEGPS_UE_ROOT }}
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
-
-      - name: Cache UE5
-        uses: actions/cache@v4
+          persist-credentials: false
+      - uses: actions/setup-python@v5
         with:
-          path: C:\UnrealEngine
-          key: ue5-5.7-${{ runner.os }}
-
-      - name: Build UE5 Project
+          python-version: '3.12'
+      - name: Build editor, game, cooked data and evidence
         shell: pwsh
         run: |
-          cd apps/unreal-akron-beta
-          if (Test-Path Build.bat) {
-            ./Build.bat
-          } else {
-            echo "Build.bat not found; skipping UE5 build in CI"
-          }
-
-  package-release:
-    name: Package Release
-    runs-on: windows-latest
-    needs: [python-tests, ue5-build]
-    if: startsWith(github.ref, 'refs/tags/v')
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Package Python Tools
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Path dist -Force
-          Compress-Archive -Path tools/ -DestinationPath dist/racegps-tools-${{ github.ref_name }}.zip
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+          $archivePath = Join-Path $env:RUNNER_TEMP "racegps-game-${{ github.run_id }}-${{ github.run_attempt }}"
+          $evidencePath = Join-Path $env:RUNNER_TEMP "racegps-evidence-${{ github.run_id }}-${{ github.run_attempt }}/build.json"
+          python scripts/build.py --config '${{ inputs.configuration }}' --archive $archivePath --report $evidencePath
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Retain build evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          files: dist/*.zip
-          generate_release_notes: true
+          name: unreal-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/racegps-evidence-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+      - name: Retain packaged game (not a playability certificate)
+        uses: actions/upload-artifact@v4
+        with:
+          name: racegps-Win64-${{ inputs.configuration }}-${{ github.sha }}
+          path: ${{ runner.temp }}/racegps-game-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          compression-level: 0

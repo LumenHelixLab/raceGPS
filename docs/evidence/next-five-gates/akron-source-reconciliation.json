@@ -1,0 +1,11 @@
+{
+  "raw_metadata_nodes": 48109,
+  "raw_nodes_with_coordinates": 0,
+  "raw_ways": 5305,
+  "raw_ways_with_node_references": 0,
+  "raw_osm_timestamp": "2026-06-04T22:52:48Z",
+  "legacy_backend_road_count": 1370,
+  "semantic_graph_road_count": 35828,
+  "raw_geometry_reconstructable": false,
+  "decision": "Preserve inconsistent historical artifacts; do not fabricate geometry or merge snapshots. Cleveland receives an independent dated source."
+}

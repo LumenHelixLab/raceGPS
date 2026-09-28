@@ -1,0 +1,9 @@
+{
+  "user_authorized": true,
+  "local_branch": "codex/d1-cleveland-build-baseline",
+  "published": false,
+  "draft_pr_created": false,
+  "git_push_error": "fatal: could not read Username for 'https://github.com': terminal prompts disabled",
+  "connected_github_push_permission": false,
+  "reason": "Technical write-access blocker; user authorization already granted"
+}

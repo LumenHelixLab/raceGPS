@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "packId": "fixture_minimal_v1",
+  "displayName": "Minimal Fixture",
+  "frame": {
+    "unitsPerMeter": 100,
+    "zUp": true,
+    "xEast": true,
+    "yNorth": true,
+    "originLat": 41.51722,
+    "originLon": -81.68306,
+    "originAltM": 0.0
+  },
+  "source": {
+    "type": "osm",
+    "attribution": "OpenStreetMap contributors (fixture)",
+    "retrievedAt": "2026-09-24T00:00:00Z",
+    "bbox": [
+      -81.684,
+      41.5165,
+      -81.682,
+      41.518
+    ]
+  },
+  "certification": {
+    "status": "provisional",
+    "notes": "Synthetic golden fixture; not a real circuit."
+  },
+  "contentHash": "sha256:36882df1a97517dc78656b2024ee128792f8451e29b6ebc6cd787cca6111940c",
+  "defaults": {
+    "environmentPreset": "Sunset"
+  },
+  "streets": "streets.json",
+  "checkpoints": "checkpoints.json",
+  "spawn": "spawn.json",
+  "environment": "environment.json"
+}

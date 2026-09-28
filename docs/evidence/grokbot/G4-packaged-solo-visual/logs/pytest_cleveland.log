@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.15, pytest-9.1.1, pluggy-1.6.0 -- C:\projects\raceGPS-grokbot-cleveland\.venv-grokbot\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\projects\raceGPS-grokbot-cleveland
+configfile: pytest.ini
+collecting ... collected 7 items
+
+tests/test_cleveland_circuit.py::test_closed_loop PASSED                 [ 14%]
+tests/test_cleveland_circuit.py::test_ten_turns PASSED                   [ 28%]
+tests/test_cleveland_circuit.py::test_length_within_5_percent PASSED     [ 42%]
+tests/test_cleveland_circuit.py::test_checkpoint_s_monotonic_and_start_finish PASSED [ 57%]
+tests/test_cleveland_circuit.py::test_pack_required_files_present PASSED [ 71%]
+tests/test_cleveland_circuit.py::test_metadata_provisional_and_not_1982 PASSED [ 85%]
+tests/test_cleveland_circuit.py::test_manifest_points_at_pack_files PASSED [100%]
+
+============================== 7 passed in 0.04s ==============================

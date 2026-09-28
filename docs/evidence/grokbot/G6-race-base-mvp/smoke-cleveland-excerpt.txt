@@ -1,0 +1,20 @@
+LogCsvProfiler: Display: Metadata set : commandline="" C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -ClevelandSkipIntro -log -windowed -ResX=1280 -ResY=720 -NOSPLASH""
+LogInit:  CurlRequestOptions (configurable via config and command line):
+LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -ClevelandSkipIntro -log -windowed -ResX=1280 -ResY=720 -NOSPLASH
+[2026.09.25-02.46.36:933][  0]LogTemp: raceGPS Cleveland: flags playtest=0 autodive=0 skipIntro=1
+[2026.09.25-02.46.36:937][  0]LogTemp: raceGPS Cleveland: HUD bind ok title=raceGPS  -  Cleveland Historic Circuit  (0/3) place=0 cp=0/12
+[2026.09.25-02.46.37:000][  0]LogTemp: raceGPS Cleveland: AI slot=1 soft recovery (human race, no aggressive teleport)
+[2026.09.25-02.46.37:002][  0]LogTemp: raceGPS Cleveland: AI slot=2 soft recovery (human race, no aggressive teleport)
+[2026.09.25-02.46.37:005][  0]LogTemp: raceGPS Cleveland: HUD bind ok title=raceGPS  -  Cleveland Historic Circuit  (3/3) place=3 cp=0/12
+[2026.09.25-02.46.37:006][  0]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Countdown
+[2026.09.25-02.46.37:006][  0]LogTemp: raceGPS Cleveland: race armed state=ERaceSessionState::Countdown countdown=3.0 checkpoints=12 autodive=0
+[2026.09.25-02.46.40:475][ 82]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Racing
+[2026.09.25-02.46.50:692][391]LogTemp: raceGPS Cleveland: soft recovery snap slot=1 s=2968.3 (human)
+[2026.09.25-02.46.50:692][391]LogTemp: raceGPS Cleveland: soft recovery snap slot=2 s=5570.2 (human)
+[2026.09.25-02.46.58:893][611]LogTemp: raceGPS Cleveland: soft recovery snap slot=2 s=6960.8 (human)
+[2026.09.25-02.47.07:450][859]LogTemp: raceGPS Cleveland: soft recovery snap slot=2 s=8382.7 (human)
+[2026.09.25-02.47.12:598][  7]LogTemp: raceGPS Cleveland: soft recovery snap slot=2 s=10362.4 (human)
+[2026.09.25-02.47.17:856][162]LogTemp: raceGPS Cleveland: soft recovery snap slot=2 s=13960.3 (human)
+[2026.09.25-02.47.23:088][306]LogTemp: raceGPS Cleveland: soft recovery snap slot=2 s=16085.8 (human)
+[2026.09.25-02.47.29:364][470]LogTemp: raceGPS Cleveland: soft recovery snap slot=2 s=18143.9 (human)
+[2026.09.25-02.47.31:857][522]LogTemp: raceGPS Cleveland: soft recovery snap slot=1 s=10462.0 (human)

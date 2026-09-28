@@ -1,0 +1,8 @@
+{
+  "default_preset": "Sunset",
+  "presets": [
+    "Sunset",
+    "Twilight",
+    "Midnight"
+  ]
+}

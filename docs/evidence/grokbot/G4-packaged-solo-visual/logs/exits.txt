@@ -1,0 +1,12 @@
+ue_editor_build=0
+pytest_cleveland=0
+pytest_full=0
+akron_audit=1
+nullrhi_sunset=0
+nullrhi_twilight=0
+nullrhi_midnight=0
+gpu_sunset=0
+gpu_twilight=0
+gpu_midnight=0
+package_development_first=6
+package_development_retry=HARD_CAP_KILLED

@@ -1,0 +1,5 @@
+# Portable compiler/garage validation. Unreal is provisioned separately.
+-r tools/akron-semantic-compiler/requirements.txt
+-r tools/universal-city-compiler/requirements.txt
+pytest>=8,<10
+jsonschema>=4,<5

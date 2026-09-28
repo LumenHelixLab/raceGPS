@@ -31,109 +31,130 @@ def _centroid(roads: list[dict]) -> dict:
             "lon": sum(p["lon"] for p in all_pts) / len(all_pts)}
 
 
-def generate_routes(road_graph: dict[str, Any], city_id: str, mode: str = "all", count: int = 3, seed: int = 42) -> list[dict]:
-    """Generate routes for a given mode.
+def directed_graph(road_graph: dict) -> tuple[dict, dict]:
+    """Build source-segment edges; join roads only at declared intersections.
 
-    Modes:
-        - cruise_sprint: checkpoint-to-checkpoint races
-        - time_trial: single-lap fastest time
-        - circuit: looped route returning to start
-        - drift_run: short technical sections with many turns
-        - all: generate a mix of all modes
+    Legacy graphs without node IDs require an exact point match at the declared
+    junction. No rounding, nearest-neighbour snapping or invented connectors.
     """
-    roads = road_graph.get("roads", [])
-    if len(roads) < 3:
+    parent, points, road_nodes = {}, {}, {}
+
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def join(a, b):
+        a, b = find(a), find(b)
+        parent[max(a, b)] = min(a, b)
+
+    roads = sorted(road_graph.get("roads", []), key=lambda r: str(r["id"]))
+    lookup = {}
+    for road in roads:
+        rid = str(road["id"])
+        if rid in lookup:
+            raise ValueError(f"Duplicate road ID: {rid}")
+        lookup[rid] = road
+        ids = road.get("node_ids")
+        if ids is not None and len(ids) != len(road["points"]):
+            raise ValueError(f"Node/point count mismatch: {rid}")
+        keys = []
+        for i, point in enumerate(road["points"]):
+            token = str(ids[i]) if ids is not None else repr((point["lat"], point["lon"]))
+            key = (rid, token)
+            if key in points and points[key] != point:
+                raise ValueError(f"Conflicting coordinates for node: {key}")
+            parent[key] = key
+            points[key] = point
+            keys.append(key)
+        road_nodes[rid] = keys
+    for junction in road_graph.get("intersections", []):
+        matches = []
+        for rid in sorted(set(map(str, junction.get("road_ids", [])))):
+            road = lookup.get(rid)
+            if road is None:
+                raise ValueError(f"Intersection references missing road: {rid}")
+            for i, point in enumerate(road["points"]):
+                ids = road.get("node_ids")
+                match = (str(ids[i]) == str(junction["node_id"])) if ids is not None else (
+                    point["lat"] == junction["lat"] and point["lon"] == junction["lon"])
+                if match:
+                    matches.append(road_nodes[rid][i])
+        if matches:
+            if any(points[k] != points[matches[0]] for k in matches):
+                raise ValueError("Intersection has conflicting source coordinates")
+            for key in matches[1:]:
+                join(matches[0], key)
+    adjacency = {}
+    for road in roads:
+        rid = str(road["id"])
+        keys = road_nodes[rid]
+        for i, (a, b) in enumerate(zip(keys, keys[1:])):
+            a, b = find(a), find(b)
+            if a == b:
+                continue
+            edge = {"road_id": rid, "segment_index": i, "direction": 1}
+            adjacency.setdefault(a, []).append((b, edge))
+            if not road.get("one_way", road.get("oneway", False)):
+                adjacency.setdefault(b, []).append((a, dict(edge, direction=-1)))
+    return adjacency, {find(k): p for k, p in points.items()}
+
+
+def generate_routes(road_graph: dict[str, Any], city_id: str, mode: str = "all", count: int = 3, seed: int = 42) -> list[dict]:
+    """Bounded deterministic search. An unsuccessful search emits no route.
+
+    A connectivity certificate is not proof of geometric clearance, handling,
+    historical accuracy or online competitive equity. Those require other gates.
+    """
+    minimum = {"cruise_sprint": 800, "time_trial": 1500, "circuit": 1000, "drift_run": 400}
+    if mode != "all" and mode not in minimum:
+        raise ValueError(f"Unknown route mode: {mode}")
+    if count < 0:
+        raise ValueError("Route count must be nonnegative")
+    adjacency, points = directed_graph(road_graph)
+    starts = sorted(adjacency)
+    if not starts:
         return []
-
     rng = random.Random(seed)
-    center = _centroid(roads)
-    modes_to_generate = ["cruise_sprint", "time_trial", "circuit", "drift_run"] if mode == "all" else [mode]
-    routes = []
-
-    for target_mode in modes_to_generate:
-        gen_count = count if mode != "all" else max(1, count // len(modes_to_generate))
-        for i in range(gen_count):
-            route = _generate_single_route(roads, center, target_mode, rng, city_id, i)
-            if route:
-                routes.append(route)
-
-    return routes
-
-
-def _generate_single_route(roads: list[dict], center: dict, mode: str, rng: random.Random, city_id: str, idx: int) -> dict | None:
-    """Generate one route of the specified mode."""
-    # Pick start road near center
-    center_roads = sorted(roads, key=lambda r: _haversine(r["points"][0], center))[:max(20, len(roads)//10)]
-    if not center_roads:
-        return None
-
-    start_road = rng.choice(center_roads)
-    start_pt = start_road["points"][0]
-    route_points = [start_pt]
-    current_road = start_road
-    used_ids = {start_road["id"]}
-
-    max_segments = {"cruise_sprint": 40, "time_trial": 60, "circuit": 50, "drift_run": 15}[mode]
-    min_distance = {"cruise_sprint": 800, "time_trial": 1500, "circuit": 1000, "drift_run": 400}[mode]
-
-    for _ in range(max_segments):
-        end_pt = current_road["points"][-1]
-        current_layer = current_road.get("layer", 0)
-        candidates = []
-        for r in roads:
-            if r["id"] in used_ids:
-                continue
-            # Roads on different layers (bridge over street, tunnel under)
-            # may pass within meters of each other but do not connect.
-            if r.get("layer", 0) != current_layer:
-                continue
-            for pt in r["points"]:
-                if _haversine(end_pt, pt) < 120:
-                    candidates.append(r)
+    result, signatures = [], set()
+    modes = list(minimum) if mode == "all" else [mode]
+    for route_idx in range(count):
+        target_mode = modes[route_idx % len(modes)]
+        for attempt in range(64):
+            start = rng.choice(starts)
+            current, visited, vertices, edges, distance = start, {start}, [start], [], 0.0
+            for step in range(256):
+                candidates = [(n, e) for n, e in adjacency.get(current, [])
+                              if n not in visited or (target_mode == "circuit" and n == start and len(edges) >= 2)]
+                if not candidates:
                     break
-        if not candidates:
+                nxt, edge = rng.choice(candidates)
+                distance += _haversine(points[current], points[nxt])
+                edges.append(edge)
+                vertices.append(nxt)
+                visited.add(nxt)
+                current = nxt
+                if nxt == start or (target_mode != "circuit" and distance >= minimum[target_mode]):
+                    break
+            closed = len(edges) >= 3 and current == start
+            if distance < minimum[target_mode] or (target_mode == "circuit" and not closed):
+                continue
+            signature = (target_mode, tuple((e["road_id"], e["segment_index"], e["direction"]) for e in edges))
+            if signature in signatures:
+                continue
+            signatures.add(signature)
+            route_points = [points[k] for k in vertices]
+            result.append({
+                "route_id": f"{city_id}_{target_mode}_{route_idx + 1:03d}", "mode": target_mode,
+                "name": f"{city_id.replace('_', ' ').title()} {target_mode.replace('_', ' ').title()} {route_idx + 1}",
+                "difficulty": "unrated", "distance_meters": round(distance),
+                "start": route_points[0], "finish": route_points[-1], "points": route_points,
+                "segments": edges, "closed": closed, "connectivity": "explicit_graph_v1",
+                "competition_certified": False,
+            })
             break
-
-        # For drift_run, prefer roads with many points (winding)
-        if mode == "drift_run":
-            candidates.sort(key=lambda r: len(r["points"]), reverse=True)
-            next_road = candidates[0]
-        else:
-            next_road = rng.choice(candidates)
-
-        used_ids.add(next_road["id"])
-        connect_idx = 0
-        for i, pt in enumerate(next_road["points"]):
-            if _haversine(end_pt, pt) < 60:
-                connect_idx = i
-                break
-        route_points.extend(next_road["points"][connect_idx+1:])
-        current_road = next_road
-
-    dist = _route_length(route_points)
-    if dist < min_distance:
-        return None
-
-    # For circuit, try to loop back
-    if mode == "circuit" and len(route_points) > 2:
-        if _haversine(route_points[-1], route_points[0]) > 500:
-            # Not a good loop; append path back
-            pass  # keep as-is for now
-
-    route_id = f"{city_id}_{mode}_{idx+1:03d}"
-    difficulties = ["easy", "medium", "hard", "extreme"]
-    difficulty = difficulties[min(idx, len(difficulties)-1)]
-
-    return {
-        "route_id": route_id,
-        "mode": mode,
-        "name": f"{city_id.replace('_',' ').title()} {mode.replace('_',' ').title()} {idx+1}",
-        "difficulty": difficulty,
-        "distance_meters": round(dist),
-        "start": route_points[0],
-        "finish": route_points[-1],
-        "points": route_points,
-    }
+    return result
 
 
 def place_checkpoints(route: dict, spacing_meters: float = 300.0, gate_radius: float = 18.0) -> list[dict]:

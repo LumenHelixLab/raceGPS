@@ -1,0 +1,36 @@
+{
+  "pack_id": "cleveland_burke_gp_1997_ez",
+  "source_pack": "cleveland_burke_gp_1997",
+  "sample_count": 410,
+  "measured_length_m_src": 3275.82,
+  "measured_length_m_ez": 3268.99,
+  "length_delta_m": -6.83,
+  "mean_abs_curvature_src": 0.00296,
+  "mean_abs_curvature_ez": 0.00302,
+  "max_abs_curvature_src": 0.03427,
+  "max_abs_curvature_ez": 0.03247,
+  "min_target_speed_mps_src": 36.75,
+  "min_target_speed_mps_ez": 36.32,
+  "mean_target_speed_mps_src": 68.5,
+  "mean_target_speed_mps_ez": 59.88,
+  "checkpoint_gates": 12,
+  "checkpoint_width_m_src_first": 22.0,
+  "checkpoint_width_m_ez_first": 29.7,
+  "reused_assets": {
+    "xodr": "/workspace/cleveland-showcase/citypacks/cleveland/burke_gp_1997/cleveland_burke_gp.xodr",
+    "skyline": "/workspace/cleveland-env/citypacks/cleveland/burke_gp_1997/skyline.json",
+    "water": "/workspace/cleveland-env/citypacks/cleveland/burke_gp_1997/water.json",
+    "track_dressing": "/workspace/cleveland-env/citypacks/cleveland/burke_gp_1997/track_dressing.json",
+    "environment_lighting": "/workspace/cleveland-env/citypacks/cleveland/burke_gp_1997/environment.json",
+    "skyline_building_count": 45
+  },
+  "gate1": {
+    "status": "HOLD",
+    "missing_for_pass": [
+      "UE PIE/packaged stills: Burke EZ ribbon readable",
+      "UE stills: vivid Cleveland skyline (reuse skyline.json)",
+      "UE stills: Lake Erie water sheet readable (reuse water.json)"
+    ],
+    "chris_facing": "blocked until PASS stills"
+  }
+}

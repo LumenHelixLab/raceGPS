@@ -149,7 +149,9 @@ void ARuntimeCityLoader::SpawnRoadSpline(const TArray<FVector>& Points, const FS
         Spline->AddSplinePoint(Pt, ESplineCoordinateSpace::World);
     }
 
+    #if WITH_EDITOR
     SplineActor->SetActorLabel(FString::Printf(TEXT("Route_%s"), *RouteId));
+    #endif
     SpawnedActors.Add(SplineActor);
 }
 
@@ -165,7 +167,9 @@ void ARuntimeCityLoader::SpawnCheckpoint(const FVector& Location, float Radius, 
     Sphere->SetSphereRadius(Radius);
     Sphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     Actor->AddInstanceComponent(Sphere);
+    #if WITH_EDITOR
     Actor->SetActorLabel(FString::Printf(TEXT("Checkpoint_%s"), *Id));
+    #endif
     SpawnedActors.Add(Actor);
 }
 
@@ -175,7 +179,9 @@ void ARuntimeCityLoader::SpawnPOI(const FVector& Location, const FString& Type, 
     AActor* Actor = GetWorld()->SpawnActor<AActor>(AActor::StaticClass(), Location, FRotator::ZeroRotator, Params);
     if (!Actor) return;
     Actor->Tags.Add(FName(*Type));
+    #if WITH_EDITOR
     Actor->SetActorLabel(FString::Printf(TEXT("POI_%s_%s"), *Type, *Name));
+    #endif
     SpawnedActors.Add(Actor);
 }
 
@@ -189,7 +195,9 @@ void ARuntimeCityLoader::SpawnWaterBody(const TArray<FVector>& Points, const FSt
     if (!Actor) return;
     Actor->Tags.Add(FName(TEXT("water")));
     Actor->Tags.Add(FName(*Type));
+    #if WITH_EDITOR
     Actor->SetActorLabel(FString::Printf(TEXT("Water_%s"), *Type));
+    #endif
     SpawnedActors.Add(Actor);
 }
 
@@ -200,7 +208,9 @@ void ARuntimeCityLoader::SpawnVegetationZone(const FVector& Center, float Radius
     if (!Actor) return;
     Actor->Tags.Add(FName(TEXT("vegetation")));
     Actor->Tags.Add(FName(*Type));
+    #if WITH_EDITOR
     Actor->SetActorLabel(FString::Printf(TEXT("Veg_%s"), *Type));
+    #endif
     SpawnedActors.Add(Actor);
 }
 

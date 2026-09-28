@@ -2,7 +2,8 @@
 """
 Convert OSM road graph → OpenDRIVE (.xodr) XML.
 Pure-Python implementation — no CARLA dependency.
-Generates valid OpenDRIVE 1.4 format from semantic road graph JSON.
+Generates prototype OpenDRIVE XML. Junction/lane semantics require independent
+ASAM/CARLA validation before this output can be certified for simulation.
 """
 
 import json
@@ -34,18 +35,13 @@ def _make_header(root: ET.Element, origin_lat: float, origin_lon: float) -> None
     hdr = ET.SubElement(root, "header")
     hdr.set("revMajor", "1")
     hdr.set("revMinor", "4")
-    hdr.set("name", "akron_oh_beta")
+    hdr.set("name", "racegps_prototype")
     hdr.set("version", "1")
-    hdr.set("date", "2026-06-04")
-    hdr.set("north", _format_float(origin_lat + 0.1))
-    hdr.set("south", _format_float(origin_lat - 0.1))
-    hdr.set("east", _format_float(origin_lon + 0.1))
-    hdr.set("west", _format_float(origin_lon - 0.1))
 
     geo = ET.SubElement(hdr, "geoReference")
     geo.text = (
-        f'+proj=tmerc +lat_0={origin_lat} +lon_0={origin_lon} '
-        f'+k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs'
+        f'+proj=eqc +lat_0={origin_lat} +lat_ts={origin_lat} +lon_0={origin_lon} '
+        f'+R={111320.0 * 180.0 / math.pi} +x_0=0 +y_0=0 +units=m +no_defs'
     )
 
 
@@ -228,9 +224,18 @@ def generate_xodr(road_graph: dict[str, Any], output_path: Path | None = None) -
     all_lons = [p["lon"] for r in roads for p in r["points"]]
     origin_lat = sum(all_lats) / len(all_lats)
     origin_lon = sum(all_lons) / len(all_lons)
+    if "origin" in road_graph:
+        origin_lat = road_graph["origin"]["lat"]
+        origin_lon = road_graph["origin"]["lon"]
 
     root = ET.Element("OpenDRIVE")
     _make_header(root, origin_lat, origin_lon)
+    local = [_geo_to_local(p["lat"], p["lon"], origin_lat, origin_lon)
+             for road in roads for p in road["points"]]
+    header = root.find("header")
+    for key, value in (("west", min(p[0] for p in local)), ("east", max(p[0] for p in local)),
+                       ("south", min(p[1] for p in local)), ("north", max(p[1] for p in local))):
+        header.set(key, _format_float(value))
 
     for road in roads:
         road_elem = ET.SubElement(root, "road")
@@ -272,7 +277,7 @@ def generate_xodr(road_graph: dict[str, Any], output_path: Path | None = None) -
         _build_lanes(
             road_elem,
             width=road.get("width", 7.0),
-            one_way=road.get("oneway", False),
+            one_way=road.get("one_way", road.get("oneway", False)),
             total_length=total_length,
         )
 
