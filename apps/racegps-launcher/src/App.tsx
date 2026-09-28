@@ -5,7 +5,12 @@ import { initialRoute } from "./lib/firstRun";
 import { HomePage } from "./pages/HomePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { WizardPage } from "./pages/WizardPage";
-import { WorkshopPlaceholderPage } from "./pages/WorkshopPlaceholderPage";
+import { CompilePage } from "./workshop/CompilePage";
+import { ExportPage } from "./workshop/ExportPage";
+import { LandingPage } from "./workshop/LandingPage";
+import { PackPage } from "./workshop/PackPage";
+import { ValidatePage } from "./workshop/ValidatePage";
+import { WorkshopLayout } from "./workshop/WorkshopLayout";
 
 export function App() {
   const [settings, setSettings] = useState<LauncherSettings | null>(null);
@@ -66,7 +71,16 @@ export function App() {
         }
       />
       <Route path="/settings" element={<SettingsPage />} />
-      <Route path="/workshop" element={<WorkshopPlaceholderPage />} />
+      <Route
+        path="/workshop"
+        element={<WorkshopLayout worktreeRoot={settings.paths.worktreeRoot} />}
+      >
+        <Route index element={<LandingPage />} />
+        <Route path="pack" element={<PackPage />} />
+        <Route path="compile" element={<CompilePage />} />
+        <Route path="validate" element={<ValidatePage />} />
+        <Route path="export" element={<ExportPage />} />
+      </Route>
       <Route path="*" element={<Navigate to={home} replace />} />
     </Routes>
   );
