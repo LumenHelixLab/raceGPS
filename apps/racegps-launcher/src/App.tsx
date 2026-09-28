@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import type { LauncherSettings } from "@racegps/launcher-settings";
 import { initialRoute } from "./lib/firstRun";
-import { PlaceholderHome } from "./pages/PlaceholderHome";
+import { HomePage } from "./pages/HomePage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { WizardPage } from "./pages/WizardPage";
+import { WorkshopPlaceholderPage } from "./pages/WorkshopPlaceholderPage";
 
 export function App() {
   const [settings, setSettings] = useState<LauncherSettings | null>(null);
@@ -35,7 +36,7 @@ export function App() {
   if (!settings) {
     return (
       <main className="page">
-        <p>Loading…</p>
+        <p>Loading.</p>
       </main>
     );
   }
@@ -58,13 +59,14 @@ export function App() {
         path="/"
         element={
           settings.firstRunCompleted ? (
-            <PlaceholderHome />
+            <HomePage />
           ) : (
             <Navigate to="/wizard" replace />
           )
         }
       />
       <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/workshop" element={<WorkshopPlaceholderPage />} />
       <Route path="*" element={<Navigate to={home} replace />} />
     </Routes>
   );

@@ -1,4 +1,5 @@
 import type { LauncherSettings } from "@racegps/launcher-settings";
+import type { PathValidation } from "./lib/pathValidation";
 
 export {};
 
@@ -8,7 +9,7 @@ declare global {
       getSettings: () => Promise<LauncherSettings>;
       saveSettings: (s: LauncherSettings) => Promise<void>;
       resetSettings: () => Promise<LauncherSettings>;
-      validatePaths: () => Promise<unknown>;
+      validatePaths: () => Promise<PathValidation>;
       launchRace: () => Promise<{ ok: boolean; detail: string }>;
       launchWorkshop: () => Promise<{ ok: boolean; detail: string }>;
       openLogs: () => Promise<void>;

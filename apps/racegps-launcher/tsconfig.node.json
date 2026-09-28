@@ -14,5 +14,5 @@
       "@racegps/launcher-settings": ["../../packages/launcher-settings/src/index.ts"]
     }
   },
-  "include": ["electron/**/*.ts", "electron.vite.config.ts"]
+  "include": ["electron/**/*.ts", "electron.vite.config.ts", "src/lib/pathValidation.ts"]
 }
