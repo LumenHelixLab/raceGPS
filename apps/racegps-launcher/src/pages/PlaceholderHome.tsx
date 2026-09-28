@@ -1,8 +1,13 @@
+import { Link } from "react-router-dom";
+
 export function PlaceholderHome() {
   return (
-    <main style={{ padding: 24, fontFamily: "system-ui" }}>
+    <main className="page">
       <h1>raceGPS Launcher</h1>
-      <p>Scaffold OK. Wizard/Home land in later tasks.</p>
+      <p>Scaffold OK. Wizard complete — Home land in Task 4.</p>
+      <p>
+        <Link to="/settings">Settings</Link>
+      </p>
     </main>
   );
 }

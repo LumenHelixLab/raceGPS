@@ -1,4 +1,4 @@
-/* ui-kit has no package exports for tokens.css — use relative path */
+/* ui-kit has no package exports for tokens.css - use relative path */
 @import "../../../packages/ui-kit/tokens.css";
 
 :root {
@@ -14,4 +14,77 @@ body {
 
 button {
   cursor: pointer;
+}
+
+.page {
+  padding: 24px;
+  max-width: 720px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.form label.radio {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.form input[type="text"],
+.form input:not([type]),
+.form input[type="search"] {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #2a3544;
+  background: #121820;
+  color: inherit;
+}
+
+.form fieldset {
+  border: 1px solid #2a3544;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.row button,
+.form > button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #3a4a5c;
+  background: #1a2430;
+  color: inherit;
+}
+
+.row button:disabled,
+.form > button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #ff8a8a;
+}
+
+.status {
+  color: #8dffb0;
+}
+
+a {
+  color: #7eb6ff;
 }
