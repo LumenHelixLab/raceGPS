@@ -68,3 +68,42 @@ def test_chaikin_respects_endpoints():
     out = chaikin(pts)
     assert out[0] == pts[0] and out[-1] == pts[-1]
     assert len(out) == 2 * len(pts)  # 2 per segment + 2 endpoints
+
+
+def test_snap_spawn_picks_nearest_lane():
+    from road_ribbon_spec import snap_spawn
+    roads_xy = {"a": [(0.0, 0.0), (100.0, 0.0)], "b": [(0.0, 50.0), (100.0, 50.0)]}
+    out = snap_spawn({"id": "s1", "lat": 0.0, "lon": 0.0, "heading": 0.0},
+                     roads_xy, origin={"lat": 0.0, "lon": 0.0})
+    assert out["road_id"] == "a"
+    assert abs(out["pos"][0]) < 1e-6 and abs(out["pos"][1]) < 1e-6
+    assert out["heading_deg"] == 0.0  # road runs +X (east) -> atan2(0, +) = 0
+
+
+def test_junction_box_covers_approaches():
+    from road_ribbon_spec import junction_boxes
+    inter = [{"node_id": "j1", "lat": 0.0, "lon": 0.0, "road_ids": ["a", "b"]}]
+    widths = {"a": 8.0, "b": 6.0}
+    to_xy = lambda lat, lon: (lon * 111320.0, lat * 111320.0)
+    boxes = junction_boxes(inter, to_xy, widths)
+    assert len(boxes) == 1
+    side = max(8.0, 6.0) + 4.0
+    xs = [p[0] for p in boxes[0]["polygon"]]
+    assert abs(max(xs) - min(xs) - side) < 1e-6
+
+
+def test_stub_roads_dropped_and_counted(tmp_path):
+    import json
+    from road_ribbon_spec import generate_for_pack
+    pack = tmp_path / "pack"
+    pack.mkdir()
+    (pack / "mini_road_graph.json").write_text(json.dumps({
+        "roads": [
+            {"id": "ok", "points": [{"lat": 0.0, "lon": 0.0}, {"lat": 0.001, "lon": 0.0}], "width": 8},
+            {"id": "stub", "points": [{"lat": 0.0, "lon": 0.0}], "width": 8},
+        ],
+        "intersections": [],
+    }))
+    spec = generate_for_pack(pack)
+    assert spec["dropped_stubs"] == 1
+    assert [r["road_id"] for r in spec["ribbons"]] == ["ok"]
