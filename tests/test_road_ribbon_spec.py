@@ -107,3 +107,60 @@ def test_stub_roads_dropped_and_counted(tmp_path):
     spec = generate_for_pack(pack)
     assert spec["dropped_stubs"] == 1
     assert [r["road_id"] for r in spec["ribbons"]] == ["ok"]
+
+
+def test_mixed_pack_emits_graph_junctions_in_xodr_frame(tmp_path):
+    """XODR supplies ribbons; a sibling *_road_graph.json still supplies
+    junction boxes, projected into the XODR local frame via its eqc geoReference."""
+    import json
+    from road_ribbon_spec import generate_for_pack
+    pack = tmp_path / "pack"
+    pack.mkdir()
+    (pack / "mini.xodr").write_text(
+        '<OpenDRIVE><header revMajor="1" revMinor="4" name="t" version="1">'
+        '<geoReference>+proj=eqc +lat_0=41.5 +lat_ts=41.5 +lon_0=-81.6925 '
+        '+R=6378166.0 +x_0=0 +y_0=0 +units=m +no_defs</geoReference>'
+        '</header>'
+        '<road name="r" length="100.0" id="a" junction="-1"><planView>'
+        '<geometry s="0" x="0" y="0" hdg="0" length="100.0"><line /></geometry>'
+        '</planView></road></OpenDRIVE>')
+    (pack / "mini_road_graph.json").write_text(json.dumps({
+        "roads": [{"id": "a", "points": [{"lat": 41.5, "lon": -81.6925},
+                                          {"lat": 41.5, "lon": -81.69}], "width": 8}],
+        "intersections": [{"node_id": "j1", "lat": 41.5, "lon": -81.6925,
+                           "road_ids": ["a"]}],
+    }))
+    spec = generate_for_pack(pack)
+    assert len(spec["junctions"]) == 1
+    xs = [p[0] for p in spec["junctions"][0]["polygon"]]
+    ys = [p[1] for p in spec["junctions"][0]["polygon"]]
+    cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+    assert abs(cx) < 0.01 and abs(cy) < 0.01  # lat_0/lon_0 projects to the origin
+
+
+def test_write_spec_is_canonical_and_hashed(tmp_path):
+    from road_ribbon_spec import write_spec
+    spec = {"frame": "ue-meters", "ribbons": [], "junctions": [], "spawns": [],
+            "origin": {"lat": 0.0, "lon": 0.0}, "dropped_stubs": 0}
+    out = tmp_path / "ribbon_spec.json"
+    h1 = write_spec(spec, out)
+    h2 = write_spec(spec, out)
+    assert h1 == h2 and len(h1) == 64
+    import hashlib
+    assert h1 == hashlib.sha256(out.read_bytes()).hexdigest()
+
+
+def test_cli_generates_burke_spec(tmp_path):
+    import json
+    import shutil
+    import subprocess
+    from road_ribbon_spec import main
+    pack = Path(__file__).resolve().parent.parent / "citypacks" / "cleveland" / "burke_gp_1997"
+    if not pack.exists():
+        pytest.skip("burke pack not staged")
+    out = tmp_path / "burke_ribbon_spec.json"
+    assert main([str(pack), "--out", str(out)]) == 0
+    spec = json.loads(out.read_text())
+    assert spec["ribbons"], "burke circuit must produce at least one ribbon"
+    total = sum(len(r["strip"]) for r in spec["ribbons"])
+    assert total > 500  # ~3.3 km circuit at 2 m sampling

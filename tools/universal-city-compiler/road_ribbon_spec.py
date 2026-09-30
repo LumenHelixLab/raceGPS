@@ -5,6 +5,8 @@ Pure stdlib Python. No unreal imports. Output coords are UE-space METERS
 """
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import math
 import xml.etree.ElementTree as ET
@@ -124,6 +126,35 @@ def snap_spawn(spawn: dict, roads_xy: dict[str, list], origin: dict) -> dict:
     return {"id": spawn["id"], "road_id": rid, "pos": [px, py], "heading_deg": hdg}
 
 
+def _eqc_projector(root: ET.Element):
+    """Parse an eqc geoReference from the XODR header; return lat/lon -> local-m
+    projector, or None when the header is missing or not equirectangular."""
+    ref = root.find("header/geoReference")
+    if ref is None or not ref.text:
+        return None
+    params = {}
+    for tok in ref.text.split():
+        if tok.startswith("+"):
+            kv = tok[1:].split("=", 1)
+            params[kv[0]] = kv[1] if len(kv) == 2 else True
+    if params.get("proj") != "eqc":
+        return None
+    try:
+        lat0 = math.radians(float(params.get("lat_0", 0)))
+        lon0 = math.radians(float(params.get("lon_0", 0)))
+        lat_ts = math.radians(float(params.get("lat_ts", params.get("lat_0", 0))))
+        radius = float(params.get("R", 6378137.0))
+    except (TypeError, ValueError):
+        return None
+    cos_ts = math.cos(lat_ts)
+
+    def to_xy(lat: float, lon: float) -> tuple[float, float]:
+        return (radius * (math.radians(lon) - lon0) * cos_ts,
+                radius * (math.radians(lat) - lat0))
+
+    return to_xy
+
+
 def junction_boxes(intersections: list[dict], to_xy, widths: dict[str, float]) -> list[dict]:
     boxes = []
     for j in intersections:
@@ -151,6 +182,7 @@ def generate_for_pack(pack_dir: Path) -> dict:
     if xodrs:
         tree = ET.parse(xodrs[0])
         root = tree.getroot()
+        widths = {}
         for road in root.findall("road"):
             if road.get("junction", "-1") != "-1":
                 continue  # junction-internal paths handled via junction boxes
@@ -164,7 +196,16 @@ def generate_for_pack(pack_dir: Path) -> dict:
                             "strip": build_strip(pts, width), "centerline": pts,
                             "width_m": width, "material": "asphalt"})
             roads_xy[road.get("id")] = pts
+            widths[road.get("id")] = width
         origin = {"lat": 0.0, "lon": 0.0}  # XODR is already local meters
+        # Mixed pack: sibling road-graph supplies junction boxes, projected into
+        # the XODR local frame via the header's eqc geoReference. Without a
+        # parseable eqc reference the frames can't align -> skip (no misaligned
+        # geometry is ever emitted).
+        to_xy = _eqc_projector(root)
+        if graphs and to_xy is not None:
+            graph = json.loads(graphs[0].read_text(encoding="utf-8"))
+            junctions = junction_boxes(graph.get("intersections", []), to_xy, widths)
     elif graphs:
         graph = json.loads(graphs[0].read_text(encoding="utf-8"))
         all_pts = [p for r in graph["roads"] for p in r["points"]]
@@ -201,3 +242,45 @@ def generate_for_pack(pack_dir: Path) -> dict:
 
     return {"frame": "ue-meters", "origin": origin, "ribbons": ribbons,
             "junctions": junctions, "spawns": spawns, "dropped_stubs": dropped}
+
+
+class _CanonEncoder(json.JSONEncoder):
+    def encode(self, o):
+        return super().encode(_round6(o))
+
+
+def _round6(o):
+    if isinstance(o, float):
+        return round(o, 6)
+    if isinstance(o, dict):
+        return {k: _round6(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_round6(v) for v in o]
+    return o
+
+
+def write_spec(spec: dict, out_path: Path) -> str:
+    """Write canonical ribbon_spec JSON; return sha256 of the written bytes."""
+    out_path = Path(out_path)
+    text = json.dumps(spec, cls=_CanonEncoder, sort_keys=True, indent=1) + chr(10)
+    out_path.write_text(text, encoding="utf-8")
+    return hashlib.sha256(out_path.read_bytes()).hexdigest()
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description="Generate ribbon_spec.json for a citypack")
+    ap.add_argument("pack_dir")
+    ap.add_argument("--out", help="output path (default: <pack_dir>/ribbon_spec.json)")
+    args = ap.parse_args(argv)
+    pack = Path(args.pack_dir)
+    spec = generate_for_pack(pack)
+    out = Path(args.out) if args.out else pack / "ribbon_spec.json"
+    digest = write_spec(spec, out)
+    print(f"ribbon_spec: {out} sha256={digest} ribbons={len(spec['ribbons'])} "
+          f"junctions={len(spec['junctions'])} spawns={len(spec['spawns'])} "
+          f"dropped_stubs={spec['dropped_stubs']}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
