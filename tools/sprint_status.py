@@ -43,8 +43,10 @@ SPRINT = {
         {"id": "T8", "title": "Editor-drive fast-follows (2 fixes shipped)", "status": "done", "owner": "ORCH"},
         {"id": "T10", "title": "Headless full-city import (terrain+buildings+water)", "status": "done", "owner": "WG-3"},
         {"id": "T9", "title": "MassEntity staggered traffic (stretch)", "status": "carry-over", "owner": "unassigned"},
+        {"id": "M2", "title": "Real roads: ribbon specs + certificate done; UE bake pending", "status": "blocked:ue-bake-ram", "owner": "WG-1"},
     ],
     "followups": [
+        "M2 real roads: ribbon_spec pinned for burke_gp_1997 (1 ribbon) + downtown-test (432 ribbons, 392 junctions, 1 spawn); validator certificate PASS on both; full gate 317 passed. UE headless bake NOT run — host RAM 6.0 GB free (OOM blocker). Evidence: docs/evidence/m2/",
         "Owner re-drive pending: Cleveland now has terrain+119k buildings+water+gates",
         "Runtime C++ BuildingMeshGenerator schema mismatch (lat/lon vs x/y) — runtime spawning builds 0 buildings; baked maps work around it. Sprint 3 C++ story.",
         "LANSessionManager hardcodes ServerTravel /Game/Maps/AkronWorld — new map is Akron5_0KmWorld",
