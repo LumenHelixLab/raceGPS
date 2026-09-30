@@ -1,0 +1,11 @@
+raceGPS runtime-readiness check
+  city_id:  burke_gp_1997 (from positional pack dir)
+  root:     C:\projects\racegps-reconcile
+
+  [WARN] no *_semantic_manifest.json in C:\projects\racegps-reconcile\citypacks\cleveland\burke_gp_1997 — pack-level checks only
+
+  [OK]   citypack directory: C:\projects\racegps-reconcile\citypacks\cleveland\burke_gp_1997
+  [OK]   ribbon_certificate: 1 ribbon(s) 1:1 with cleveland_burke_gp.xodr (dropped_stubs=0) sha256=584cf14dc9a5…
+
+Result: 0 error(s), 1 warning(s)
+PASSED — the runtime has everything it looks for.

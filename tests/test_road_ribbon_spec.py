@@ -164,3 +164,35 @@ def test_cli_generates_burke_spec(tmp_path):
     assert spec["ribbons"], "burke circuit must produce at least one ribbon"
     total = sum(len(r["strip"]) for r in spec["ribbons"])
     assert total > 500  # ~3.3 km circuit at 2 m sampling
+
+
+def test_ribbon_certificate_1to1(tmp_path):
+    import json
+    from road_ribbon_spec import generate_for_pack
+    pack = tmp_path / "pack"
+    pack.mkdir()
+    (pack / "mini_road_graph.json").write_text(json.dumps({
+        "roads": [{"id": "a", "points": [{"lat": 0.0, "lon": 0.0},
+                                          {"lat": 0.001, "lon": 0.0}], "width": 8}],
+        "intersections": []}))
+    spec = generate_for_pack(pack)
+    ids = {r["road_id"] for r in spec["ribbons"]}
+    assert ids == {"a"}
+
+
+def test_spawn_within_ribbon(tmp_path):
+    import json
+    from road_ribbon_spec import generate_for_pack
+    pack = tmp_path / "pack"
+    pack.mkdir()
+    (pack / "mini_road_graph.json").write_text(json.dumps({
+        "roads": [{"id": "a", "points": [{"lat": 0.0, "lon": 0.0},
+                                          {"lat": 0.001, "lon": 0.0}], "width": 8}],
+        "intersections": []}))
+    (pack / "mini_spawn_points.json").write_text(json.dumps(
+        [{"id": "s1", "lat": 0.0005, "lon": 0.00002, "heading": 0.0}]))
+    spec = generate_for_pack(pack)
+    s = spec["spawns"][0]
+    # snapped spawn must sit within half-width + 0.5 m of its road centerline
+    assert s["road_id"] == "a"
+    assert abs(s["pos"][0]) <= 8.0 / 2 + 0.5 + 3.0  # +3 m snap tolerance

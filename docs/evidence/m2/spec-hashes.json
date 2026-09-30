@@ -1,0 +1,16 @@
+{
+  "burke_gp_1997": {
+    "sha256": "584cf14dc9a5aee7f229284560b4da14e7c2990618c14a6911c47c36c059c6d5",
+    "ribbons": 1,
+    "junctions": 0,
+    "spawns": 0,
+    "dropped_stubs": 0
+  },
+  "downtown-test": {
+    "sha256": "fcffa1f86060a6e69012da3b2bd4f64b562840de2ed316e3e0f488cf62ce373c",
+    "ribbons": 432,
+    "junctions": 392,
+    "spawns": 1,
+    "dropped_stubs": 0
+  }
+}

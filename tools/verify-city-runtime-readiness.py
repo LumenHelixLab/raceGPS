@@ -160,8 +160,107 @@ def check_spawn_or_poi_file(report: Report, label: str, path: Path):
         report.ok(f"{label} file {path.name}: {len(data)} entries loadable")
 
 
+def _point_seg_dist(px, py, ax, ay, bx, by):
+    """Distance from (px,py) to segment (a,b)."""
+    dx, dy = bx - ax, by - ay
+    if dx == 0 and dy == 0:
+        return ((px - ax) ** 2 + (py - ay) ** 2) ** 0.5
+    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+    cx, cy = ax + t * dx, ay + t * dy
+    return ((px - cx) ** 2 + (py - cy) ** 2) ** 0.5
+
+
+def check_ribbon_certificate(report: Report, pack_dir: Path):
+    """M2 ribbon certificate: ribbon_spec.json must reproduce the road model 1:1.
+
+    PASS iff (a) the spec file exists (sha256 reported), (b) ribbon road ids
+    == model road ids (XODR junction=-1 roads, or graph roads) modulo exactly
+    `dropped_stubs` model-only ids, and (c) every snapped spawn lies within
+    (width/2 + 0.5 m + 3.0 m snap tolerance) of its ribbon centerline.
+    A present-but-wrong spec is FAIL-closed; a missing spec is a warning only
+    (M2 is Cleveland-scoped — out-of-scope cities must not regress).
+    """
+    import hashlib
+    import xml.etree.ElementTree as ET
+
+    spec_path = pack_dir / "ribbon_spec.json"
+    if not spec_path.is_file():
+        # Missing spec is a warning, not a failure: M2 is Cleveland-scoped, so
+        # cities without a ribbon bake yet (e.g. Akron) must not regress. A
+        # spec that EXISTS but is wrong is always a hard failure below.
+        report.warn("ribbon_certificate: ribbon_spec.json missing "
+                    "(run tools/universal-city-compiler/road_ribbon_spec.py)")
+        return
+    blob = spec_path.read_bytes()
+    sha = hashlib.sha256(blob).hexdigest()
+    spec = load_json(spec_path)
+    if isinstance(spec, Exception) or not isinstance(spec, dict):
+        report.fail(f"ribbon_certificate: ribbon_spec.json unreadable ({spec})")
+        return
+    ribbons = spec.get("ribbons") or []
+    ribbon_ids = {str(r.get("road_id")) for r in ribbons}
+    dropped = int(spec.get("dropped_stubs") or 0)
+
+    # (b) 1:1 against the road model the generator would have used
+    xodrs = sorted(pack_dir.glob("*.xodr"))
+    graphs = sorted(pack_dir.glob("*_road_graph.json"))
+    model_ids = set()
+    model_label = None
+    if xodrs:
+        root = ET.parse(xodrs[0]).getroot()
+        model_ids = {r.get("id") for r in root.findall("road")
+                     if r.get("junction", "-1") == "-1"}
+        model_label = xodrs[0].name
+    elif graphs:
+        graph = load_json(graphs[0])
+        if isinstance(graph, dict):
+            model_ids = {str(r.get("id")) for r in graph.get("roads", [])}
+        model_label = graphs[0].name
+    if model_label is None:
+        report.fail("ribbon_certificate: no road model (.xodr / *_road_graph.json) to reconcile against")
+        return
+
+    missing = model_ids - ribbon_ids   # in model, not baked
+    extra = ribbon_ids - model_ids     # baked, not in model
+    if extra:
+        report.fail(f"ribbon_certificate: {len(extra)} ribbon(s) not in {model_label}: "
+                    f"{sorted(extra)[:5]}")
+    elif len(missing) != dropped:
+        report.fail(f"ribbon_certificate: {len(missing)} model road(s) without a ribbon but "
+                    f"dropped_stubs={dropped} (missing: {sorted(missing)[:5]})")
+    else:
+        report.ok(f"ribbon_certificate: {len(ribbon_ids)} ribbon(s) 1:1 with {model_label} "
+                  f"(dropped_stubs={dropped}) sha256={sha[:12]}…")
+
+    # (c) snapped spawns within tolerance of their ribbon centerline
+    by_id = {str(r.get("road_id")): r for r in ribbons}
+    for s in spec.get("spawns") or []:
+        rid = str(s.get("road_id"))
+        rb = by_id.get(rid)
+        label = s.get("id", "?")
+        if rb is None:
+            report.fail(f"ribbon_certificate: spawn {label} references unknown road_id {rid}")
+            continue
+        pts = rb.get("centerline") or []
+        pos = s.get("pos") or [0, 0]
+        if len(pts) < 2:
+            report.fail(f"ribbon_certificate: spawn {label} road {rid} has <2 centerline points")
+            continue
+        d = min(_point_seg_dist(pos[0], pos[1], a[0], a[1], b[0], b[1])
+                for a, b in zip(pts, pts[1:]))
+        tol = float(rb.get("width_m", 7.0)) / 2 + 0.5 + 3.0
+        if d > tol:
+            report.fail(f"ribbon_certificate: spawn {label} is {d:.2f} m from road {rid} "
+                        f"centerline (tolerance {tol:.2f} m)")
+        else:
+            report.ok(f"ribbon_certificate: spawn {label} snapped {d:.2f} m from centerline "
+                      f"(tol {tol:.2f} m)")
+
+
 def main():
     parser = argparse.ArgumentParser(description="raceGPS city runtime-readiness check")
+    parser.add_argument("pack", nargs="?",
+                        help="Citypack directory to check directly (bypasses city resolution)")
     parser.add_argument("--city", help="City id (overrides DefaultGame.ini); default comes from ini or Akron")
     parser.add_argument("--root", default=str(Path(__file__).resolve().parent.parent),
                         help="Repo root (default: parent of tools/)")
@@ -171,8 +270,12 @@ def main():
     project_dir = root / PROJECT_DIR_REL
     ini = read_game_ini_city_config(project_dir)
 
-    city_id = args.city or ini.get("CityId") or DEFAULT_CITY_ID
-    source = "--city" if args.city else ("DefaultGame.ini" if ini.get("CityId") else "built-in default")
+    if args.pack:
+        city_id = args.city or Path(args.pack).resolve().name
+        source = "positional pack dir"
+    else:
+        city_id = args.city or ini.get("CityId") or DEFAULT_CITY_ID
+        source = "--city" if args.city else ("DefaultGame.ini" if ini.get("CityId") else "built-in default")
 
     report = Report()
     print(f"raceGPS runtime-readiness check")
@@ -181,7 +284,9 @@ def main():
     print()
 
     # --- citypack dir + manifest -------------------------------------------------
-    if ini.get("CitypackDir"):
+    if args.pack:
+        pack_dir = Path(args.pack).resolve()
+    elif ini.get("CitypackDir"):
         pack_dir = resolve_project_relative(project_dir, ini["CitypackDir"])
     else:
         pack_dir = root / "citypacks" / city_id
@@ -194,6 +299,13 @@ def main():
 
     manifests = sorted(pack_dir.glob("*_semantic_manifest.json"))
     if not manifests:
+        if args.pack:
+            # Pack-level mode: no semantic manifest (e.g. a circuit pack) is not
+            # fatal — run the checks that don't need one and report honestly.
+            report.warn(f"no *_semantic_manifest.json in {pack_dir} — pack-level checks only")
+            check_ribbon_certificate(report, pack_dir)
+            print_summary(report)
+            sys.exit(1 if report.errors else 0)
         report.fail(f"no *_semantic_manifest.json in {pack_dir}")
         print_summary(report)
         sys.exit(1)
@@ -208,7 +320,10 @@ def main():
 
     manifest_city = manifest.get("city_id")
     if manifest_city and manifest_city != city_id:
-        report.warn(f"manifest city_id '{manifest_city}' != selected city '{city_id}'")
+        if args.pack and not args.city:
+            city_id = manifest_city  # positional mode: trust the pack's own id
+        else:
+            report.warn(f"manifest city_id '{manifest_city}' != selected city '{city_id}'")
 
     display_name = manifest.get("display_name") or manifest.get("name")
     if display_name:
@@ -268,6 +383,9 @@ def main():
             report.ok(f"XODR (glob): {matches[0].name}")
         else:
             report.warn("no XODR file — runtime will use the road-graph JSON fallback")
+
+    # --- ribbon certificate (M2) ---------------------------------------------------
+    check_ribbon_certificate(report, pack_dir)
 
     # --- buildings (optional) ------------------------------------------------------
     bld_ref = manifest_file_ref(manifest, "buildings")
