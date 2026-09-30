@@ -42,3 +42,29 @@ def test_no_duplicate_joint_points():
     </planView></road></OpenDRIVE>"""
     pts = sample_planview(ET.fromstring(xodr).find("road"), step_m=2.0)
     assert len(pts) == len(set(pts))
+
+
+def test_strip_straight_road_is_rectangle():
+    from road_ribbon_spec import build_strip
+    pts = [(0.0, 0.0), (10.0, 0.0)]
+    poly = build_strip(pts, width_m=8.0)
+    assert len(poly) == 4
+    ys = sorted(p[1] for p in poly)
+    assert ys == [-4.0, -4.0, 4.0, 4.0]
+
+
+def test_strip_turn_no_explosion():
+    from road_ribbon_spec import build_strip
+    pts = [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0)]  # 90 deg corner
+    poly = build_strip(pts, width_m=8.0)
+    assert len(poly) == 6
+    for x, y in poly:
+        assert abs(x) <= 14.0 and abs(y) <= 14.0  # miter clamp holds
+
+
+def test_chaikin_respects_endpoints():
+    from road_ribbon_spec import chaikin
+    pts = [(0.0, 0.0), (10.0, 0.0), (10.0, 10.0)]
+    out = chaikin(pts)
+    assert out[0] == pts[0] and out[-1] == pts[-1]
+    assert len(out) == 2 * len(pts)  # 2 per segment + 2 endpoints

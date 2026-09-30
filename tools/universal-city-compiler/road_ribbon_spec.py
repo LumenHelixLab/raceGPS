@@ -41,3 +41,54 @@ def sample_planview(road_el: ET.Element, step_m: float = 2.0) -> list[tuple[floa
             seg = seg[1:]
         pts.extend(seg)
     return pts
+
+
+def chaikin(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """One corner-cutting pass; preserves endpoints."""
+    if len(points) < 3:
+        return list(points)
+    out = [points[0]]
+    for i in range(len(points) - 1):
+        p, q = points[i], points[i + 1]
+        out.append((0.75 * p[0] + 0.25 * q[0], 0.75 * p[1] + 0.25 * q[1]))
+        out.append((0.25 * p[0] + 0.75 * q[0], 0.25 * p[1] + 0.75 * q[1]))
+    out.append(points[-1])
+    return out
+
+
+def build_strip(points: list[tuple[float, float]], width_m: float) -> list[tuple[float, float]]:
+    """Closed ribbon outline: left edge forward, right edge reversed. Miter clamped at 3x half-width."""
+    if len(points) < 2:
+        raise ValueError("strip needs >= 2 points")
+    half = width_m / 2.0
+    clamp = 3.0 * half
+
+    def normals():
+        for i in range(len(points)):
+            if i == 0:
+                dx, dy = points[1][0] - points[0][0], points[1][1] - points[0][1]
+            elif i == len(points) - 1:
+                dx, dy = points[-1][0] - points[-2][0], points[-1][1] - points[-2][1]
+            else:
+                dx, dy = points[i + 1][0] - points[i - 1][0], points[i + 1][1] - points[i - 1][1]
+            length = math.hypot(dx, dy)
+            if length == 0.0:
+                yield 0.0, 0.0
+            else:
+                yield -dy / length, dx / length  # left normal
+
+    left, right = [], []
+    for (px, py), (nx, ny) in zip(points, normals()):
+        left.append((px + nx * half, py + ny * half))
+        right.append((px - nx * half, py - ny * half))
+
+    def clamped(edge):
+        out = []
+        for (px, py), (ex, ey) in zip(points, edge):
+            d = math.hypot(ex - px, ey - py)
+            if d > clamp and d > 0:
+                f = clamp / d
+                ex, ey = px + (ex - px) * f, py + (ey - py) * f
+            out.append((ex, ey))
+        return out
+    return clamped(left) + list(reversed(clamped(right)))
