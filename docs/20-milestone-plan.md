@@ -1,6 +1,6 @@
 # raceGPS — 20-Milestone Program Plan: From Reconciled Baseline to Shipped Game
 
-**Status:** PROPOSED 2026-09-29. Extends and supersedes `docs/10-milestone-plan.md` (approved 2026-09-23).
+**Status:** APPROVED by owner 2026-09-29. Extends and supersedes `docs/10-milestone-plan.md` (approved 2026-09-23).
 **Baseline:** branch `integration/reconciled` (Sprint-2 + showcase + grokbot two-app/rgpack/gates + master installer), 303 tests green.
 **Design discipline (ECC loop-design):** every milestone is a servo loop with a **machine-decidable done-criterion**, a **boundary** (what it must NOT do), a **reconciliation anchor** (external/golden reference), and a **retry cap of 3 → escalate to owner**. Judge is always CI/scripts — never the builder. The "done" cell is flipped by the owner.
 
