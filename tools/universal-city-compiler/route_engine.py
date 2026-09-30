@@ -18,19 +18,6 @@ def _haversine(a: dict, b: dict) -> float:
     return math.atan2(math.sqrt(x*x + y*y), math.sin(lat1)*math.sin(lat2) + math.cos(lat1)*math.cos(lat2)*math.cos(dlon)) * R
 
 
-def _route_length(points: list[dict]) -> float:
-    return sum(_haversine(points[i], points[i+1]) for i in range(len(points)-1))
-
-
-def _centroid(roads: list[dict]) -> dict:
-    """Compute approximate city center from road points."""
-    all_pts = [p for r in roads for p in r["points"]]
-    if not all_pts:
-        return {"lat": 0, "lon": 0}
-    return {"lat": sum(p["lat"] for p in all_pts) / len(all_pts),
-            "lon": sum(p["lon"] for p in all_pts) / len(all_pts)}
-
-
 def directed_graph(road_graph: dict) -> tuple[dict, dict]:
     """Build source-segment edges; join roads only at declared intersections.
 
