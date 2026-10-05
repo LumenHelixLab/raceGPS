@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="racegps-steel-thread-fixture">
+  <bounds minlat="41.0805" minlon="-81.5205" maxlat="41.0815" maxlon="-81.5195"/>
+  <!-- Shared junction node -->
+  <node id="1" lat="41.0810000" lon="-81.5200000"/>
+  <!-- Road 1: west–east through the junction -->
+  <node id="2" lat="41.0810000" lon="-81.5204000"/>
+  <node id="3" lat="41.0810000" lon="-81.5196000"/>
+  <!-- Road 2: south–north through the junction -->
+  <node id="4" lat="41.0806000" lon="-81.5200000"/>
+  <node id="5" lat="41.0814000" lon="-81.5200000"/>
+  <!-- Building closed ring (last nd repeats first) -->
+  <node id="10" lat="41.0811500" lon="-81.5198500"/>
+  <node id="11" lat="41.0811500" lon="-81.5197500"/>
+  <node id="12" lat="41.0810500" lon="-81.5197500"/>
+  <node id="13" lat="41.0810500" lon="-81.5198500"/>
+  <way id="100">
+    <nd ref="2"/>
+    <nd ref="1"/>
+    <nd ref="3"/>
+    <tag k="highway" v="residential"/>
+    <tag k="name" v="Steel Thread Avenue"/>
+    <tag k="lanes" v="2"/>
+    <tag k="maxspeed" v="40"/>
+  </way>
+  <way id="101">
+    <nd ref="4"/>
+    <nd ref="1"/>
+    <nd ref="5"/>
+    <tag k="highway" v="residential"/>
+    <tag k="name" v="Junction Street"/>
+    <tag k="lanes" v="2"/>
+    <tag k="maxspeed" v="40"/>
+  </way>
+  <way id="200">
+    <nd ref="10"/>
+    <nd ref="11"/>
+    <nd ref="12"/>
+    <nd ref="13"/>
+    <nd ref="10"/>
+    <tag k="building" v="yes"/>
+    <tag k="name" v="Steel Thread Garage"/>
+    <tag k="building:levels" v="3"/>
+    <tag k="height" v="12"/>
+  </way>
+</osm>
