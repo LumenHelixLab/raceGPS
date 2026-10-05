@@ -3,18 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "AkronXodrImporter.h"
+#include "RaceLoopHarness.h"
 #include "CruiseSprintGameMode.generated.h"
-
-UENUM(BlueprintType)
-enum class ECruiseSprintState : uint8
-{
-    None            UMETA(Hidden),
-    Loading         UMETA(DisplayName = "Loading"),
-    Countdown       UMETA(DisplayName = "Countdown"),
-    Racing          UMETA(DisplayName = "Racing"),
-    Finished        UMETA(DisplayName = "Finished"),
-    Paused          UMETA(DisplayName = "Paused")
-};
 
 UCLASS()
 class RACEGPSAKRONBETA_API ACruiseSprintGameMode : public AGameModeBase
@@ -65,6 +55,19 @@ public:
 
     UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
     float GetTotalRaceDistance() const;
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
+    bool IsUsingPlaceholderCourse() const;
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
+    FString GetActiveRouteId() const;
+
+    UFUNCTION(BlueprintPure, Category = "raceGPS|GameMode")
+    URaceLoopHarness* GetLoopHarness() const { return LoopHarness; }
+
+    /** When true, skip citypack XODR/buildings and install a hardcoded sprint. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
+    bool bUsePlaceholderCourse = true;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|GameMode")
     FString CityPackPath = TEXT("../../citypacks/akron-oh-beta-001/");
@@ -151,6 +154,9 @@ public:
     TObjectPtr<class ULoadingScreenWidget> LoadingScreen;
 
     UPROPERTY()
+    TObjectPtr<class URaceLoopHarness> LoopHarness;
+
+    UPROPERTY()
     TObjectPtr<class URaceScoringSystem> ScoringSystem;
 
     UPROPERTY()
@@ -210,4 +216,10 @@ protected:
     void LoadHandlingModePresets();
     TObjectPtr<class UVehicleTuningData> BuildMergedVehicleTuning(class UVehicleTuningData* BaseVehiclePreset, const FString& HandlingMode);
     void ApplyVehicleTuningToPlayer();
+    void BindLoopHarnessSystems();
+    void InstallPlaceholderCourseInWorld();
+    void ConvertLoadedCityIntoHarness();
+    void SyncLoadedRouteFromHarness();
+    void SyncStateFromHarness();
+    void HandleRaceFinished();
 };

@@ -6,6 +6,7 @@
 #include "AchievementSystem.h"
 #include "LeaderboardSystem.h"
 #include "VehicleTuningData.h"
+#include "RaceLoopHarness.h"
 
 // ---------------------------------------------------------------------------
 // Race Scoring Tests
@@ -195,6 +196,125 @@ bool FraceGPSVehicleTuningPreset::RunTest(const FString& Parameters)
     TestEqual(TEXT("Display name should match"), Tuning->DisplayName, FString(TEXT("Test Vehicle")));
     TestEqual(TEXT("Vehicle class should be Sports"), static_cast<uint8>(Tuning->VehicleClass), static_cast<uint8>(EVehicleClass::Sports));
     TestEqual(TEXT("Mass should be 1200"), Tuning->VehicleMass, 1200.0f);
+
+    return true;
+}
+
+// ---------------------------------------------------------------------------
+// Placeholder race-loop tests (no world / PIE required)
+// ---------------------------------------------------------------------------
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FraceGPSRaceLoopPlaceholderCheckpoints, "raceGPS.Gameplay.RaceLoop.PlaceholderCheckpoints",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FraceGPSRaceLoopPlaceholderCheckpoints::RunTest(const FString& Parameters)
+{
+    URaceLoopHarness* Loop = NewObject<URaceLoopHarness>();
+    Loop->InstallPlaceholderCourse();
+
+    TestTrue(TEXT("Placeholder course is marked installed"), Loop->HasCourse());
+    TestTrue(TEXT("Placeholder course flag is set"), Loop->IsPlaceholderCourse());
+    TestEqual(TEXT("Route id is placeholder_sprint"), Loop->GetRouteId(), FString(TEXT("placeholder_sprint")));
+    TestTrue(TEXT("GetTotalCheckpoints() > 0 on placeholder"), Loop->GetTotalCheckpoints() > 0);
+    TestTrue(TEXT("At least 2 waypoints"), Loop->GetWaypoints().Num() >= 2);
+    TestTrue(TEXT("At least 2 checkpoint gates"), Loop->GetCheckpointLocations().Num() >= 2);
+    TestEqual(TEXT("Checkpoint count matches locations"), Loop->GetTotalCheckpoints(), Loop->GetCheckpointLocations().Num());
+
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FraceGPSRaceLoopCountdownToRacing, "raceGPS.Gameplay.RaceLoop.CountdownToRacing",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FraceGPSRaceLoopCountdownToRacing::RunTest(const FString& Parameters)
+{
+    URaceLoopHarness* Loop = NewObject<URaceLoopHarness>();
+    Loop->InstallPlaceholderCourse();
+    Loop->CountdownDuration = 1.0f;
+
+    Loop->BeginLoading();
+    TestTrue(TEXT("BeginLoading enters Loading"), Loop->GetState() == ECruiseSprintState::Loading);
+
+    Loop->CompleteLoading();
+    TestTrue(TEXT("CompleteLoading enters Countdown"), Loop->GetState() == ECruiseSprintState::Countdown);
+
+    Loop->StartRace();
+    TestTrue(TEXT("StartRace enters Countdown"), Loop->GetState() == ECruiseSprintState::Countdown);
+
+    Loop->TickLoop(0.4f);
+    TestTrue(TEXT("Countdown still running before expiry"), Loop->GetState() == ECruiseSprintState::Countdown);
+
+    Loop->TickLoop(0.7f);
+    TestTrue(TEXT("Countdown expiry enters Racing"), Loop->GetState() == ECruiseSprintState::Racing);
+    TestEqual(TEXT("Checkpoint index resets at race start"), Loop->GetCurrentCheckpoint(), 0);
+    TestEqual(TEXT("Elapsed time resets at race start"), Loop->GetElapsedTime(), 0.0f);
+
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FraceGPSRaceLoopInOrderFinish, "raceGPS.Gameplay.RaceLoop.InOrderFinish",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FraceGPSRaceLoopInOrderFinish::RunTest(const FString& Parameters)
+{
+    URaceLoopHarness* Loop = NewObject<URaceLoopHarness>();
+    URaceScoringSystem* Scoring = NewObject<URaceScoringSystem>(Loop);
+    ULeaderboardSystem* Board = NewObject<ULeaderboardSystem>(Loop);
+    Loop->BindScoringSystem(Scoring);
+    Loop->BindLeaderboardSystem(Board);
+    Loop->InstallPlaceholderCourse();
+    Loop->CountdownDuration = 0.1f;
+
+    Loop->StartRace();
+    Loop->TickLoop(0.2f);
+    TestTrue(TEXT("In Racing before checkpoints"), Loop->GetState() == ECruiseSprintState::Racing);
+
+    Loop->TickLoop(8.0f);
+
+    const int32 Total = Loop->GetTotalCheckpoints();
+    for (int32 Index = 0; Index < Total; ++Index)
+    {
+        const bool bAccepted = Loop->OnCheckpointReached(Index);
+        const FString Message = FString::Printf(TEXT("In-order checkpoint %d accepted"), Index);
+        TestTrue(*Message, bAccepted);
+    }
+
+    TestTrue(TEXT("Last checkpoint finishes the race"), Loop->GetState() == ECruiseSprintState::Finished);
+    TestEqual(TEXT("CurrentCheckpoint equals total"), Loop->GetCurrentCheckpoint(), Total);
+
+    const FRaceScore LastScore = Loop->GetLastScore();
+    TestTrue(TEXT("Harness stored a final score"), LastScore.BaseTime > 0.0f);
+
+    const FRaceScore ScoringScore = Scoring->CalculateFinalScore(Loop->GetElapsedTime());
+    TestEqual(TEXT("ScoringSystem final time matches harness"), LastScore.FinalTime, ScoringScore.FinalTime);
+
+    TestTrue(TEXT("Leaderboard written for placeholder_sprint"),
+        Board->HasLeaderboard(URaceLoopHarness::PlaceholderRouteId()));
+
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FraceGPSRaceLoopOutOfOrderIgnored, "raceGPS.Gameplay.RaceLoop.OutOfOrderIgnored",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
+
+bool FraceGPSRaceLoopOutOfOrderIgnored::RunTest(const FString& Parameters)
+{
+    URaceLoopHarness* Loop = NewObject<URaceLoopHarness>();
+    Loop->InstallPlaceholderCourse();
+    Loop->CountdownDuration = 0.1f;
+    Loop->StartRace();
+    Loop->TickLoop(0.2f);
+
+    TestTrue(TEXT("Need at least two gates to test order"), Loop->GetTotalCheckpoints() >= 2);
+
+    const bool bSkip = Loop->OnCheckpointReached(1);
+    TestFalse(TEXT("Out-of-order checkpoint is ignored"), bSkip);
+    TestEqual(TEXT("CurrentCheckpoint unchanged after out-of-order"), Loop->GetCurrentCheckpoint(), 0);
+    TestTrue(TEXT("Still Racing after out-of-order"), Loop->GetState() == ECruiseSprintState::Racing);
+
+    TestTrue(TEXT("Expected first gate still accepted"), Loop->OnCheckpointReached(0));
+    TestEqual(TEXT("Advanced to checkpoint 1"), Loop->GetCurrentCheckpoint(), 1);
+    TestTrue(TEXT("Still Racing after first gate"), Loop->GetState() == ECruiseSprintState::Racing);
 
     return true;
 }

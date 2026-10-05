@@ -10,14 +10,29 @@ set UPROJECT=%PROJECT_DIR%%PROJECT_NAME%.uproject
 set BUILD_CONFIG=Development
 set TARGET_PLATFORM=Win64
 set OUTPUT_DIR=%PROJECT_DIR%Build\Windows
+set INSTALLER_STAGE=%PROJECT_DIR%..\..\Build\Windows
+set UMAP=%PROJECT_DIR%Content\Maps\AkronWorld.umap
+set ALLOW_PLACEHOLDER=%~1
 
 echo ==========================================
 echo raceGPS Akron Beta Build
 echo ==========================================
 
+REM Pre-build: AkronWorld.umap required for release packaging
+if not exist "%UMAP%" (
+    if /I "%ALLOW_PLACEHOLDER%"=="AllowPlaceholder" (
+        echo WARN: AkronWorld.umap missing. Continuing because AllowPlaceholder was passed.
+        echo.
+    ) else (
+        echo ERROR: AkronWorld.umap is required before packaging a release build.
+        echo        Create and save Content\Maps\AkronWorld.umap in UE 5.5 Editor.
+        echo        See README Level Setup Guide, or pass AllowPlaceholder for dev/CI only.
+        exit /b 1
+    )
+)
+
 REM Pre-build: Level spec staleness check
 set LEVEL_SPEC=%PROJECT_DIR%..\..\generated\AkronWorld_LevelSpec.json
-set UMAP=%PROJECT_DIR%Content\Maps\AkronWorld.umap
 set PLACEHOLDER=%PROJECT_DIR%Content\Maps\AkronWorld.umap.placeholder
 
 if not exist "%UMAP%" (
@@ -81,13 +96,24 @@ if errorlevel 1 (
     exit /b 1
 )
 
-REM Step 4: Copy citypack data
-echo [4/4] Copying citypack data...
-if not exist "%OUTPUT_DIR%\Windows\%PROJECT_NAME%\citypacks" mkdir "%OUTPUT_DIR%\Windows\%PROJECT_NAME%\citypacks"
-xcopy /E /I /Y "%PROJECT_DIR%..\..\citypacks\*" "%OUTPUT_DIR%\Windows\%PROJECT_NAME%\citypacks\"
+REM Step 4: Copy citypack data into packaged game tree
+echo [4/5] Copying citypack data into package...
+set GAME_ROOT=%OUTPUT_DIR%\Windows\raceGPS
+if not exist "%GAME_ROOT%" set GAME_ROOT=%OUTPUT_DIR%\Windows\%PROJECT_NAME%
+if not exist "%GAME_ROOT%\citypacks" mkdir "%GAME_ROOT%\citypacks"
+xcopy /E /I /Y "%PROJECT_DIR%..\..\citypacks\*" "%GAME_ROOT%\citypacks\"
+
+REM Step 5: Stage flat installer payload at repo Build/Windows
+echo [5/5] Staging Windows installer payload...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PROJECT_DIR%..\..\scripts\stage-windows-installer.ps1"
+if errorlevel 1 (
+    echo ERROR: Installer staging failed.
+    exit /b 1
+)
 
 echo ==========================================
 echo Build complete: %OUTPUT_DIR%
+echo Installer payload: %INSTALLER_STAGE%
 echo ==========================================
 
 endlocal

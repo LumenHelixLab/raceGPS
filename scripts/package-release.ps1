@@ -20,7 +20,10 @@ Compress-Archive -Path "$ProjectRoot/tools/*" -DestinationPath $ToolsZip -Force
 Write-Host "      -> $ToolsZip" -ForegroundColor Gray
 
 # Package 2: UE5 Game (if built)
-$GameDir = "$ProjectRoot/apps/unreal-akron-beta/Build/Windows"
+$GameDir = Join-Path $ProjectRoot "Build/Windows"
+if (-not (Test-Path $GameDir)) {
+    $GameDir = Join-Path $ProjectRoot "apps/unreal-akron-beta/Build/Windows"
+}
 if (Test-Path $GameDir) {
     $GameZip = "$OutputDir/racegps-game-$Version.zip"
     Write-Host "`n[2/3] Packaging UE5 game..." -ForegroundColor Green

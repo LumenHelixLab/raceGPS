@@ -17,6 +17,9 @@ public:
     void OnPlayClicked();
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Menu")
+    void ShowWorldContentGate();
+
+    UFUNCTION(BlueprintCallable, Category = "raceGPS|Menu")
     void OnSettingsClicked();
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Menu")
@@ -111,4 +114,7 @@ public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|LAN")
     TSubclassOf<class ULANBrowserWidget> LANBrowserClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "raceGPS|WorldContent")
+    TSubclassOf<class UWorldContentGateWidget> WorldContentGateClass;
 };

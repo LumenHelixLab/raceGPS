@@ -1,33 +1,35 @@
 # Current State
 
-Timestamp: 2026-06-12T05:10:00Z
-Session-End: true
-Plan-Version: 0.1.0
-Milestone-Version: 2026-06-11.1
-Canonical-For-Project: true
+Canonical live board is repo-root [`STATUS.md`](../../STATUS.md). Constitution: [`AGENTS.md`](../../AGENTS.md). Lessons: [`lessons.md`](../../lessons.md). Do not treat this AgentDock dump as a second progress board.
+
+Timestamp: 2026-08-19
+Plan-Version: agent-os-1
+Canonical-For-Project: false (pointer only)
 
 ## Last Verified
 
-- Remote: `lumenhelixsolutions/raceGPS`
-- Backend tests: `cd apps/backend && npm test` — room-utils + health/rooms pass
-- Second city: Cleveland compiler output at `generated/cleveland_5.0km/`
+- Engine association: UE 5.5
+- Section 2.2 truth gate: **not passed** (`AkronWorld.umap.placeholder` only)
+- Agent OS instantiated: constitution, roster, CityPack v2 steel-thread contract
 
 ## What Is Working
 
 - Express + WebSocket backend on port 8787
-- Universal city compiler (Akron + Cleveland level specs)
-- M10 checklist partially complete (code lanes)
+- Universal city compiler (legacy Akron/Cleveland packs; not sealed CityPack v2)
+- `ACruiseSprintGameMode` C++ loop exists; placeholder PIE and loop automation not yet evidenced
 
 ## What Is Unverified
 
-- Real `AkronWorld.umap` in UE5 (placeholder only)
-- UE5 client WebSocket wire to Node backend
-- Packaged beta playthrough
+- Real `AkronWorld.umap`
+- Steel-thread CityPack v2
+- Placeholder gameplay loop tests
+- Packaged Win64
 
 ## Blockers
 
-- UE5 Editor sprint for AkronWorld level art
+- Section 2.2 (editor world proof)
+- Sequencing law: no Control-Plane multiplayer-alpha until World-Gen + Gameplay-Loop gates merge on the real map
 
 ## Next Best Move
 
-- UE5 import Cleveland level spec; replace Akron placeholder; wire LAN multiplayer UI
+See repo-root `STATUS.md`. Steel-thread CityPack v2 pytest passed. Placeholder loop is in C++ with un-run UE automation. Do not start Geometry-Import / CARLA / Java / Control-Plane. Next real gate is UE 5.5 Build/PIE of the placeholder loop when an editor exists.

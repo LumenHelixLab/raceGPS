@@ -88,7 +88,20 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Preflight")
     static FString GetSaveDirectoryStatus();
 
+    UFUNCTION(BlueprintCallable, Category = "Preflight")
+    static FPreflightCheck CheckWorldMap();
+
+    UFUNCTION(BlueprintCallable, Category = "Preflight")
+    static bool IsWorldMapReady();
+
+    UFUNCTION(BlueprintCallable, Category = "Preflight")
+    static FString GetWorldMapPackageName();
+
+    UFUNCTION(BlueprintCallable, Category = "Preflight")
+    static void AppendPreflightLog(const FString& Line);
+
 private:
+    static bool IsPackagedRuntime();
     static FPreflightCheck CheckOS();
     static FPreflightCheck CheckRAM();
     static FPreflightCheck CheckDiskSpace();

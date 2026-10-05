@@ -43,6 +43,11 @@ ACruiseSprintGameMode::ACruiseSprintGameMode(const FObjectInitializer& ObjectIni
     DefaultPawnClass = AChaosVehiclePawn::StaticClass();
     PrimaryActorTick.bCanEverTick = true;
     ScoringSystem = CreateDefaultSubobject<URaceScoringSystem>(TEXT("ScoringSystem"));
+    LoopHarness = CreateDefaultSubobject<URaceLoopHarness>(TEXT("LoopHarness"));
+    if (LoopHarness)
+    {
+        LoopHarness->BindScoringSystem(ScoringSystem);
+    }
 }
 
 void ACruiseSprintGameMode::StartPlay()
@@ -117,75 +122,135 @@ void ACruiseSprintGameMode::StartPlay()
         GI->LastSelectedVehicleTuning = SelectedVehicleTuning;
     }
 
-    LoadCityData();
-    CurrentState = ECruiseSprintState::Loading;
+    BindLoopHarnessSystems();
 
-    // Spawn road meshes asynchronously
-    FActorSpawnParameters RoadParams;
-    RoadParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    ARoadMeshGenerator* RoadGen = GetWorld()->SpawnActor<ARoadMeshGenerator>(
-        ARoadMeshGenerator::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, RoadParams);
-    if (RoadGen)
+    if (!bUsePlaceholderCourse)
     {
-        RoadGen->XodrPath = CityPackPath + XodrFile;
-        RoadGen->GenerateRoadMeshAsync();
-    }
-
-    // Spawn building generator
-    if (BuildingGeneratorClass)
-    {
-        ABuildingMeshGenerator* BuildingGen = GetWorld()->SpawnActor<ABuildingMeshGenerator>(
-            BuildingGeneratorClass, FVector::ZeroVector, FRotator::ZeroRotator, RoadParams);
-        if (BuildingGen)
+        LoadCityData();
+        if (LoadedRoutes.Num() == 0)
         {
-            BuildingGen->BuildingsJsonPath = CityPackPath + TEXT("akron_buildings.json");
-            BuildingGen->GenerateBuildingsAsync();
+            UE_LOG(LogTemp, Warning, TEXT("[raceGPS] LoadCityData yielded 0 routes; enabling placeholder course"));
+            bUsePlaceholderCourse = true;
+        }
+        else
+        {
+            ConvertLoadedCityIntoHarness();
         }
     }
 
-    // Spawn street furniture
-    if (FurnitureSpawnerClass)
+    if (bUsePlaceholderCourse)
     {
-        AStreetFurnitureSpawner* Furniture = GetWorld()->SpawnActor<AStreetFurnitureSpawner>(
-            FurnitureSpawnerClass, FVector::ZeroVector, FRotator::ZeroRotator, RoadParams);
-        if (Furniture)
+        InstallPlaceholderCourseInWorld();
+    }
+
+    if (LoopHarness)
+    {
+        LoopHarness->BeginLoading();
+        SyncStateFromHarness();
+    }
+    else
+    {
+        CurrentState = ECruiseSprintState::Loading;
+    }
+
+    UWorld* World = GetWorld();
+    if (World && !bUsePlaceholderCourse)
+    {
+        FActorSpawnParameters RoadParams;
+        RoadParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        ARoadMeshGenerator* RoadGen = World->SpawnActor<ARoadMeshGenerator>(
+            ARoadMeshGenerator::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, RoadParams);
+        if (RoadGen)
         {
-            Furniture->RoadGraphJsonPath = CityPackPath + TEXT("akron_road_graph.json");
-            Furniture->SpawnFurnitureAsync();
+            RoadGen->XodrPath = CityPackPath + XodrFile;
+            RoadGen->GenerateRoadMeshAsync();
+        }
+
+        if (BuildingGeneratorClass)
+        {
+            ABuildingMeshGenerator* BuildingGen = World->SpawnActor<ABuildingMeshGenerator>(
+                BuildingGeneratorClass, FVector::ZeroVector, FRotator::ZeroRotator, RoadParams);
+            if (BuildingGen)
+            {
+                BuildingGen->BuildingsJsonPath = CityPackPath + TEXT("akron_buildings.json");
+                BuildingGen->GenerateBuildingsAsync();
+            }
+        }
+
+        if (FurnitureSpawnerClass)
+        {
+            AStreetFurnitureSpawner* Furniture = World->SpawnActor<AStreetFurnitureSpawner>(
+                FurnitureSpawnerClass, FVector::ZeroVector, FRotator::ZeroRotator, RoadParams);
+            if (Furniture)
+            {
+                Furniture->RoadGraphJsonPath = CityPackPath + TEXT("akron_road_graph.json");
+                Furniture->SpawnFurnitureAsync();
+            }
         }
     }
 
-    // After road generation + brief load, transition to countdown
-    FTimerHandle LoadTimer;
-    GetWorld()->GetTimerManager().SetTimer(LoadTimer, [this]()
+    const float LoadDelay = bUsePlaceholderCourse ? 0.25f : 3.0f;
+    if (World)
     {
-        if (LoadingScreen)
+        FTimerHandle LoadTimer;
+        World->GetTimerManager().SetTimer(LoadTimer, [this]()
         {
-            LoadingScreen->SetProgress(1.0f);
-            LoadingScreen->SetStatusText(TEXT("Ready!"));
-            LoadingScreen->FinishLoading();
-        }
-        CurrentState = ECruiseSprintState::Countdown;
-        CountdownTimer = CountdownDuration;
-        OnRaceStateChanged(CurrentState);
-    }, 3.0f, false);
+            if (LoadingScreen)
+            {
+                LoadingScreen->SetProgress(1.0f);
+                LoadingScreen->SetStatusText(TEXT("Ready!"));
+                LoadingScreen->FinishLoading();
+            }
+            if (LoopHarness)
+            {
+                LoopHarness->CompleteLoading();
+                SyncStateFromHarness();
+            }
+            else
+            {
+                CurrentState = ECruiseSprintState::Countdown;
+                CountdownTimer = CountdownDuration;
+            }
+            SpawnRouteSpline();
+            OnRaceStateChanged(CurrentState);
+        }, LoadDelay, false);
+    }
 }
 
 void ACruiseSprintGameMode::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (CurrentState == ECruiseSprintState::Countdown)
+    const ECruiseSprintState PreviousState = LoopHarness ? LoopHarness->GetState() : CurrentState;
+
+    if (LoopHarness)
+    {
+        LoopHarness->TickLoop(DeltaTime);
+        SyncStateFromHarness();
+    }
+    else if (CurrentState == ECruiseSprintState::Countdown)
     {
         UpdateCountdown(DeltaTime);
     }
     else if (CurrentState == ECruiseSprintState::Racing)
     {
         ElapsedTime += DeltaTime;
+    }
+
+    if (PreviousState == ECruiseSprintState::Countdown && CurrentState == ECruiseSprintState::Racing)
+    {
+        SpawnPlayerAtStart();
+        SpawnCheckpoints();
         if (ReplayManager)
         {
-            ReplayManager->TickRecording(DeltaTime);
+            ReplayManager->BeginRaceRecording();
         }
+        OnRaceStateChanged(CurrentState);
+    }
+
+    if (CurrentState == ECruiseSprintState::Racing && ReplayManager)
+    {
+        ReplayManager->TickRecording(DeltaTime);
     }
 
     if (ReplayManager)
@@ -240,7 +305,7 @@ void ACruiseSprintGameMode::InitHUDWidgets()
 
 void ACruiseSprintGameMode::OnVehicleCollision(float ImpactSpeedKmh)
 {
-    if (ScoringSystem && CurrentState == ECruiseSprintState::Racing)
+    if (ScoringSystem && GetRaceState() == ECruiseSprintState::Racing)
     {
         ScoringSystem->OnCollision(ImpactSpeedKmh);
     }
@@ -301,53 +366,82 @@ void ACruiseSprintGameMode::LoadCityData()
 
 void ACruiseSprintGameMode::SpawnPlayerAtStart()
 {
-    if (LoadedSpawns.Num() == 0) return;
+    FVector WorldLoc = FVector(0.0f, 0.0f, 50.0f);
+    FRotator WorldRot = FRotator::ZeroRotator;
 
-    FAkronSpawnPoint& Spawn = LoadedSpawns[0];
-    FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-        Spawn.Location.Z, Spawn.Location.X, WorldOriginLat, WorldOriginLon);
-    WorldLoc.Z = 50.0f; // Slight lift off ground
+    if (LoopHarness && LoopHarness->HasCourse())
+    {
+        WorldLoc = LoopHarness->GetPlayerSpawnLocation();
+        WorldRot = LoopHarness->GetPlayerSpawnRotation();
+    }
+    else if (LoadedSpawns.Num() > 0)
+    {
+        FAkronSpawnPoint& Spawn = LoadedSpawns[0];
+        WorldLoc = UAkronXodrImporter::GeoToWorld(
+            Spawn.Location.Z, Spawn.Location.X, WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 50.0f;
+        WorldRot = Spawn.Rotation;
+    }
+    else
+    {
+        return;
+    }
 
     APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
     if (PC && PC->GetPawn())
     {
-        PC->GetPawn()->SetActorLocationAndRotation(WorldLoc, Spawn.Rotation, false, nullptr, ETeleportType::ResetPhysics);
+        PC->GetPawn()->SetActorLocationAndRotation(WorldLoc, WorldRot, false, nullptr, ETeleportType::ResetPhysics);
     }
 
-    // Apply selected vehicle tuning after spawn/teleport
     ApplyVehicleTuningToPlayer();
 }
 
 void ACruiseSprintGameMode::SpawnRouteSpline()
 {
-    if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
-
-    const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
-    if (Route.Waypoints.Num() < 2) return;
-
-    // Convert raw lat/lon waypoints to world space
-    TArray<FVector> WorldWaypoints;
-    for (const FVector& Wp : Route.Waypoints)
+    UWorld* World = GetWorld();
+    if (!World)
     {
-        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-            -Wp.Z, Wp.X, WorldOriginLat, WorldOriginLon);
-        WorldLoc.Z = 50.0f;
-        WorldWaypoints.Add(WorldLoc);
+        return;
+    }
+
+    TArray<FVector> WorldWaypoints;
+    FString RouteId;
+
+    if (LoopHarness && LoopHarness->HasCourse())
+    {
+        WorldWaypoints = LoopHarness->GetWaypoints();
+        RouteId = LoopHarness->GetRouteId();
+    }
+    else if (LoadedRoutes.Num() > 0 && SelectedRouteIndex < LoadedRoutes.Num())
+    {
+        const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
+        RouteId = Route.RouteId;
+        for (const FVector& Wp : Route.Waypoints)
+        {
+            FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
+                -Wp.Z, Wp.X, WorldOriginLat, WorldOriginLon);
+            WorldLoc.Z = 50.0f;
+            WorldWaypoints.Add(WorldLoc);
+        }
+    }
+
+    if (WorldWaypoints.Num() < 2)
+    {
+        return;
     }
 
     FActorSpawnParameters Params;
     Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    ARouteSplineActor* RouteActor = GetWorld()->SpawnActor<ARouteSplineActor>(
+    ARouteSplineActor* RouteActor = World->SpawnActor<ARouteSplineActor>(
         ARouteSplineActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Params);
 
     if (RouteActor)
     {
-        RouteActor->RouteId = Route.RouteId;
+        RouteActor->RouteId = RouteId;
         RouteActor->BuildSplineFromWaypoints(WorldWaypoints);
     }
 
-    // Spawn ghost car
-    AGhostVehicle* Ghost = GetWorld()->SpawnActor<AGhostVehicle>(
+    AGhostVehicle* Ghost = World->SpawnActor<AGhostVehicle>(
         AGhostVehicle::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Params);
     if (Ghost)
     {
@@ -358,24 +452,40 @@ void ACruiseSprintGameMode::SpawnRouteSpline()
 
 void ACruiseSprintGameMode::SpawnCheckpoints()
 {
-    if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
-
-    const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
-    for (int32 i = 0; i < Route.CheckpointLocations.Num(); ++i)
+    UWorld* World = GetWorld();
+    if (!World)
     {
-        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
-            -Route.CheckpointLocations[i].Z, Route.CheckpointLocations[i].X, WorldOriginLat, WorldOriginLon);
-        WorldLoc.Z = 100.0f;
+        return;
+    }
 
+    TArray<FVector> WorldCheckpoints;
+    if (LoopHarness && LoopHarness->HasCourse())
+    {
+        WorldCheckpoints = LoopHarness->GetCheckpointLocations();
+    }
+    else if (LoadedRoutes.Num() > 0 && SelectedRouteIndex < LoadedRoutes.Num())
+    {
+        const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
+        for (int32 i = 0; i < Route.CheckpointLocations.Num(); ++i)
+        {
+            FVector WorldLoc = UAkronXodrImporter::GeoToWorld(
+                -Route.CheckpointLocations[i].Z, Route.CheckpointLocations[i].X, WorldOriginLat, WorldOriginLon);
+            WorldLoc.Z = 100.0f;
+            WorldCheckpoints.Add(WorldLoc);
+        }
+    }
+
+    for (int32 i = 0; i < WorldCheckpoints.Num(); ++i)
+    {
         FActorSpawnParameters Params;
         Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-        ACheckpointGate* Gate = GetWorld()->SpawnActor<ACheckpointGate>(ACheckpointGate::StaticClass(), WorldLoc, FRotator::ZeroRotator, Params);
+        ACheckpointGate* Gate = World->SpawnActor<ACheckpointGate>(
+            ACheckpointGate::StaticClass(), WorldCheckpoints[i], FRotator::ZeroRotator, Params);
 
         if (Gate)
         {
             Gate->CheckpointIndex = i;
             Gate->ActivateGate();
-            // Bind delegate to route checkpoint reached
             Gate->OnCheckpointReached.AddDynamic(this, &ACruiseSprintGameMode::OnCheckpointReached);
         }
     }
@@ -383,27 +493,39 @@ void ACruiseSprintGameMode::SpawnCheckpoints()
 
 void ACruiseSprintGameMode::UpdateCountdown(float DeltaTime)
 {
+    if (LoopHarness)
+    {
+        LoopHarness->TickLoop(DeltaTime);
+        SyncStateFromHarness();
+        return;
+    }
+
     CountdownTimer -= DeltaTime;
     if (CountdownTimer <= 0.0f)
     {
         CurrentState = ECruiseSprintState::Racing;
         ElapsedTime = 0.0f;
         CurrentCheckpoint = 0;
-        SpawnPlayerAtStart();
-        SpawnCheckpoints();
-        OnRaceStateChanged(CurrentState);
     }
 }
 
 void ACruiseSprintGameMode::StartRace()
 {
-    CurrentState = ECruiseSprintState::Countdown;
-    CountdownTimer = CountdownDuration;
-    ElapsedTime = 0.0f;
-    CurrentCheckpoint = 0;
+    BindLoopHarnessSystems();
+    if (LoopHarness)
+    {
+        LoopHarness->StartRace();
+        SyncStateFromHarness();
+    }
+    else
+    {
+        CurrentState = ECruiseSprintState::Countdown;
+        CountdownTimer = CountdownDuration;
+        ElapsedTime = 0.0f;
+        CurrentCheckpoint = 0;
+    }
     SpawnRouteSpline();
 
-    // Start tutorial on first race
     if (TutorialSystem && !TutorialSystem->IsActive())
     {
         TutorialSystem->StartTutorial();
@@ -421,10 +543,9 @@ void ACruiseSprintGameMode::StartRace()
         }
     }
 
-    // Load best replay ghost
-    if (ReplayManager && LoadedRoutes.Num() > 0 && SelectedRouteIndex < LoadedRoutes.Num())
+    const FString RouteId = GetActiveRouteId();
+    if (ReplayManager && !RouteId.IsEmpty())
     {
-        FString RouteId = LoadedRoutes[SelectedRouteIndex].RouteId;
         if (ReplayManager->HasBestReplay(RouteId))
         {
             ReplayManager->LoadBestReplay(RouteId);
@@ -440,9 +561,17 @@ void ACruiseSprintGameMode::StartRace()
 
 void ACruiseSprintGameMode::PauseRace()
 {
-    if (CurrentState == ECruiseSprintState::Racing)
+    if (GetRaceState() == ECruiseSprintState::Racing)
     {
-        CurrentState = ECruiseSprintState::Paused;
+        if (LoopHarness)
+        {
+            LoopHarness->PauseRace();
+            SyncStateFromHarness();
+        }
+        else
+        {
+            CurrentState = ECruiseSprintState::Paused;
+        }
         UGameplayStatics::SetGamePaused(GetWorld(), true);
         OnRaceStateChanged(CurrentState);
 
@@ -462,9 +591,17 @@ void ACruiseSprintGameMode::PauseRace()
 
 void ACruiseSprintGameMode::ResumeRace()
 {
-    if (CurrentState == ECruiseSprintState::Paused)
+    if (GetRaceState() == ECruiseSprintState::Paused)
     {
-        CurrentState = ECruiseSprintState::Racing;
+        if (LoopHarness)
+        {
+            LoopHarness->ResumeRace();
+            SyncStateFromHarness();
+        }
+        else
+        {
+            CurrentState = ECruiseSprintState::Racing;
+        }
         UGameplayStatics::SetGamePaused(GetWorld(), false);
         OnRaceStateChanged(CurrentState);
 
@@ -485,76 +622,46 @@ void ACruiseSprintGameMode::ResumeRace()
 
 void ACruiseSprintGameMode::FinishRace()
 {
-    CurrentState = ECruiseSprintState::Finished;
-
-    FString RouteId;
-    if (LoadedRoutes.Num() > 0 && SelectedRouteIndex < LoadedRoutes.Num())
+    BindLoopHarnessSystems();
+    if (LoopHarness)
     {
-        RouteId = LoadedRoutes[SelectedRouteIndex].RouteId;
+        LoopHarness->FinishRace();
+        SyncStateFromHarness();
     }
-
-    if (ScoringSystem)
+    else
     {
-        FRaceScore Score = ScoringSystem->CalculateFinalScore(ElapsedTime);
-        UE_LOG(LogTemp, Log, TEXT("[raceGPS] Race finished! Base: %.2fs, Penalties: %.2fs, Bonus: %.2fs, Final: %.2fs, Medal: %s"),
-            Score.BaseTime, Score.CollisionPenalty + Score.MissedCheckpointPenalty, Score.CleanDrivingBonus,
-            Score.FinalTime, *Score.Medal);
-
-        UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
-        if (GI && !RouteId.IsEmpty())
+        CurrentState = ECruiseSprintState::Finished;
+        if (ScoringSystem)
         {
-            GI->UpdateBestTime(RouteId, Score.FinalTime);
+            ScoringSystem->CalculateFinalScore(ElapsedTime);
         }
-
-        // Add leaderboard entry
-        if (LeaderboardSystem && !RouteId.IsEmpty())
+        if (ReplayManager)
         {
-            if (!LeaderboardSystem->HasLeaderboard(RouteId))
-            {
-                LeaderboardSystem->SeedDefaultEntries(RouteId, GoldTimeSeconds, SilverTimeSeconds, BronzeTimeSeconds);
-            }
-
-            FLeaderboardEntry Entry;
-            Entry.PlayerName = TEXT("Player");
-            Entry.TimeSeconds = Score.FinalTime;
-            Entry.Medal = Score.Medal;
-            Entry.Date = FDateTime::Now().ToString(TEXT("%Y-%m-%d"));
-            Entry.VehicleUsed = TEXT("Sedan");
-            Entry.Collisions = Score.Collisions;
-            Entry.bIsPlayer = true;
-            LeaderboardSystem->AddEntry(RouteId, Entry);
+            ReplayManager->EndRaceRecording();
         }
     }
 
-    // Save replay if it's the best
-    if (ReplayManager && !RouteId.IsEmpty())
-    {
-        ReplayManager->EndRaceRecording();
-
-        UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
-        if (GI)
-        {
-            float BestTime = GI->GetBestTime(RouteId);
-            if (BestTime < 0.0f || ElapsedTime <= BestTime)
-            {
-                ReplayManager->SaveBestReplay(RouteId);
-                UE_LOG(LogTemp, Log, TEXT("[raceGPS] New best replay saved for %s"), *RouteId);
-            }
-        }
-    }
-
-    OnRaceStateChanged(CurrentState);
+    HandleRaceFinished();
 }
 
 void ACruiseSprintGameMode::RestartRace()
 {
-    CurrentState = ECruiseSprintState::Countdown;
-    CountdownTimer = CountdownDuration;
-    ElapsedTime = 0.0f;
-    CurrentCheckpoint = 0;
-    if (ScoringSystem)
+    BindLoopHarnessSystems();
+    if (LoopHarness)
     {
-        ScoringSystem->Reset();
+        LoopHarness->RestartRace();
+        SyncStateFromHarness();
+    }
+    else
+    {
+        CurrentState = ECruiseSprintState::Countdown;
+        CountdownTimer = CountdownDuration;
+        ElapsedTime = 0.0f;
+        CurrentCheckpoint = 0;
+        if (ScoringSystem)
+        {
+            ScoringSystem->Reset();
+        }
     }
     if (ReplayManager)
     {
@@ -565,30 +672,41 @@ void ACruiseSprintGameMode::RestartRace()
 
 void ACruiseSprintGameMode::StartRaceForAllPlayers()
 {
-    // In multiplayer, host triggers this and it replicates to all clients
     if (HasAuthority())
     {
-        CurrentState = ECruiseSprintState::Countdown;
-        CountdownTimer = CountdownDuration;
-        ElapsedTime = 0.0f;
-        CurrentCheckpoint = 0;
-
-        if (ScoringSystem)
+        BindLoopHarnessSystems();
+        if (LoopHarness)
         {
-            ScoringSystem->Reset();
+            LoopHarness->StartRace();
+            SyncStateFromHarness();
         }
+        else
+        {
+            CurrentState = ECruiseSprintState::Countdown;
+            CountdownTimer = CountdownDuration;
+            ElapsedTime = 0.0f;
+            CurrentCheckpoint = 0;
+            if (ScoringSystem)
+            {
+                ScoringSystem->Reset();
+            }
+        }
+
         if (ReplayManager)
         {
             ReplayManager->BeginRaceRecording();
         }
 
-        // Spawn all players at their start positions
-        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        UWorld* World = GetWorld();
+        if (World)
         {
-            APlayerController* PC = It->Get();
-            if (PC && PC->GetPawn())
+            for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
             {
-                SpawnPlayerAtStart();
+                APlayerController* PC = It->Get();
+                if (PC && PC->GetPawn())
+                {
+                    SpawnPlayerAtStart();
+                }
             }
         }
 
@@ -621,6 +739,18 @@ void ACruiseSprintGameMode::Logout(AController* Exiting)
 
 void ACruiseSprintGameMode::OnCheckpointReached(int32 CheckpointIndex)
 {
+    if (LoopHarness)
+    {
+        const ECruiseSprintState PreviousState = LoopHarness->GetState();
+        LoopHarness->OnCheckpointReached(CheckpointIndex);
+        SyncStateFromHarness();
+        if (PreviousState != ECruiseSprintState::Finished && CurrentState == ECruiseSprintState::Finished)
+        {
+            HandleRaceFinished();
+        }
+        return;
+    }
+
     if (CurrentState != ECruiseSprintState::Racing) return;
     if (CheckpointIndex == CurrentCheckpoint)
     {
@@ -636,14 +766,183 @@ void ACruiseSprintGameMode::OnCheckpointReached(int32 CheckpointIndex)
 
 int32 ACruiseSprintGameMode::GetTotalCheckpoints() const
 {
+    if (LoopHarness && LoopHarness->HasCourse())
+    {
+        return LoopHarness->GetTotalCheckpoints();
+    }
     if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return 0;
     return LoadedRoutes[SelectedRouteIndex].CheckpointLocations.Num();
 }
 
 float ACruiseSprintGameMode::GetTotalRaceDistance() const
 {
+    if (LoopHarness && LoopHarness->HasCourse())
+    {
+        return LoopHarness->GetTotalDistanceMeters();
+    }
     if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return 0.0f;
     return LoadedRoutes[SelectedRouteIndex].TotalDistanceMeters;
+}
+
+bool ACruiseSprintGameMode::IsUsingPlaceholderCourse() const
+{
+    return bUsePlaceholderCourse || (LoopHarness && LoopHarness->IsPlaceholderCourse());
+}
+
+FString ACruiseSprintGameMode::GetActiveRouteId() const
+{
+    if (LoopHarness && !LoopHarness->GetRouteId().IsEmpty())
+    {
+        return LoopHarness->GetRouteId();
+    }
+    if (LoadedRoutes.Num() > 0 && SelectedRouteIndex < LoadedRoutes.Num())
+    {
+        return LoadedRoutes[SelectedRouteIndex].RouteId;
+    }
+    return FString();
+}
+
+void ACruiseSprintGameMode::BindLoopHarnessSystems()
+{
+    if (!LoopHarness)
+    {
+        return;
+    }
+
+    LoopHarness->BindScoringSystem(ScoringSystem);
+    LoopHarness->BindLeaderboardSystem(LeaderboardSystem);
+    LoopHarness->BindReplayManager(ReplayManager);
+    LoopHarness->CountdownDuration = CountdownDuration;
+    LoopHarness->SetMedalTimes(GoldTimeSeconds, SilverTimeSeconds, BronzeTimeSeconds);
+}
+
+void ACruiseSprintGameMode::InstallPlaceholderCourseInWorld()
+{
+    if (!LoopHarness)
+    {
+        return;
+    }
+
+    LoopHarness->InstallPlaceholderCourse();
+    SyncLoadedRouteFromHarness();
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] Using placeholder course '%s' (%d checkpoints)"),
+        *LoopHarness->GetRouteId(), LoopHarness->GetTotalCheckpoints());
+}
+
+void ACruiseSprintGameMode::ConvertLoadedCityIntoHarness()
+{
+    if (!LoopHarness || LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num())
+    {
+        return;
+    }
+
+    const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
+
+    FVector SpawnLoc = FVector(0.0f, 0.0f, 50.0f);
+    FRotator SpawnRot = FRotator::ZeroRotator;
+    if (LoadedSpawns.Num() > 0)
+    {
+        const FAkronSpawnPoint& Spawn = LoadedSpawns[0];
+        SpawnLoc = UAkronXodrImporter::GeoToWorld(
+            Spawn.Location.Z, Spawn.Location.X, WorldOriginLat, WorldOriginLon);
+        SpawnLoc.Z = 50.0f;
+        SpawnRot = Spawn.Rotation;
+    }
+    else if (Route.Waypoints.Num() > 0)
+    {
+        const FVector& Wp = Route.Waypoints[0];
+        SpawnLoc = UAkronXodrImporter::GeoToWorld(-Wp.Z, Wp.X, WorldOriginLat, WorldOriginLon);
+        SpawnLoc.Z = 50.0f;
+    }
+
+    TArray<FVector> WorldWaypoints;
+    for (const FVector& Wp : Route.Waypoints)
+    {
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(-Wp.Z, Wp.X, WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 50.0f;
+        WorldWaypoints.Add(WorldLoc);
+    }
+
+    TArray<FVector> WorldCheckpoints;
+    for (const FVector& Cp : Route.CheckpointLocations)
+    {
+        FVector WorldLoc = UAkronXodrImporter::GeoToWorld(-Cp.Z, Cp.X, WorldOriginLat, WorldOriginLon);
+        WorldLoc.Z = 100.0f;
+        WorldCheckpoints.Add(WorldLoc);
+    }
+
+    LoopHarness->InstallCourse(
+        Route.RouteId,
+        SpawnLoc,
+        SpawnRot,
+        WorldWaypoints,
+        WorldCheckpoints,
+        Route.TotalDistanceMeters);
+}
+
+void ACruiseSprintGameMode::SyncLoadedRouteFromHarness()
+{
+    if (!LoopHarness || !LoopHarness->HasCourse())
+    {
+        return;
+    }
+
+    FAkronRouteSpline Route;
+    Route.RouteId = LoopHarness->GetRouteId();
+    Route.Waypoints = LoopHarness->GetWaypoints();
+    Route.CheckpointLocations = LoopHarness->GetCheckpointLocations();
+    Route.TotalDistanceMeters = LoopHarness->GetTotalDistanceMeters();
+
+    LoadedRoutes.Reset();
+    LoadedRoutes.Add(Route);
+    SelectedRouteIndex = 0;
+
+    FAkronSpawnPoint Spawn;
+    Spawn.SpawnId = TEXT("placeholder_start");
+    Spawn.Location = LoopHarness->GetPlayerSpawnLocation();
+    Spawn.Rotation = LoopHarness->GetPlayerSpawnRotation();
+    LoadedSpawns.Reset();
+    LoadedSpawns.Add(Spawn);
+}
+
+void ACruiseSprintGameMode::SyncStateFromHarness()
+{
+    if (!LoopHarness)
+    {
+        return;
+    }
+
+    CurrentState = LoopHarness->GetState();
+    ElapsedTime = LoopHarness->GetElapsedTime();
+    CurrentCheckpoint = LoopHarness->GetCurrentCheckpoint();
+    CountdownTimer = LoopHarness->GetCountdownTimer();
+}
+
+void ACruiseSprintGameMode::HandleRaceFinished()
+{
+    const FString RouteId = GetActiveRouteId();
+    const FRaceScore Score = LoopHarness ? LoopHarness->GetLastScore() : FRaceScore();
+
+    UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
+    if (GI && !RouteId.IsEmpty())
+    {
+        GI->UpdateBestTime(RouteId, Score.FinalTime);
+    }
+
+    if (ReplayManager && !RouteId.IsEmpty())
+    {
+        if (GI)
+        {
+            const float BestTime = GI->GetBestTime(RouteId);
+            if (BestTime < 0.0f || ElapsedTime <= BestTime)
+            {
+                ReplayManager->SaveBestReplay(RouteId);
+                UE_LOG(LogTemp, Log, TEXT("[raceGPS] New best replay saved for %s"), *RouteId);
+            }
+        }
+    }
+
+    OnRaceStateChanged(CurrentState);
 }
 
 void ACruiseSprintGameMode::OnRaceStateChanged(ECruiseSprintState NewState)

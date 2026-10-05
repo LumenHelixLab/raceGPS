@@ -81,6 +81,15 @@ public:
     UFUNCTION(BlueprintPure, Category = "Onboarding")
     int32 GetLastPreflightWarningCount() const { return LastPreflightWarningCount; }
 
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    bool CanAdvanceFromCurrentStep() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Onboarding")
+    TArray<FPreflightCheck> GetPreflightChecks() const;
+
+    UFUNCTION(BlueprintPure, Category = "Onboarding")
+    static bool IsWorldMapReady();
+
 protected:
     static TArray<FString> StepNames;
     int32 CurrentStep = -1;

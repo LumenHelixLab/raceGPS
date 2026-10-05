@@ -299,6 +299,8 @@ All coordinates in the JSON are **WGS84 (lat, lon)**. The `AkronXodrImporter` co
 
 `AkronWorld.umap` is a placeholder binary that must be finalized inside the Unreal Editor. The pipeline below makes this trivial and reproducible.
 
+At runtime, **Preflight Step 0** and the main-menu **Play** button call `UPreflightSystem::CheckWorldMap()`. If only the placeholder exists, onboarding blocks **Next** and `UWorldContentGateWidget` offers verify / docs / reinstall actions. `Build.bat` hard-fails packaging without a real `.umap` unless you pass `AllowPlaceholder`.
+
 ### Prerequisites
 
 - Unreal Engine 5.5 Editor (with **Python Editor Script Plugin** enabled)

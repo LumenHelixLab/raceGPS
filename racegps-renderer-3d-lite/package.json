@@ -1,0 +1,26 @@
+{
+  "name": "racegps-renderer-3d-lite",
+  "version": "1.0.0",
+  "description": "Best-looking open-source 3D map/game renderer that stays simple, fast, modular, and browser-first. Uses MapLibre GL JS, PMTiles, and Babylon.js.",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8080"
+  },
+  "keywords": [
+    "racegps",
+    "maplibre",
+    "pmtiles",
+    "babylonjs",
+    "telemetry",
+    "3d-maps",
+    "gpx"
+  ],
+  "author": "Christopher Gordon Phillips (LumenHelixLab)",
+  "license": "MIT",
+  "dependencies": {
+    "maplibre-gl": "^4.7.1",
+    "pmtiles": "^3.0.7",
+    "babylonjs": "^7.0.0",
+    "@turf/turf": "^6.5.0"
+  }
+}

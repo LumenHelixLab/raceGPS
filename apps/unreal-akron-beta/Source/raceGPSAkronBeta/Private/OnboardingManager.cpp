@@ -36,6 +36,12 @@ void UOnboardingManager::StartOnboarding()
 
 void UOnboardingManager::AdvanceStep()
 {
+    if (!CanAdvanceFromCurrentStep())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Onboarding blocked: resolve preflight failures before advancing"));
+        return;
+    }
+
     if (CurrentStep < StepNames.Num() - 1)
     {
         CurrentStep++;
@@ -77,7 +83,7 @@ FString UOnboardingManager::GetStepSubtitle(int32 StepIndex) const
 {
     switch (StepIndex)
     {
-    case 0: return TEXT("Check your machine before the first night run.");
+    case 0: return TEXT("Check hardware, city data, and AkronWorld map before the first night run.");
     case 1: return TEXT("Dial visuals for a smooth, readable street-racing feel.");
     case 2: return TEXT("Pick your city and lock the world you are about to drive.");
     case 3: return TEXT("Set controls that feel natural the moment the countdown ends.");
@@ -101,6 +107,28 @@ FString UOnboardingManager::BuildCompletionMessage(bool bCanLaunch, int32 FailCo
 bool UOnboardingManager::ShouldShowOnboarding()
 {
     return UPreflightSystem::IsFirstRun();
+}
+
+bool UOnboardingManager::IsWorldMapReady()
+{
+    return UPreflightSystem::IsWorldMapReady();
+}
+
+bool UOnboardingManager::CanAdvanceFromCurrentStep() const
+{
+    if (CurrentStep != 0)
+    {
+        return true;
+    }
+
+    const TArray<FPreflightCheck> Checks = UPreflightSystem::RunAllChecks();
+    const FPreflightSummary Summary = UPreflightSystem::GetSummary(Checks);
+    return Summary.FailCount == 0;
+}
+
+TArray<FPreflightCheck> UOnboardingManager::GetPreflightChecks() const
+{
+    return UPreflightSystem::RunAllChecks();
 }
 
 void UOnboardingManager::FinishAndSave()
@@ -134,6 +162,7 @@ void UOnboardingManager::FinishAndSave()
     Root->SetStringField(TEXT("step_4_subtitle"), GetStepSubtitle(4));
     Root->SetStringField(TEXT("completion_message"), LastCompletionMessage);
     Root->SetBoolField(TEXT("preflight_can_launch"), Summary.bCanLaunch);
+    Root->SetBoolField(TEXT("world_map_ready"), UPreflightSystem::IsWorldMapReady());
     Root->SetNumberField(TEXT("preflight_fail_count"), Summary.FailCount);
     Root->SetNumberField(TEXT("preflight_warning_count"), Summary.WarningCount);
 

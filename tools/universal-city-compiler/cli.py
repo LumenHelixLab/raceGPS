@@ -5,6 +5,7 @@ Usage:
     python cli.py "Cleveland, OH" --radius 8 --routes 6
     python cli.py "41.5,-81.7" --radius 5 --detail full
     python cli.py --batch batch_cities.txt --output ../../citypacks
+    python cli.py --fixture steel_thread
 """
 
 import argparse
@@ -28,12 +29,22 @@ def main() -> int:
                         help="Output directory for citypacks")
     parser.add_argument("--batch", type=Path, default=None,
                         help="File with one city per line for batch compilation")
+    parser.add_argument("--fixture", type=str, default=None,
+                        help="Compile a checked-in OSM fixture (steel_thread)")
 
     args = parser.parse_args()
 
     project_root = Path(__file__).resolve().parents[2]
     output_dir = args.output if args.output.is_absolute() else project_root / args.output
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.fixture:
+        if args.fixture != "steel_thread":
+            print(f"Unknown fixture: {args.fixture}")
+            return 1
+        from export_citypack_v2 import compile_steel_thread
+        result = compile_steel_thread(output_dir=output_dir / "steel-thread-001", seed=args.seed)
+        return 0 if result.get("success") else 1
 
     if args.batch:
         if not args.batch.exists():

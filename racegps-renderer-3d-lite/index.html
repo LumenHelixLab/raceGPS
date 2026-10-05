@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RaceGPS - Midnight Run Arcade Edition</title>
+
+  <!-- CDN Dependencies -->
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/pmtiles@3.0.7/dist/pmtiles.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Courier New', Courier, monospace, -apple-system, sans-serif;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #030712;
+      color: #f1f5f9;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* Midnight Run Arcade HUD Overlay */
+    .hud-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 360px;
+      pointer-events: none;
+    }
+
+    .hud-card {
+      pointer-events: auto;
+      background: rgba(10, 15, 30, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.25), inset 0 0 15px rgba(255, 0, 127, 0.15);
+    }
+
+    .hud-card.brand h2 {
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #ffffff;
+      text-shadow: 0 0 10px #00f0ff;
+      text-transform: uppercase;
+    }
+
+    .hud-card.brand h2 span {
+      color: #ff007f;
+      text-shadow: 0 0 10px #ff007f;
+    }
+
+    .hud-card.brand .subtitle {
+      font-size: 0.75rem;
+      color: #38bdf8;
+      margin-top: 2px;
+    }
+
+    /* Midnight Arcade Speedometer & Gauges */
+    .metrics-arcade {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .metric-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border-left: 3px solid #00f0ff;
+    }
+
+    .metric-box .label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #ff007f;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .metric-box .value-arcade {
+      font-size: 2.0rem;
+      font-weight: 900;
+      color: #00f0ff;
+      line-height: 1;
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.8);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-box .unit {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* Nitro Bar */
+    .nitro-bar-container {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 6px;
+      border: 1px solid #ff007f;
+    }
+
+    .nitro-bar-fill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff007f, #00f0ff);
+      box-shadow: 0 0 10px #00f0ff;
+      transition: width 0.1s linear;
+    }
+
+    /* Controls & Selectors */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-arcade {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+      letter-spacing: 1px;
+    }
+
+    .btn-arcade.primary {
+      background: linear-gradient(135deg, #00f0ff, #0284c7);
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    }
+
+    .btn-arcade.primary:hover {
+      box-shadow: 0 0 20px rgba(0, 240, 255, 1);
+    }
+
+    .btn-arcade.secondary {
+      background: rgba(255, 0, 127, 0.2);
+      color: #ff007f;
+      border: 1px solid #ff007f;
+    }
+
+    .setting-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      width: 100%;
+    }
+
+    .setting-group select {
+      background: #0f172a;
+      color: #00f0ff;
+      border: 1px solid #00f0ff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Arcade HUD -->
+  <div class="hud-container">
+    <div class="hud-card brand">
+      <h2>MIDNIGHT <span>RUN 3D</span></h2>
+      <p class="subtitle">Real GPS Street Data + Driver View</p>
+    </div>
+
+    <div class="hud-card metrics-arcade">
+      <div class="metric-box">
+        <span class="label">SPEED</span>
+        <span class="value-arcade" id="val-speed">0</span>
+        <span class="unit">MPH</span>
+      </div>
+      <div class="metric-box">
+        <span class="label">GEAR</span>
+        <span class="value-arcade" id="val-gear">1</span>
+        <span class="unit">GEAR</span>
+      </div>
+      <div class="metric-box">
+        <span class="label">LAP TIME</span>
+        <span class="value-arcade" style="font-size:1.3rem" id="val-time">00:00.00</span>
+        <span class="unit">MM:SS.ms</span>
+      </div>
+      <div class="metric-box">
+        <span class="label">LATERAL G</span>
+        <span class="value-arcade" style="font-size:1.3rem" id="val-gforce">0.00</span>
+        <span class="unit">G-FORCE</span>
+      </div>
+    </div>
+
+    <div class="hud-card">
+      <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:800; color:#ff007f;">
+        <span>NITRO BOOST (NOS)</span>
+        <button id="btn-nos" style="background:#ff007f; color:#fff; border:none; padding:2px 8px; border-radius:4px; font-weight:800; cursor:pointer;">BOOST</button>
+      </div>
+      <div class="nitro-bar-container">
+        <div class="nitro-bar-fill" id="nitro-fill"></div>
+      </div>
+    </div>
+
+    <div class="hud-card controls">
+      <button id="btn-play-pause" class="btn-arcade primary">Start Run</button>
+      <button id="btn-reset" class="btn-arcade secondary">Reset</button>
+      <div class="setting-group" style="width:auto">
+        <label for="playback-rate">Rate:</label>
+        <select id="playback-rate">
+          <option value="1">1x</option>
+          <option value="2" selected>2x</option>
+          <option value="5">5x</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="hud-card">
+      <div class="setting-group">
+        <label for="camera-view">Camera Perspective:</label>
+        <select id="camera-view">
+          <option value="driver" selected>Driver Street View (Cockpit)</option>
+          <option value="chase">3D Chase Cam</option>
+          <option value="topdown">Top-Down 2D Map</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // Telemetry Engine
+    // -------------------------------------------------------------
+    class TelemetryEngine {
+      constructor() {
+        this.points = [];
+        this.currentIndex = 0;
+        this.isPlaying = false;
+        this.listeners = [];
+      }
+
+      loadSyntheticTrack() {
+        const baseLat = 43.7374; // Monaco Grand Prix Circuit
+        const baseLng = 7.4211;
+        const totalPoints = 300;
+        this.points = [];
+
+        for (let i = 0; i < totalPoints; i++) {
+          const angle = (i / totalPoints) * Math.PI * 2;
+          const radiusLat = 0.003 * (1 + 0.3 * Math.sin(angle * 3));
+          const radiusLng = 0.005 * (1 + 0.2 * Math.cos(angle * 2));
+
+          const lat = baseLat + radiusLat * Math.sin(angle);
+          const lng = baseLng + radiusLng * Math.cos(angle);
+          const altitude = 15 + 12 * Math.sin(angle * 4);
+          const speedMph = 65 + 45 * Math.sin(angle * 5) + (Math.random() * 2 - 1);
+          const lateralG = 0.8 * Math.cos(angle * 3);
+
+          this.points.push({
+            index: i,
+            lat: lat,
+            lng: lng,
+            alt: altitude,
+            speedMph: Math.max(20, Math.round(speedMph)),
+            gForce: parseFloat(lateralG.toFixed(2)),
+            timestamp: i * 200
+          });
+        }
+
+        for (let i = 0; i < this.points.length; i++) {
+          const nextIdx = (i + 1) % this.points.length;
+          const p1 = this.points[i];
+          const p2 = this.points[nextIdx];
+          p1.heading = this.calculateBearing(p1.lat, p1.lng, p2.lat, p2.lng);
+        }
+
+        this.currentIndex = 0;
+        return this.points;
+      }
+
+      calculateBearing(lat1, lon1, lat2, lon2) {
+        const toRad = deg => (deg * Math.PI) / 180;
+        const toDeg = rad => (rad * 180) / Math.PI;
+        const dLon = toRad(lon2 - lon1);
+        const y = Math.sin(dLon) * Math.cos(toRad(lat2));
+        const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+                  Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLon);
+        return (toDeg(Math.atan2(y, x)) + 360) % 360;
+      }
+
+      getCurrentPoint() {
+        return this.points[this.currentIndex] || null;
+      }
+
+      nextFrame() {
+        if (!this.isPlaying || this.points.length === 0) return null;
+        this.currentIndex = (this.currentIndex + 1) % this.points.length;
+        const point = this.getCurrentPoint();
+        this.notify(point);
+        return point;
+      }
+
+      subscribe(callback) {
+        this.listeners.push(callback);
+      }
+
+      notify(point) {
+        this.listeners.forEach(fn => fn(point));
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Midnight Audio Synthesizer
+    // -------------------------------------------------------------
+    class MidnightArcadeEngine {
+      constructor() {
+        this.audioCtx = null;
+        this.oscillator = null;
+        this.gainNode = null;
+        this.nitro = 100;
+        this.gear = 1;
+      }
+
+      initAudio() {
+        if (this.audioCtx) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        this.audioCtx = new AudioCtx();
+        this.oscillator = this.audioCtx.createOscillator();
+        this.gainNode = this.audioCtx.createGain();
+
+        this.oscillator.type = 'sawtooth';
+        this.oscillator.frequency.setValueAtTime(60, this.audioCtx.currentTime);
+        this.gainNode.gain.setValueAtTime(0.04, this.audioCtx.currentTime);
+
+        this.oscillator.connect(this.gainNode);
+        this.gainNode.connect(this.audioCtx.destination);
+        this.oscillator.start();
+      }
+
+      updateEngineSound(speedMph) {
+        if (!this.audioCtx) return;
+        if (speedMph < 25) this.gear = 1;
+        else if (speedMph < 45) this.gear = 2;
+        else if (speedMph < 70) this.gear = 3;
+        else if (speedMph < 95) this.gear = 4;
+        else if (speedMph < 120) this.gear = 5;
+        else this.gear = 6;
+
+        const gearSpeed = (speedMph % 25) * 4;
+        const freq = 50 + gearSpeed + this.gear * 15;
+        this.oscillator.frequency.setTargetAtTime(freq, this.audioCtx.currentTime, 0.05);
+      }
+
+      triggerNitro() {
+        if (this.nitro > 15) {
+          this.nitro -= 15;
+          return true;
+        }
+        return false;
+      }
+
+      rechargeNitro() {
+        if (this.nitro < 100) this.nitro += 0.2;
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Main Renderer Initialization
+    // -------------------------------------------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+      const telemetry = new TelemetryEngine();
+      const arcade = new MidnightArcadeEngine();
+      const trackData = telemetry.loadSyntheticTrack();
+
+      const valSpeed = document.getElementById("val-speed");
+      const valTime = document.getElementById("val-time");
+      const valGear = document.getElementById("val-gear");
+      const valGForce = document.getElementById("val-gforce");
+      const nitroFill = document.getElementById("nitro-fill");
+      const btnPlayPause = document.getElementById("btn-play-pause");
+      const btnReset = document.getElementById("btn-reset");
+      const btnNos = document.getElementById("btn-nos");
+      const selectRate = document.getElementById("playback-rate");
+      const selectCamera = document.getElementById("camera-view");
+
+      const protocol = new pmtiles.Protocol();
+      maplibregl.addProtocol("pmtiles", protocol.tile);
+
+      const startPoint = trackData[0];
+
+      // MapLibre GL JS Dark Vector Map
+      const map = new maplibregl.Map({
+        container: "map",
+        style: "https://tiles.openfreemap.org/styles/dark",
+        center: [startPoint.lng, startPoint.lat],
+        zoom: 18.8, // Street Level
+        pitch: 85,  // Driver Cockpit Look-Ahead
+        bearing: startPoint.heading || 0,
+        maxPitch: 88
+      });
+
+      map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }));
+
+      map.on("load", () => {
+        // Add 3D Vector Building Layer
+        if (!map.getSource('openfreemap-vector')) {
+          map.addSource('openfreemap-vector', {
+            type: 'vector',
+            url: 'https://tiles.openfreemap.org/planet'
+          });
+        }
+
+        map.addLayer({
+          id: '3d-buildings',
+          type: 'fill-extrusion',
+          source: 'openfreemap-vector',
+          'source-layer': 'building',
+          filter: ['!=', ['get', 'hide_3d'], true],
+          paint: {
+            'fill-extrusion-color': [
+              'interpolate',
+              ['linear'],
+              ['get', 'render_height'],
+              0, '#090d16',
+              20, '#0f172a',
+              50, '#1e1b4b',
+              100, '#31103f'
+            ],
+            'fill-extrusion-height': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              13, 0,
+              14.5, ['get', 'render_height']
+            ],
+            'fill-extrusion-base': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              13, 0,
+              14.5, ['get', 'render_min_height']
+            ],
+            'fill-extrusion-opacity': 0.9
+          }
+        });
+
+        // Track Path Layer
+        const geojsonLine = {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: trackData.map(pt => [pt.lng, pt.lat, pt.alt])
+          }
+        };
+
+        map.addSource("track-path", {
+          type: "geojson",
+          data: geojsonLine
+        });
+
+        map.addLayer({
+          id: "track-halo",
+          type: "line",
+          source: "track-path",
+          paint: {
+            "line-color": "#ff007f",
+            "line-width": 14,
+            "line-blur": 6,
+            "line-opacity": 0.8
+          }
+        });
+
+        map.addLayer({
+          id: "track-line",
+          type: "line",
+          source: "track-path",
+          paint: {
+            "line-color": "#00f0ff",
+            "line-width": 6,
+            "line-opacity": 1.0
+          }
+        });
+
+        // Vehicle Position
+        map.addSource("vehicle-marker", {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [startPoint.lng, startPoint.lat]
+            }
+          }
+        });
+
+        map.addLayer({
+          id: "vehicle-point",
+          type: "circle",
+          source: "vehicle-marker",
+          paint: {
+            "circle-radius": 12,
+            "circle-color": "#ff007f",
+            "circle-stroke-width": 3,
+            "circle-stroke-color": "#00f0ff"
+          }
+        });
+      });
+
+      // Frame Listener
+      telemetry.subscribe(point => {
+        if (!point) return;
+
+        arcade.updateEngineSound(point.speedMph);
+        arcade.rechargeNitro();
+        if (nitroFill) nitroFill.style.width = `${arcade.nitro}%`;
+
+        valSpeed.textContent = point.speedMph;
+        valGForce.textContent = point.gForce >= 0 ? `+${point.gForce}` : `${point.gForce}`;
+        if (valGear) valGear.textContent = arcade.gear;
+
+        const totalSecs = Math.floor(point.timestamp / 1000);
+        const mins = String(Math.floor(totalSecs / 60)).padStart(2, "0");
+        const secs = String(totalSecs % 60).padStart(2, "0");
+        const ms = String(Math.floor((point.timestamp % 1000) / 10)).padStart(2, "0");
+        valTime.textContent = `${mins}:${secs}.${ms}`;
+
+        const vehicleSource = map.getSource("vehicle-marker");
+        if (vehicleSource) {
+          vehicleSource.setData({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [point.lng, point.lat]
+            }
+          });
+        }
+
+        const camMode = selectCamera ? selectCamera.value : "driver";
+        if (camMode === "driver") {
+          map.easeTo({
+            center: [point.lng, point.lat],
+            bearing: point.heading,
+            pitch: 85,
+            zoom: 18.8,
+            duration: 180,
+            easing: t => t
+          });
+        } else if (camMode === "chase") {
+          map.easeTo({
+            center: [point.lng, point.lat],
+            bearing: point.heading,
+            pitch: 70,
+            zoom: 17.2,
+            duration: 180,
+            easing: t => t
+          });
+        } else if (camMode === "topdown") {
+          map.easeTo({
+            center: [point.lng, point.lat],
+            pitch: 0,
+            zoom: 16.0,
+            duration: 180,
+            easing: t => t
+          });
+        }
+      });
+
+      let timerId = null;
+      function startPlayback() {
+        arcade.initAudio();
+        if (timerId) clearInterval(timerId);
+        const interval = Math.max(50, 200 / parseFloat(selectRate.value));
+        timerId = setInterval(() => {
+          telemetry.nextFrame();
+        }, interval);
+      }
+
+      function stopPlayback() {
+        if (timerId) clearInterval(timerId);
+        timerId = null;
+      }
+
+      btnPlayPause.addEventListener("click", () => {
+        telemetry.isPlaying = !telemetry.isPlaying;
+        if (telemetry.isPlaying) {
+          btnPlayPause.textContent = "Pause Run";
+          btnPlayPause.classList.replace("primary", "secondary");
+          startPlayback();
+        } else {
+          btnPlayPause.textContent = "Start Run";
+          btnPlayPause.classList.replace("secondary", "primary");
+          stopPlayback();
+        }
+      });
+
+      btnReset.addEventListener("click", () => {
+        telemetry.isPlaying = false;
+        stopPlayback();
+        telemetry.currentIndex = 0;
+        btnPlayPause.textContent = "Start Run";
+        btnPlayPause.classList.replace("secondary", "primary");
+        const firstPoint = telemetry.getCurrentPoint();
+        telemetry.notify(firstPoint);
+      });
+
+      if (btnNos) {
+        btnNos.addEventListener("click", () => {
+          arcade.triggerNitro();
+        });
+      }
+
+      selectRate.addEventListener("change", () => {
+        if (telemetry.isPlaying) startPlayback();
+      });
+    });
+  </script>
+</body>
+</html>

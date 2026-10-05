@@ -5,8 +5,8 @@
 #
 # What this does:
 #   1. Downloads VS2022 Build Tools bootstrapper
-#   2. Installs VS2022 + C++ Game Dev workload on D: drive
-#   3. Installs Epic Games Launcher on D: drive
+#   2. Installs VS2022 + C++ Game Dev workload
+#   3. Installs Epic Games Launcher
 #   4. Sets environment variables for raceGPS build
 #   5. Creates desktop shortcuts
 #
@@ -17,8 +17,21 @@
 #   4. Let it download overnight (~30-40 GB)
 
 $ErrorActionPreference = "Stop"
-$LogFile = "D:\projects\logs\setup-ue5-dev-env.log"
-New-Item -ItemType Directory -Path "D:\projects\logs" -Force | Out-Null
+
+$ScriptDir = $PSScriptRoot
+if (-not $ScriptDir) { $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path }
+$ProjectRoot = Split-Path -Parent $ScriptDir
+$UeAppDir = Join-Path $ProjectRoot "apps\unreal-akron-beta"
+$BuildBat = Join-Path $UeAppDir "Build.bat"
+
+$InstallDrive = if (Test-Path "D:\") { "D:" } else { $env:SystemDrive }
+$VsInstallPath = Join-Path $InstallDrive "Microsoft Visual Studio\2022\BuildTools"
+$EpicInstallPath = Join-Path $InstallDrive "Epic Games"
+$CacheDir = Join-Path $ProjectRoot ".setup-cache"
+$LogDir = Join-Path $ProjectRoot "logs"
+$LogFile = Join-Path $LogDir "setup-ue5-dev-env.log"
+
+New-Item -ItemType Directory -Path $CacheDir, $LogDir -Force | Out-Null
 
 function Write-Log($msg) {
     $ts = Get-Date -Format "HH:mm:ss"
@@ -38,12 +51,13 @@ function Test-Admin {
 Write-Log "========================================"
 Write-Log "raceGPS UE5.5 Dev Environment Setup"
 Write-Log "========================================"
+Write-Log "Project root: $ProjectRoot"
 
 if (-not (Test-Admin)) {
     Write-Log "Not running as Administrator. Auto-elevating..."
     Write-Log "Click YES on the UAC prompt."
     $ScriptPath = $PSCommandPath
-    if (-not $ScriptPath) { $ScriptPath = "D:\projects\scripts\setup-ue5-dev-env.ps1" }
+    if (-not $ScriptPath) { $ScriptPath = Join-Path $ScriptDir "setup-ue5-dev-env.ps1" }
     Start-Process -FilePath "powershell.exe" -ArgumentList @(
         "-ExecutionPolicy", "Bypass",
         "-File", "`"$ScriptPath`""
@@ -52,7 +66,7 @@ if (-not (Test-Admin)) {
 }
 
 Write-Log "Running as Administrator. OK."
-Write-Log "Install target: D: drive"
+Write-Log "Install drive: $InstallDrive"
 Write-Log "Log file: $LogFile"
 Write-Log ""
 
@@ -60,11 +74,10 @@ Write-Log ""
 # STEP 1: VS2022 Build Tools + Game Dev Workload
 # ============================================================================
 Write-Log "[STEP 1/4] Visual Studio 2022 Build Tools"
-$VsInstallPath = "D:\Microsoft Visual Studio\2022\BuildTools"
-$VsInstallerDir = "D:\projects\downloads\vs2022"
-$VsBootstrapper = "$VsInstallerDir\vs_buildtools.exe"
+$VsInstallerDir = Join-Path $CacheDir "vs2022"
+$VsBootstrapper = Join-Path $VsInstallerDir "vs_buildtools.exe"
 
-if (Test-Path "$VsInstallPath\MSBuild\Current\Bin\MSBuild.exe") {
+if (Test-Path (Join-Path $VsInstallPath "MSBuild\Current\Bin\MSBuild.exe")) {
     Write-Log "  VS2022 Build Tools already installed at $VsInstallPath"
 } else {
     New-Item -ItemType Directory -Path $VsInstallerDir -Force | Out-Null
@@ -110,7 +123,7 @@ if (Test-Path "$VsInstallPath\MSBuild\Current\Bin\MSBuild.exe") {
 }
 
 # Verify MSBuild
-$MsBuildPath = "$VsInstallPath\MSBuild\Current\Bin\MSBuild.exe"
+$MsBuildPath = Join-Path $VsInstallPath "MSBuild\Current\Bin\MSBuild.exe"
 if (Test-Path $MsBuildPath) {
     Write-Log "  MSBuild confirmed: $MsBuildPath"
 } else {
@@ -122,10 +135,10 @@ if (Test-Path $MsBuildPath) {
 # ============================================================================
 Write-Log ""
 Write-Log "[STEP 2/4] Epic Games Launcher"
-$EpicInstallPath = "D:\Epic Games"
-$EpicMsi = "D:\projects\downloads\EpicGamesLauncherInstaller.msi"
+$EpicMsi = Join-Path $CacheDir "EpicGamesLauncherInstaller.msi"
+$EpicExe = Join-Path $EpicInstallPath "Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe"
 
-if (Test-Path "$EpicInstallPath\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe") {
+if (Test-Path $EpicExe) {
     Write-Log "  Epic Games Launcher already installed at $EpicInstallPath"
 } else {
     if (-not (Test-Path $EpicMsi)) {
@@ -143,19 +156,20 @@ if (Test-Path "$EpicInstallPath\Launcher\Portal\Binaries\Win64\EpicGamesLauncher
 
     if (Test-Path $EpicMsi) {
         Write-Log "  Installing Epic Games Launcher..."
+        $EpicLog = Join-Path $LogDir "epic-install.log"
         $proc = Start-Process -FilePath "msiexec.exe" -ArgumentList @(
             "/i", "`"$EpicMsi`"",
             "INSTALLDIR=`"$EpicInstallPath`"",
             "/qn",
             "/norestart",
-            "/log", "`"D:\projects\logs\epic-install.log`""
+            "/log", "`"$EpicLog`""
         ) -Wait -PassThru
 
         if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) {
             Write-Log "  Epic Games Launcher installed successfully"
         } else {
             Write-Log "  WARNING: Epic installer exited with code $($proc.ExitCode)"
-            Write-Log "  Check D:\projects\logs\epic-install.log"
+            Write-Log "  Check $EpicLog"
         }
     }
 }
@@ -166,18 +180,18 @@ if (Test-Path "$EpicInstallPath\Launcher\Portal\Binaries\Win64\EpicGamesLauncher
 Write-Log ""
 Write-Log "[STEP 3/4] Environment Variables"
 
-# Set MSBuild path
+[Environment]::SetEnvironmentVariable("RACEGPS_ROOT", $ProjectRoot, "User")
+Write-Log "  RACEGPS_ROOT = $ProjectRoot"
+
 [Environment]::SetEnvironmentVariable("RACEGPS_MSBUILD", $MsBuildPath, "User")
 Write-Log "  RACEGPS_MSBUILD = $MsBuildPath"
 
-# Set UE5 path (will exist after user downloads it)
 $Ue55Path = "C:\Program Files\Epic Games\UE_5.5"
 [Environment]::SetEnvironmentVariable("RACEGPS_UE5", $Ue55Path, "User")
 Write-Log "  RACEGPS_UE5 = $Ue55Path (set now, available after UE5 install)"
 
-# Add MSBuild to PATH if not already there
 $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
-$VsBinDir = "$VsInstallPath\MSBuild\Current\Bin"
+$VsBinDir = Join-Path $VsInstallPath "MSBuild\Current\Bin"
 if ($UserPath -notlike "*$VsBinDir*") {
     [Environment]::SetEnvironmentVariable("Path", "$UserPath;$VsBinDir", "User")
     Write-Log "  Added MSBuild to user PATH"
@@ -193,22 +207,18 @@ Write-Log "[STEP 4/4] Desktop Shortcuts"
 $WshShell = New-Object -ComObject WScript.Shell
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
 
-# Epic Launcher shortcut
-$EpicExe = "$EpicInstallPath\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe"
 if (Test-Path $EpicExe) {
-    $Shortcut = $WshShell.CreateShortcut("$DesktopPath\Epic Games Launcher.lnk")
+    $Shortcut = $WshShell.CreateShortcut((Join-Path $DesktopPath "Epic Games Launcher.lnk"))
     $Shortcut.TargetPath = $EpicExe
-    $Shortcut.WorkingDirectory = "$EpicInstallPath\Launcher\Portal\Binaries\Win64"
+    $Shortcut.WorkingDirectory = Split-Path $EpicExe
     $Shortcut.Save()
     Write-Log "  Created: Epic Games Launcher shortcut"
 }
 
-# raceGPS Build shortcut
-$BuildBat = "D:\projects\racegps\apps\unreal-akron-beta\Build.bat"
 if (Test-Path $BuildBat) {
-    $Shortcut = $WshShell.CreateShortcut("$DesktopPath\raceGPS Build.lnk")
+    $Shortcut = $WshShell.CreateShortcut((Join-Path $DesktopPath "raceGPS Build.lnk"))
     $Shortcut.TargetPath = $BuildBat
-    $Shortcut.WorkingDirectory = "D:\projects\racegps\apps\unreal-akron-beta"
+    $Shortcut.WorkingDirectory = $UeAppDir
     $Shortcut.Save()
     Write-Log "  Created: raceGPS Build shortcut"
 }
@@ -233,12 +243,14 @@ Write-Log "  7. Let it download overnight (~30-40 GB)"
 Write-Log ""
 Write-Log "AFTER UE5.5 IS INSTALLED:"
 Write-Log "  Double-click 'raceGPS Build' on your desktop"
-Write-Log "  or run: D:\projects\racegps\apps\unreal-akron-beta\Build.bat"
+Write-Log "  or run: $BuildBat"
+Write-Log ""
+Write-Log "BUILD WINDOWS INSTALLER:"
+Write-Log "  .\scripts\build-windows-installer.ps1"
 Write-Log ""
 Write-Log "Full log: $LogFile"
 Write-Log ""
 
-# Auto-open Epic Launcher if installed
 if (Test-Path $EpicExe) {
     Write-Log "Launching Epic Games Launcher now..."
     Start-Process -FilePath $EpicExe

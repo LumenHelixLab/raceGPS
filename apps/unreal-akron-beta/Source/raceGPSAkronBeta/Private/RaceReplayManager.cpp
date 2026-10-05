@@ -28,6 +28,10 @@ void URaceReplayManager::BeginRaceRecording()
 
 void URaceReplayManager::EndRaceRecording()
 {
+    if (!Recorder)
+    {
+        return;
+    }
     Recorder->StopRecording();
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] Race recording ended. %d frames"), Recorder->GetFrameCount());
 }

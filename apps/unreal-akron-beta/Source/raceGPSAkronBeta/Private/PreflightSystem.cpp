@@ -4,11 +4,20 @@
 #include "HAL/PlatformFilemanager.h"
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
+#include "Misc/PackageName.h"
 #include "GenericPlatform/GenericPlatformMisc.h"
 #include "Engine/Engine.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
+#include "Misc/DateTime.h"
+#include "HAL/FileManager.h"
+
+namespace RaceGPSPreflight
+{
+    static constexpr int64 MinUmapBytes = 4096;
+    static const FString AkronWorldPackage = TEXT("/Game/Maps/AkronWorld");
+}
 
 TArray<FPreflightCheck> UPreflightSystem::RunAllChecks()
 {
@@ -18,6 +27,7 @@ TArray<FPreflightCheck> UPreflightSystem::RunAllChecks()
     Checks.Add(CheckDiskSpace());
     Checks.Add(CheckGPU());
     Checks.Add(CheckCitypackIntegrity());
+    Checks.Add(CheckWorldMap());
     Checks.Add(CheckSaveDirectory());
     Checks.Add(CheckNetwork());
     return Checks;
@@ -235,6 +245,99 @@ FPreflightCheck UPreflightSystem::CheckGPU()
         Check.Status = EPreflightStatus::Pass;
         Check.Detail = FString::Printf(TEXT("%s (Driver: %s)"), *GPUName, *GPUDriver);
     }
+    return Check;
+}
+
+bool UPreflightSystem::IsPackagedRuntime()
+{
+#if WITH_EDITOR
+    return false;
+#else
+    return !GIsEditor;
+#endif
+}
+
+FString UPreflightSystem::GetWorldMapPackageName()
+{
+    return RaceGPSPreflight::AkronWorldPackage;
+}
+
+void UPreflightSystem::AppendPreflightLog(const FString& Line)
+{
+    const FString LogDir = FPaths::ProjectSavedDir() / TEXT("logs");
+    FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*LogDir);
+    const FString LogPath = LogDir / TEXT("preflight.log");
+    const FString Entry = FString::Printf(TEXT("[%s] %s\n"), *FDateTime::UtcNow().ToIso8601(), *Line);
+    FFileHelper::SaveStringToFile(Entry, *LogPath, FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
+}
+
+bool UPreflightSystem::IsWorldMapReady()
+{
+    return CheckWorldMap().Status == EPreflightStatus::Pass;
+}
+
+FPreflightCheck UPreflightSystem::CheckWorldMap()
+{
+    FPreflightCheck Check;
+    Check.Category = TEXT("World Map");
+    Check.Description = TEXT("AkronWorld playable map required");
+
+    IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+    const FString ContentUmap = FPaths::ProjectContentDir() / TEXT("Maps/AkronWorld.umap");
+    const FString PlaceholderPath = FPaths::ProjectContentDir() / TEXT("Maps/AkronWorld.umap.placeholder");
+    const bool bPackageExists = FPackageName::DoesPackageExist(RaceGPSPreflight::AkronWorldPackage);
+
+    if (IsPackagedRuntime())
+    {
+        if (bPackageExists)
+        {
+            Check.Status = EPreflightStatus::Pass;
+            Check.Detail = TEXT("AkronWorld cooked package found");
+        }
+        else
+        {
+            Check.Status = EPreflightStatus::Fail;
+            Check.Detail = TEXT("AkronWorld not found in cooked content");
+            Check.RecommendedAction = TEXT("Verify installation or reinstall from GitHub Releases");
+        }
+        AppendPreflightLog(FString::Printf(TEXT("World map packaged check: %s"), *Check.Detail));
+        return Check;
+    }
+
+    if (PlatformFile.FileExists(*ContentUmap))
+    {
+        const int64 UmapSize = PlatformFile.FileSize(*ContentUmap);
+        if (UmapSize > RaceGPSPreflight::MinUmapBytes)
+        {
+            Check.Status = EPreflightStatus::Pass;
+            Check.Detail = FString::Printf(TEXT("AkronWorld.umap found (%lld bytes)"), UmapSize);
+        }
+        else
+        {
+            Check.Status = EPreflightStatus::Fail;
+            Check.Detail = TEXT("AkronWorld.umap exists but appears invalid (too small)");
+            Check.RecommendedAction = TEXT("Recreate AkronWorld.umap in UE 5.5 Editor");
+        }
+    }
+    else if (bPackageExists)
+    {
+        Check.Status = EPreflightStatus::Pass;
+        Check.Detail = TEXT("AkronWorld package available in project content");
+    }
+    else if (PlatformFile.FileExists(*PlaceholderPath))
+    {
+        Check.Status = EPreflightStatus::Fail;
+        Check.Detail = TEXT("Only AkronWorld.umap.placeholder present — real map not created");
+        Check.RecommendedAction = TEXT("Open raceGPSAkronBeta.uproject in UE 5.5 and save Content/Maps/AkronWorld.umap");
+    }
+    else
+    {
+        Check.Status = EPreflightStatus::Fail;
+        Check.Detail = TEXT("AkronWorld.umap not found");
+        Check.RecommendedAction = TEXT("Create AkronWorld.umap in UE 5.5 Editor — see README Level Setup Guide");
+    }
+
+    AppendPreflightLog(FString::Printf(TEXT("World map dev check: %s"), *Check.Detail));
     return Check;
 }
 

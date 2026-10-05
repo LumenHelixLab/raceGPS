@@ -1,0 +1,179 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Courier New', Courier, monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #030712;
+  color: #f1f5f9;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Midnight Run Arcade HUD Overlay */
+.hud-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 380px;
+  pointer-events: none;
+}
+
+.hud-card {
+  pointer-events: auto;
+  background: rgba(10, 15, 30, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2), inset 0 0 15px rgba(255, 0, 127, 0.1);
+}
+
+.hud-card.brand h2 {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #ffffff;
+  text-shadow: 0 0 10px #00f0ff;
+  text-transform: uppercase;
+}
+
+.hud-card.brand h2 span {
+  color: #ff007f;
+  text-shadow: 0 0 10px #ff007f;
+}
+
+.hud-card.brand .subtitle {
+  font-size: 0.75rem;
+  color: #38bdf8;
+  margin-top: 2px;
+}
+
+/* Midnight Arcade Speedometer & Gauges */
+.metrics-arcade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.metric-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid #00f0ff;
+}
+
+.metric-box .label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ff007f;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.metric-box .value-arcade {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #00f0ff;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.8);
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-box .unit {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* Nitro Bar */
+.nitro-bar-container {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 8px;
+  border: 1px solid #ff007f;
+}
+
+.nitro-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff007f, #00f0ff);
+  box-shadow: 0 0 10px #00f0ff;
+  transition: width 0.1s linear;
+}
+
+/* Controls & View Selectors */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-arcade {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  letter-spacing: 1px;
+}
+
+.btn-arcade.primary {
+  background: linear-gradient(135deg, #00f0ff, #0284c7);
+  color: #000;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+.btn-arcade.primary:hover {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 1);
+}
+
+.btn-arcade.secondary {
+  background: rgba(255, 0, 127, 0.2);
+  color: #ff007f;
+  border: 1px solid #ff007f;
+}
+
+.setting-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.setting-group select {
+  background: #0f172a;
+  color: #00f0ff;
+  border: 1px solid #00f0ff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  outline: none;
+}

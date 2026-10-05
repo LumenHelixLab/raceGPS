@@ -12,6 +12,8 @@
 #include "VehicleTuningData.h"
 #include "Version.h"
 #include "LANBrowserWidget.h"
+#include "PreflightSystem.h"
+#include "WorldContentGateWidget.h"
 
 void UMainMenuWidget::NativeConstruct()
 {
@@ -134,8 +136,38 @@ void UMainMenuWidget::NativeConstruct()
     UpdateVehicleInfo();
 }
 
+void UMainMenuWidget::ShowWorldContentGate()
+{
+    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    if (!PC)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Cannot show world content gate: missing player controller"));
+        return;
+    }
+
+    TSubclassOf<UWorldContentGateWidget> WidgetClass = WorldContentGateClass;
+    if (!WidgetClass)
+    {
+        WidgetClass = UWorldContentGateWidget::StaticClass();
+    }
+
+    UWorldContentGateWidget* Gate = CreateWidget<UWorldContentGateWidget>(PC, WidgetClass);
+    if (Gate)
+    {
+        Gate->AddToViewport(200);
+        Gate->RefreshFromPreflight();
+    }
+}
+
 void UMainMenuWidget::OnPlayClicked()
 {
+    if (!UPreflightSystem::IsWorldMapReady())
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Cannot start play: AkronWorld map not installed"));
+        ShowWorldContentGate();
+        return;
+    }
+
     UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance());
     if (!RouteSelector)
     {
