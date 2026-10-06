@@ -1,0 +1,40 @@
+Using bundled DotNet SDK version: 8.0.412 win-x64
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" raceGPSAkronBetaEditor Win64 Development -Project=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject -WaitMutex -MaxParallelActions=1 -NoUBA -NoXGE
+Log file: C:\Users\cgp22\AppData\Local\UnrealBuildTool\Log.txt
+Parsing headers for raceGPSAkronBetaEditor
+  Running Internal UnrealHeaderTool C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Intermediate\Build\Win64\raceGPSAkronBetaEditor\Development\raceGPSAkronBetaEditor.uhtmanifest -WarningsAsErrors -installed
+UHT processed raceGPSAkronBetaEditor in 11.4328353 seconds (3 files written)
+Building raceGPSAkronBetaEditor...
+Using Visual Studio 2022 14.44.35226 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207) and Windows 10.0.26100.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from raceGPSAkronBeta unity file: AchievementSystem.cpp, AkronHUD.cpp, AkronXodrImporter.cpp, BuildingMeshGenerator.cpp, ChampionshipManager.cpp, ChaosVehiclePawn.cpp, CheckpointGate.cpp, ClevelandEnvironmentActor.cpp, ClevelandLookDirector.cpp, ClevelandShowcaseGameMode.cpp, ClevelandSoloGameMode.cpp, CompassWidget.cpp, ConsoleCommands.cpp, ContributionCaptureComponent.cpp, CourseCreatorWidget.cpp, CruiseSprintGameMode.cpp, DayNightCycle.cpp, DeveloperConsole.cpp, DriftScoreSystem.cpp, FrameDiagnosticActor.cpp, GhostVehicle.cpp, GhostVehicleSystem.cpp, LANBrowserWidget.cpp, LANSessionManager.cpp, LeaderboardSystem.cpp, LeaderboardWidget.cpp, LoadingScreenWidget.cpp, MainMenuGameMode.cpp, MainMenuWidget.cpp, MinimapRenderer.cpp, MinimapWidget.cpp, NeonHUD.cpp, NotificationManager.cpp, OnboardingManager.cpp, PauseMenuWidget.cpp, PhotoModeController.cpp, PlayerProfileSaveGame.cpp, PostProcessController.cpp, PostRaceStatsWidget.cpp, PreflightSystem.cpp, RaceAIDriverController.cpp, raceGPSAkronBeta.cpp, RaceGPSBackendClient.cpp, raceGPSGameInstance.cpp, RaceGPSMaterialProvider.cpp, RaceGPSVehicleWheels.cpp, RaceGridManager.cpp, RaceReplayManager.cpp, RaceReplayPlayer.cpp, RaceReplayRecorder.cpp, RaceScoringSystem.cpp, RaceSessionManager.cpp, RaceTimerSystem.cpp, RacingLineComponent.cpp, RoadMeshGenerator.cpp, RouteSplineActor.cpp, RuntimeCityLoader.cpp, SettingsAutoConfigurator.cpp, SettingsSystem.cpp, SettingsWidget.cpp, StreetFurnitureSpawner.cpp, TrafficAISpawner.cpp, TrafficSpawner.cpp, TrafficVehicle.cpp, TutorialSystem.cpp, TutorialWidget.cpp, UnlockSystem.cpp, VehicleAudioComponent.cpp, VehicleSelectionWidget.cpp, VisualQualitySettings.cpp, WeatherSystem.cpp, WorldContentInstaller.cpp, FrameContractTests.cpp, raceGPSGameplayTests.cpp
+Executing up to 1 actions based on MaxProcessorCount override
+Using Parallel executor to run 22 action(s)
+------ Building 22 action(s) started ------
+[1/22] Compile [x64] ChaosVehiclePawn.cpp
+[2/22] Compile [x64] ClevelandShowcaseGameMode.cpp
+[3/22] Compile [x64] ClevelandSoloGameMode.cpp
+[4/22] Compile [x64] CompassWidget.cpp
+[5/22] Compile [x64] ConsoleCommands.cpp
+[6/22] Compile [x64] CourseCreatorWidget.cpp
+[7/22] Compile [x64] CruiseSprintGameMode.cpp
+[8/22] Compile [x64] DeveloperConsole.cpp
+[9/22] Compile [x64] MinimapWidget.cpp
+[10/22] Compile [x64] Module.raceGPSAkronBeta.1.cpp
+[11/22] Compile [x64] Module.raceGPSAkronBeta.5.cpp
+[12/22] Compile [x64] RaceAIDriverController.cpp
+[13/22] Compile [x64] RaceGridManager.cpp
+[14/22] Compile [x64] RaceReplayManager.cpp
+[15/22] Compile [x64] RaceSessionManager.cpp
+[16/22] Compile [x64] SettingsSystem.cpp
+[17/22] Compile [x64] SettingsWidget.cpp
+[18/22] Compile [x64] TrafficSpawner.cpp
+[19/22] Compile [x64] VehicleAudioComponent.cpp
+[20/22] Link [x64] UnrealEditor-raceGPSAkronBeta.dll
+[21/22] Link [x64] UnrealEditor-raceGPSAkronBeta.lib
+   Creating library C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/Build/Win64/x64/UnrealEditor/Development/raceGPSAkronBeta/UnrealEditor-raceGPSAkronBeta.lib and object C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/Build/Win64/x64/UnrealEditor/Development/raceGPSAkronBeta/UnrealEditor-raceGPSAkronBeta.exp
+[22/22] WriteMetadata raceGPSAkronBetaEditor.target
+
+Total time in Parallel executor: 90.93 seconds
+
+Result: Succeeded
+Total execution time: 105.55 seconds

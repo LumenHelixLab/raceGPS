@@ -1,0 +1,4 @@
+[18140:52416:1005/234400.315:ERROR:google_update_settings.cc(265)] Failed opening key Software\Chromium to set usagestats; result: 5
+[18140:54740:1005/234430.191:ERROR:usb_descriptors.cc(146)] Failed to read length for configuration 1.
+[18140:54740:1005/234430.518:ERROR:usb_descriptors.cc(105)] Failed to read all configuration descriptors. Expected 2, got 1.
+[18140:54740:1005/234430.523:ERROR:device_event_log_impl.cc(196)] [23:44:30.523] USB: usb_device_win.cc:95 Failed to read descriptors from \\?\usb#vid_0bda&pid_8153#000001#{a5dcbf10-6530-11d2-901f-00c04fb951ed}.

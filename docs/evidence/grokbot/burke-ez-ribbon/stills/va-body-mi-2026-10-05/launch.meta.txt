@@ -1,0 +1,4 @@
+LAUNCH_START=2026-10-05T23:43:34.0124823-04:00
+UE=C:\Program Files\Epic Games\UE_5.7\Engine\Binaries\Win64\UnrealEditor.exe
+EXEC=py "C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/create_bodypaint_skeletal_safe.py", py "C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_va_body_mi_verify.py"
+PID=18140
