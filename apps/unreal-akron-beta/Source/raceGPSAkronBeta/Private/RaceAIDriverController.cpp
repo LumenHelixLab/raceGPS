@@ -1,4 +1,7 @@
 #include "RaceAIDriverController.h"
+#include "RaceContactPolicy.h"
+#include "EngineUtils.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "ClevelandModuleCompat.h"
 #include "RacingLineComponent.h"
 #include "RaceGridManager.h"
@@ -43,7 +46,7 @@ void ARaceAIDriverController::ApplyRecoveryModeFromFlags()
 		|| FParse::Param(Cmd, TEXT("ClevelandPlaytest"));
 	if (bAggressiveRecovery)
 	{
-		// Keep G5 playtest defaults (fast stuck trigger + +25m snap).
+		// Diagnostic timing may differ, but safe recovery never advances the car.
 		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: AI slot=%d aggressive recovery (AutoLap/playtest)"), SlotIndex);
 		return;
 	}
@@ -91,7 +94,41 @@ void ARaceAIDriverController::ApplyCommands(AChaosVehiclePawn* Vehicle, float St
 	{
 		return;
 	}
-	Vehicle->SetDriveOverride(Steer, Throttle, Brake, bHandbrake);
+    double NearestGapM = -1.0;
+    double LeaderKmh = 0.0;
+    const FVector Forward = Vehicle->GetActorForwardVector().GetSafeNormal2D();
+    const FVector Right(-Forward.Y, Forward.X, 0.f);
+    const auto OwnBounds = Vehicle->GetMesh()->Bounds;
+    for (TActorIterator<AChaosVehiclePawn> It(GetWorld()); It; ++It)
+    {
+        AChaosVehiclePawn* Other = *It;
+        if (Other == Vehicle || !Other->GetMesh()) continue;
+        const auto OtherBounds = Other->GetMesh()->Bounds;
+        const FVector Delta = OtherBounds.Origin - OwnBounds.Origin;
+        const double Ahead = FVector::DotProduct(Delta, Forward);
+        if (Ahead <= 0.0 || FMath::Abs(Delta.Z) > OwnBounds.BoxExtent.Z + OtherBounds.BoxExtent.Z) continue;
+        const FVector SumExtent = OwnBounds.BoxExtent + OtherBounds.BoxExtent;
+        const double LateralLimit = FMath::Abs(Right.X) * SumExtent.X + FMath::Abs(Right.Y) * SumExtent.Y + 50.0;
+        if (FMath::Abs(FVector::DotProduct(Delta, Right)) > LateralLimit) continue;
+        const double HalfLengths = FMath::Abs(Forward.X) * SumExtent.X + FMath::Abs(Forward.Y) * SumExtent.Y;
+        const double Gap = FMath::Max(0.0, Ahead - HalfLengths) * 0.01;
+        if (NearestGapM < 0.0 || Gap < NearestGapM)
+        {
+            NearestGapM = Gap;
+            LeaderKmh = FMath::Max(0.0, FVector::DotProduct(Other->GetVelocity(), Forward) * 0.036);
+        }
+    }
+    if (NearestGapM >= 0.0)
+    {
+        const auto Safe = RaceContactPolicy::Drive(260.0, Vehicle->GetSpeedKmh(), NearestGapM, LeaderKmh);
+        Throttle = FMath::Min(Throttle, float(Safe.throttle));
+        Brake = FMath::Max(Brake, float(Safe.brake));
+        if (Safe.targetKmh < 5.0) StuckTimer = 0.f;
+    }
+    ThrottleCommand = Throttle;
+    BrakeCommand = Brake;
+    SteeringCommand = Steer;
+    Vehicle->SetDriveOverride(Steer, Throttle, Brake, bHandbrake);
 }
 
 void ARaceAIDriverController::PublishTelemetry()
@@ -153,34 +190,23 @@ void ARaceAIDriverController::SnapToNearestSpline(AChaosVehiclePawn* Vehicle)
 	{
 		return;
 	}
-	const float S0 = RacingLine->GetNearestS(Vehicle->GetActorLocation());
-	if (!bAggressiveRecovery)
-	{
-		// Human races: soft nudge to nearest line pose (no +25m jump). Rare; prefer steer recovery.
-		const float Lat = RaceAIControlMath::LateralOffsetCm(Personality.Aggression, Gains.MaxLateralOffsetCm);
-		const FTransform Pose = RacingLine->GetPoseAtS(S0, Lat);
-		Vehicle->ResetVehicle();
-		Vehicle->SetActorTransform(Pose, false, nullptr, ETeleportType::TeleportPhysics);
-		Vehicle->WakeForDrive();
-		CurrentSplineDistance = S0;
-		RecoveryState = ERaceRecoveryState::None;
-		RecoveryTimer = 0.f;
-		StuckTimer = 0.f;
-		UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: soft recovery snap slot=%d s=%.1f (human)"), SlotIndex, S0);
-		return;
-	}
-	// G5 AutoLap/playtest: advance ~25m so hairpin crawls unblock EndRace CI.
-	const float S = RaceAIControlMath::WrapS(S0 + 2500.f, RacingLine->TrackLength);
-	const float Lat = RaceAIControlMath::LateralOffsetCm(Personality.Aggression, Gains.MaxLateralOffsetCm);
-	const FTransform Pose = RacingLine->GetPoseAtS(S, Lat);
-	Vehicle->ResetVehicle();
-	Vehicle->SetActorTransform(Pose, false, nullptr, ETeleportType::TeleportPhysics);
-	Vehicle->WakeForDrive();
-	CurrentSplineDistance = S;
-	RecoveryState = ERaceRecoveryState::None;
-	RecoveryTimer = 0.f;
-	StuckTimer = 0.f;
-	UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: aggressive recovery snap slot=%d s0=%.1f -> s=%.1f"), SlotIndex, S0, S);
+    // Same location along the course in both play and diagnostic modes; never +25m.
+    const float S = bHavePrevS ? PrevS : RacingLine->GetNearestS(Vehicle->GetActorLocation());
+    const float Lat = RaceAIControlMath::LateralOffsetCm(Personality.Aggression, Gains.MaxLateralOffsetCm);
+    FTransform Pose = RacingLine->GetPoseAtS(S, Lat);
+    Pose.AddToTranslation(FVector(0.f, 0.f, 50.f));
+    if (!Vehicle->TryRecoverAtPose(Pose))
+    {
+        ApplyCommands(Vehicle, 0.f, 0.f, 1.f, true);
+        return; // wait for space; do not teleport through the other car
+    }
+    CurrentSplineDistance = S;
+    PrevS = S;
+    bHavePrevS = false; // teleport must not be interpreted as crossing the lap boundary
+    RecoveryState = ERaceRecoveryState::None;
+    RecoveryTimer = 0.f;
+    StuckTimer = 0.f;
+    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: safe recovery slot=%d s=%.1f"), SlotIndex, S);
 }
 
 void ARaceAIDriverController::TickRecovery(AChaosVehiclePawn* Vehicle, float DeltaSeconds, float AbsCteCm)
@@ -219,10 +245,8 @@ void ARaceAIDriverController::TickRecovery(AChaosVehiclePawn* Vehicle, float Del
 
 	if (RecoveryState == ERaceRecoveryState::SteerBrake)
 	{
-		// Skip full-stop brake for Cleveland playtest — keep moving on the line.
-		ThrottleCommand = 1.f;
-		BrakeCommand = 0.f;
-		ApplyCommands(Vehicle, SteeringCommand, 1.f, 0.f, false);
+		// Settle after contact before trying to rejoin.
+		ApplyCommands(Vehicle, SteeringCommand, 0.f, 0.6f, false);
 		if (RecoveryTimer >= Gains.RecoverySteerBrakeSec)
 		{
 			RecoveryState = ERaceRecoveryState::Reverse;
@@ -233,10 +257,8 @@ void ARaceAIDriverController::TickRecovery(AChaosVehiclePawn* Vehicle, float Del
 
 	if (RecoveryState == ERaceRecoveryState::Reverse)
 	{
-		// Cleveland arcade: NEVER crawl at thr=0.35 / reverse. Punch forward thr=1 then snap.
-		ThrottleCommand = 1.f;
-		BrakeCommand = 0.f;
-		ApplyCommands(Vehicle, SteeringCommand, 1.f, 0.f, false);
+		// Legacy Reverse state now makes a gentle forward rejoin, bounded by rival clearance.
+		ApplyCommands(Vehicle, SteeringCommand, 0.25f, 0.f, false);
 		if (RecoveryTimer >= Gains.RecoveryReverseSec)
 		{
 			RecoveryState = ERaceRecoveryState::ResetSnap;
@@ -372,22 +394,11 @@ void ARaceAIDriverController::TickDriveForPawn(AChaosVehiclePawn* Vehicle, float
 	const float Vmin = Gains.VminKmh * Personality.CornerSpeed;
 	TargetSpeed = RaceAIControlMath::TargetSpeedKmh(FMath::Abs(Kappa), Vmax, Vmin, Gains.KCurve);
 
-	const float SpeedError = TargetSpeed - CurrentSpeed;
-	if (SpeedError > 0.f)
-	{
-		ThrottleCommand = FMath::Clamp(SpeedError / FMath::Max(Gains.ThrottleTauKmh, KINDA_SMALL_NUMBER), 0.f, 1.f);
-		BrakeCommand = 0.f;
-	}
-	else
-	{
-		// Soft coast only when well over target — never hard brake on racing-line playtest.
-		ThrottleCommand = 0.f;
-		BrakeCommand = FMath::Clamp((-SpeedError) / FMath::Max(Gains.BrakeTauKmh, KINDA_SMALL_NUMBER), 0.f, 0.35f);
-	}
-	// Cleveland arcade default: stay pinned to thr=1 on the racing line (GTA/MC leave-grid feel).
-	// Prevents SpeedError/recovery from starving drive (thr=0.35 stall).
-	ThrottleCommand = 1.f;
-	BrakeCommand = 0.f;
+    // The same target-speed law drives the physical rival and diagnostic auto-driver.
+    // Sense bumper clearance, not just racing-line progress, so contact causes a response.
+    const auto Drive = RaceContactPolicy::Drive(TargetSpeed, CurrentSpeed, -1.0, 0.0);
+    ThrottleCommand = float(Drive.throttle);
+    BrakeCommand = float(Drive.brake);
 
 	ApplyCommands(Vehicle, SteeringCommand, ThrottleCommand, BrakeCommand, false);
 	PublishTelemetry();

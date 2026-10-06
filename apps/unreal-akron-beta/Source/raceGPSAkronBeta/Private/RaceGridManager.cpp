@@ -15,8 +15,8 @@ ARaceGridManager::ARaceGridManager()
 	PrimaryActorTick.bCanEverTick = true;
 	RacingLine = CreateDefaultSubobject<URacingLineComponent>(TEXT("RacingLine"));
 	AIControllerClass = ARaceAIDriverController::StaticClass();
-	SlotRoles = { ERaceGridSlotRole::Player, ERaceGridSlotRole::AI, ERaceGridSlotRole::AI };
-	SlotLooks = { EVehicleLook::Hellcat, EVehicleLook::ChargerAsphalt, EVehicleLook::ChargerSilver };
+	SlotRoles = { ERaceGridSlotRole::Player, ERaceGridSlotRole::AI };
+	SlotLooks = { EVehicleLook::Hellcat, EVehicleLook::ChargerAsphalt };
 
 	// Cleveland showcase visuals + real Chaos WheelSetups live on the CARLA Charger BP.
 	static ConstructorHelpers::FClassFinder<AChaosVehiclePawn> ChargerBP(
@@ -219,9 +219,11 @@ void ARaceGridManager::DestroyGrid()
 bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 {
 	DestroyGrid();
+	NumSlots = 2; // Approved first-release scope: player plus one physical rival.
+	SlotRoles = { ERaceGridSlotRole::Player, ERaceGridSlotRole::AI };
 
 	UWorld* World = GetWorld();
-	if (!World)
+	if (!World || !PlayerPC)
 	{
 		return false;
 	}
@@ -244,7 +246,7 @@ bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 	}
 	if (SlotRoles.Num() < NumSlots)
 	{
-		SlotRoles = { ERaceGridSlotRole::Player, ERaceGridSlotRole::AI, ERaceGridSlotRole::AI };
+		SlotRoles = { ERaceGridSlotRole::Player, ERaceGridSlotRole::AI };
 	}
 
 	FinishTimes.SetNumZeroed(NumSlots);
@@ -263,7 +265,8 @@ bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 		if (!Pawn)
 		{
 			UE_LOG(LogTemp, Error, TEXT("raceGPS Cleveland: failed to spawn Chaos vehicle slot %d class=%s"), i, *GetNameSafe(VehicleClass));
-			continue;
+			DestroyGrid();
+			return false;
 		}
 		UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: spawned slot=%d class=%s name=%s"),
 			i, *GetNameSafe(Pawn->GetClass()), *GetNameSafe(Pawn));
@@ -278,6 +281,7 @@ bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 		{
 			PlayerPawn = Pawn;
 			PossessPlayer(PlayerPC, Pawn);
+			if (PlayerPC->GetPawn() != Pawn) { DestroyGrid(); return false; }
 			if (bAutoDrivePlayer)
 			{
 				PlayerAutoDriver = World->SpawnActor<ARaceAIDriverController>(AIControllerClass, Pose, Params);
@@ -295,7 +299,8 @@ bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 			if (!AI)
 			{
 				UE_LOG(LogTemp, Error, TEXT("raceGPS Cleveland: failed to spawn AI controller slot %d"), i);
-				continue;
+				DestroyGrid();
+				return false;
 			}
 			const FRaceAIPersonality Persona = (i == 1)
 				? FRaceAIPersonality::ConservativeAI01()
@@ -304,6 +309,7 @@ bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 			AI->SetGridManager(this);
 			AI->Possess(Pawn);
 			AIControllers.Add(AI);
+			if (AI->GetPawn() != Pawn) { DestroyGrid(); return false; }
 		}
 	}
 
@@ -313,7 +319,7 @@ bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 
 void ARaceGridManager::RespawnGridAndRestart(APlayerController* PlayerPC)
 {
-	SpawnGrid(PlayerPC);
+	if (!SpawnGrid(PlayerPC)) return;
 	if (SessionManager)
 	{
 		SessionManager->StartSession(TEXT("cleveland_burke_gp_1997"), TEXT("hellcat"));

@@ -1,4 +1,10 @@
 #include "ChaosVehiclePawn.h"
+#include "RaceContactPolicy.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+#include "CollisionShape.h"
+#include "Engine/World.h"
+#include "CollisionQueryParams.h"
 #include "RaceGPSVehicleWheels.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -258,6 +264,7 @@ void AChaosVehiclePawn::BeginPlay()
         bChaosSimReady = true;
     }
 
+    GetMesh()->SetNotifyRigidBodyCollision(true);
     GetMesh()->OnComponentHit.AddDynamic(this, &AChaosVehiclePawn::OnVehicleHit);
 }
 
@@ -1285,18 +1292,36 @@ void AChaosVehiclePawn::HandbrakeReleased()
     bHandbrake = false;
 }
 
+bool AChaosVehiclePawn::TryRecoverAtPose(const FTransform& Pose)
+{
+    UWorld* World = GetWorld();
+    if (!World || !GetMesh()) return false;
+    FVector Destination = Pose.GetLocation();
+    const FRotator Rotation = Pose.Rotator();
+    // Also check vehicles explicitly: a reset must never materialize inside a rival.
+    FCollisionObjectQueryParams Objects;
+    Objects.AddObjectTypesToQuery(ECC_Vehicle);
+    Objects.AddObjectTypesToQuery(ECC_Pawn);
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(RaceRecovery), false, this);
+    const FVector Extent = GetMesh()->Bounds.BoxExtent.ComponentMax(FVector(100.f, 100.f, 50.f));
+    if (World->OverlapAnyTestByObjectType(Destination, FQuat::Identity, Objects,
+        FCollisionShape::MakeBox(Extent + FVector(25.f)), Query)) return false;
+    if (!World->FindTeleportSpot(this, Destination, Rotation)) return false;
+    // Allow vertical ground clearance, never an engine-adjusted horizontal shortcut.
+    if (FVector::DistSquaredXY(Destination, Pose.GetLocation()) > 1.f) return false;
+    if (!TeleportTo(Destination, Rotation, false, false)) return false;
+    if (auto* Move = GetVehicleMovementComponent()) Move->StopMovementImmediately();
+    GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+    GetMesh()->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+    LastContactFeedbackTime = World->GetTimeSeconds();
+    WakeForDrive();
+    return true;
+}
+
 void AChaosVehiclePawn::ResetVehicle()
 {
-    auto* MoveComp = GetVehicleMovementComponent();
-    if (MoveComp)
-    {
-        MoveComp->StopMovementImmediately();
-    }
-
-    FVector CurrentLocation = GetActorLocation();
-    FRotator CurrentRotation = GetActorRotation();
-    CurrentLocation.Z += 50.0f;
-    SetActorLocationAndRotation(CurrentLocation, CurrentRotation, false, nullptr, ETeleportType::ResetPhysics);
+    const FRotator Upright(0.f, GetActorRotation().Yaw, 0.f);
+    TryRecoverAtPose(FTransform(Upright, GetActorLocation() + FVector(0.f, 0.f, 50.f)));
 }
 
 void AChaosVehiclePawn::ToggleCamera()
@@ -1448,18 +1473,54 @@ void AChaosVehiclePawn::OnVehicleHit(UPrimitiveComponent* HitComponent, AActor* 
     if (!OtherActor || OtherActor == this)
         return;
 
-    float ImpactSpeed = FMath::Abs(FVector::DotProduct(GetVelocity(), Hit.ImpactNormal));
-    float ImpactKmh = ImpactSpeed * 0.036f;
-
-    if (ImpactKmh > 5.0f)
+    UWorld* World = GetWorld();
+    if (!World) return;
+    AChaosVehiclePawn* Rival = Cast<AChaosVehiclePawn>(OtherActor);
+    if (Rival && HitComponent && OtherComp)
     {
-        ACruiseSprintGameMode* GM = Cast<ACruiseSprintGameMode>(GetWorld()->GetAuthGameMode());
-        if (GM)
+        const FVector Normal = Hit.ImpactNormal.GetSafeNormal();
+        const FVector Relative = HitComponent->GetPhysicsLinearVelocityAtPoint(Hit.ImpactPoint)
+            - OtherComp->GetPhysicsLinearVelocityAtPoint(Hit.ImpactPoint);
+        const double NormalSpeed = FVector::DotProduct(Relative, Normal);
+        const double TangentSpeed = (Relative - Normal * NormalSpeed).Size();
+        // Hit callbacks can run after solver response; impulse preserves impact severity.
+        const double DeltaSpeed = NormalImpulse.Size() / FMath::Max(1.f, HitComponent->GetMass());
+        const auto Feedback = RaceContactPolicy::Evaluate(NormalSpeed * 0.036,
+            TangentSpeed * 0.036, DeltaSpeed * 0.036);
+        const double Now = World->GetTimeSeconds();
+        if (Feedback.kind == RaceContactPolicy::Kind::None ||
+            !RaceContactPolicy::ShouldEmit(Now, LastContactFeedbackTime)) return;
+        LastContactFeedbackTime = Now;
+        const ERaceContactKind Kind = Feedback.kind == RaceContactPolicy::Kind::Scrape
+            ? ERaceContactKind::Scrape : (Feedback.kind == RaceContactPolicy::Kind::Tap
+                ? ERaceContactKind::Tap : ERaceContactKind::Impact);
+        CosmeticContactWear = FMath::Clamp(CosmeticContactWear + float(Feedback.strength) * 0.02f, 0.f, 1.f);
+        OnContactFeedback.Broadcast(Kind, float(Feedback.strength), Hit.ImpactPoint, Normal);
+        // One presentation source per pair prevents doubled sound/sparks.
+        const bool bPresentPair = RaceContactPolicy::PresentsPair(IsPlayerControlled(),
+            Rival->IsPlayerControlled(), GetUniqueID(), Rival->GetUniqueID());
+        if (bPresentPair)
         {
-            GM->OnVehicleCollision(ImpactKmh);
+            if (Kind != ERaceContactKind::Scrape && AudioComponent)
+                AudioComponent->OnCollision(float(Feedback.impactKmh));
+            if (Kind == ERaceContactKind::Scrape && ContactScrapeEffect)
+                UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, ContactScrapeEffect,
+                    Hit.ImpactPoint, Normal.Rotation());
         }
-        UE_LOG(LogTemp, Log, TEXT("[raceGPS] Vehicle collision at %.1f km/h with %s"),
-            ImpactKmh, *OtherActor->GetName());
+        UE_LOG(LogTemp, Log, TEXT("raceGPS contact self=%s other=%s kind=%d strength=%.3f"),
+            *GetName(), *OtherActor->GetName(), int32(Kind), Feedback.strength);
+        return; // car contact has no score penalty or extra arcade impulse
+    }
+
+    const float ImpactKmh = FMath::Abs(FVector::DotProduct(GetVelocity(), Hit.ImpactNormal)) * 0.036f;
+    if (ImpactKmh > 5.f && RaceContactPolicy::ShouldEmit(World->GetTimeSeconds(), LastContactFeedbackTime))
+    {
+        LastContactFeedbackTime = World->GetTimeSeconds();
+        if (AudioComponent) AudioComponent->OnCollision(ImpactKmh);
+        // AI hitting scenery must not change the human player's score.
+        if (IsPlayerControlled())
+            if (ACruiseSprintGameMode* GM = Cast<ACruiseSprintGameMode>(World->GetAuthGameMode()))
+                GM->OnVehicleCollision(ImpactKmh);
     }
 }
 

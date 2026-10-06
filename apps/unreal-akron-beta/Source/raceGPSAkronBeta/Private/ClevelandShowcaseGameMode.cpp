@@ -131,7 +131,7 @@ void AClevelandShowcaseGameMode::BindHud()
 	Hud->ShowCountdown(false);
 	Hud->SetRaceTime(SessionManager ? SessionManager->ElapsedTime : 0.f);
 	Hud->SetCheckpointProgress(CpCur, CpTot);
-	Hud->SetPlace(Place, 3);
+	Hud->SetPlace(Place, GridManager ? GridManager->NumSlots : 2);
 	if (AChaosVehiclePawn* Pawn = GridManager ? GridManager->GetPlayerPawn() : nullptr)
 	{
 		Hud->SetSpeedKmh(Pawn->GetSpeedKmh());
@@ -155,7 +155,7 @@ void AClevelandShowcaseGameMode::UpdateHud()
 	const int32 CpCur = SessionManager ? SessionManager->CurrentCheckpoint : NextCheckpointIndex;
 	const int32 CpTot = TotalCheckpoints > 0 ? TotalCheckpoints : (SessionManager ? SessionManager->TotalCheckpoints : 0);
 
-	Hud->SetPlace(Place, 3);
+	Hud->SetPlace(Place, GridManager ? GridManager->NumSlots : 2);
 	Hud->SetCheckpointProgress(CpCur, CpTot);
 
 	if (State == ERaceSessionState::Countdown)
@@ -206,8 +206,8 @@ void AClevelandShowcaseGameMode::PollRestartInput()
 
 FString AClevelandShowcaseGameMode::GetHudTitleLine() const
 {
-	return FString::Printf(TEXT("%s  -  %s  (%d/3)"), *ProductTitle, *CircuitTitle,
-		GridManager ? GridManager->GetPlayerPlace() : 0);
+	return FString::Printf(TEXT("%s  -  %s  (%d/%d)"), *ProductTitle, *CircuitTitle,
+		GridManager ? GridManager->GetPlayerPlace() : 0, GridManager ? GridManager->NumSlots : 2);
 }
 
 void AClevelandShowcaseGameMode::StartSkylineIntro(APlayerController* PC)
@@ -227,7 +227,7 @@ void AClevelandShowcaseGameMode::StartSkylineIntro(APlayerController* PC)
 	 *   Lake Erie sheet sits NORTH (+Y). A north-facing chase along the runway
 	 *   therefore puts the city behind the camera.
 	 *   Intro camera: EAST of the grid, elevated, looking WSW along the cars so
-	 *   downtown is LEFT of frame and Erie is RIGHT, with the 3-car grid in the
+	 *   downtown is LEFT of frame and Erie is RIGHT, with the two-car grid in the
 	 *   foreground. Then blend to the raised 3/4 pawn chase (left/south bias).
 	 */
 	const FVector PawnLoc = Pawn->GetActorLocation();
@@ -333,7 +333,11 @@ void AClevelandShowcaseGameMode::BeginPlay()
 	{
 		GridManager->bAutoDrivePlayer = bAutoDrivePlayer;
 	}
-	GridManager->SpawnGrid(PC);
+	if (!GridManager || !GridManager->SpawnGrid(PC))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Cleveland: two-car grid unavailable; race not started"));
+		return;
+	}
 	SpawnShowcaseCheckpoints();
 	BindHud(); // HUD may spawn after first BindHud call
 
@@ -434,7 +438,7 @@ void AClevelandShowcaseGameMode::Tick(float DeltaSeconds)
 	if (bIntroActive)
 	{
 		IntroElapsed += DeltaSeconds;
-		// V11: intro HighResShot while 3-car grid framing still owns the view.
+		// V11: intro HighResShot while two-car grid framing still owns the view.
 		if (!bIntroCaptureDone && IntroElapsed >= FMath::Max(1.2f, IntroHoldSeconds - 0.35f))
 		{
 			CaptureStill(TEXT("intro"));
@@ -596,13 +600,13 @@ void AClevelandShowcaseGameMode::EndRace()
 	}
 	const int32 Place = GridManager ? GridManager->GetPlayerPlace() : 0;
 	const float FinalTime = SessionManager ? SessionManager->ElapsedTime : 0.f;
-	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: EndRace place=%d/3 nextCP=%d time=%.2f"),
-		Place, NextCheckpointIndex, FinalTime);
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: EndRace place=%d/%d nextCP=%d time=%.2f"),
+		Place, GridManager ? GridManager->NumSlots : 2, NextCheckpointIndex, FinalTime);
 
 	if (ANeonHUD* Hud = ResolveNeonHud())
 	{
 		Hud->ShowCountdown(false);
-		Hud->SetPlace(Place, 3);
+		Hud->SetPlace(Place, GridManager ? GridManager->NumSlots : 2);
 		Hud->SetRaceTime(FinalTime);
 		const TCHAR* PlaceLabel = TEXT("3RD");
 		if (Place <= 1) { PlaceLabel = TEXT("1ST"); }
@@ -641,7 +645,7 @@ void AClevelandShowcaseGameMode::RestartShowcase()
 		Hud->ShowCountdown(false);
 		Hud->SetRaceTime(0.f);
 		Hud->SetCheckpointProgress(1, TotalCheckpoints);
-		Hud->SetPlace(0, 3);
+		Hud->SetPlace(0, 2);
 	}
 	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: RestartShowcase (no RequestExit)"));
 	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
@@ -761,6 +765,11 @@ void AClevelandShowcaseGameMode::SpawnShowcaseCheckpoints()
 
 void AClevelandShowcaseGameMode::ConfigureAndStartRace()
 {
+	if (!GridManager || !GridManager->IsGridReady())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Cleveland: race requires player and one possessed rival"));
+		return;
+	}
 	if (!SessionManager)
 	{
 		UE_LOG(LogTemp, Error, TEXT("raceGPS Cleveland: no SessionManager"));

@@ -8,6 +8,12 @@
 
 class UVehicleTuningData;
 
+UENUM(BlueprintType)
+enum class ERaceContactKind : uint8 { Scrape, Tap, Impact };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FRaceContactFeedback,
+    ERaceContactKind, Kind, float, Strength, FVector, Location, FVector, Normal);
+
 UCLASS()
 class RACEGPSAKRONBETA_API AChaosVehiclePawn : public AWheeledVehiclePawn
 {
@@ -93,6 +99,21 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
     void ResetVehicle();
+
+    // Shared by human and AI recovery. Refuses an occupied destination.
+    bool TryRecoverAtPose(const FTransform& Pose);
+
+    UPROPERTY(BlueprintAssignable, Category = "raceGPS|Contact")
+    FRaceContactFeedback OnContactFeedback;
+
+    UPROPERTY(EditDefaultsOnly, Category = "raceGPS|Contact")
+    TObjectPtr<class UNiagaraSystem> ContactScrapeEffect;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Contact")
+    float CosmeticContactWear = 0.f; // presentation only; never changes handling
+
+    double LastContactFeedbackTime = -1.0;
+
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|Vehicle")
     void ToggleCamera();
