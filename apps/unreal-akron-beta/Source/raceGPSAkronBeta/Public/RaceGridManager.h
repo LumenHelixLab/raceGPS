@@ -12,7 +12,7 @@ class URaceSessionManager;
 class APlayerController;
 
 /**
- * 3-slot PLAYER/AI/AI grid. Spawns Chaos vehicle pawns (physics) before countdown.
+ * 2-slot PLAYER/AI grid. Spawns Chaos vehicle pawns (physics) before countdown.
  * Standings sort by LapIndex * TrackLength + CurrentSplineDistance (not Euclidean).
  */
 UCLASS()
@@ -42,7 +42,7 @@ public:
 	int32 TargetLaps = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Grid")
-	int32 NumSlots = 3;
+	int32 NumSlots = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Grid")
 	TArray<EVehicleLook> SlotLooks;
@@ -52,6 +52,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|Grid")
 	bool SpawnGrid(APlayerController* PlayerPC);
+
+	bool IsGridReady() const { return Pawns.Num() == 2 && PlayerPawn && AIControllers.Num() == 1; }
 
 	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|Grid")
 	void RespawnGridAndRestart(APlayerController* PlayerPC);
