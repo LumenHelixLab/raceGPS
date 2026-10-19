@@ -1,0 +1,17 @@
+# raceGPS Cleveland intro, Scene 3 (sequence 0:20-0:30). DRAFT text-to-video prompt; not yet generated.
+# Target: 16:9, 10 s clip. Callout added in the edit (DaVinci Resolve): ROUTE 2 EAST.
+# All on-screen words and the logo are added in post; the prompt asks only for empty glowing panels because video models garble lettering.
+----- PROMPT -----
+Realistic night drive, Cleveland, 10 seconds. Real route, in order: out of the sharp right-hand bend, east along the lakefront on the Cleveland Memorial Shoreway (I-90 and Route 2 East) heading northeast, toward the East 55th exit about 1.25 miles ahead. This scene: open lakefront, Route 2 merge, police in the mirrors.
+Cars: the same two in every scene: a low candy-blue widebody Japanese-style import coupe and a black American muscle car with a hood scoop.
+[00:00-00:02] Drone tracking from behind and above: blue and red streaks sweep in and leave a clean, empty, glowing panel. On the LEFT, Burke Lakefront Airport: flat parallel runways with rows of blue edge lights and a low terminal, black Lake Erie beyond; the skyline behind-left.
+[00:02-00:05] On the RIGHT, Route 2 merges in and the freeway widens to five lanes, concrete median on the left, tall light poles in long rows, rail lines and industrial plants dark on the right.
+[00:05-00:06] One white flash frame, red and purple glitch lines.
+[00:06-00:09] Close on the blue import's side mirror and glossy flank at speed: small police cruisers far behind in the mirror, their red and blue light rippling across the candy paint, chrome trim and window glass; a wide side view shows the cruisers well back.
+[00:09-00:10] A green overhead sign gantry with unreadable faces rises ahead, the East 55th exit; green glitch wipe out.
+Look: realistic night drive footage, natural color, true blacks, practical light only, glossy wet-sheen asphalt mirroring the lights but no puddles, spray or rain. Real camera rigs: camera car, low bumper mount, chase car, drone. Believable speed, weight, body roll.
+Game-art layer (graphics only, scene stays real): Midnight Club-style light streaks, speed lines, glitch lines and graphic wipes in raceGPS red with purple, green and blue cyber neon sweep across the screen and leave clean, empty, glowing bars and panels with no lettering.
+Police: only seen small in a racer's rearview or side mirror or in a wide side view, never close, no contact; their red and blue light flashes across the cars' glossy paint, chrome, glass and wheels; sirens fade behind as the racers pull away.
+Audio: engines at full throttle, sirens behind, tire hiss, wind, drum-and-bass building.
+Physics: every vehicle drives forward, nose-first in its direction of travel, all the same direction, police too; wheels roll forward and steer into turns; white headlights at the front only, red taillights and brake lights at the rear only; police light bars on roofs only, flashing red and blue; cars upright, real scale, four wheels on the road; lanes and traffic flow correct.
+Avoid: readable text, letters, numbers, logos, badges, plate text, POLICE lettering, HUD, video-game or cartoon look, people on foot, daylight, cars driving backwards or in reverse, cars facing the wrong way, headlights on the rear, taillights on the front, glowing wheels, floating or extra lights, car bodies morphing, merging or splitting, sliding sideways without steering, extra or missing wheels, duplicated cars, close-up police.

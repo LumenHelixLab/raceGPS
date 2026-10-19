@@ -1,0 +1,17 @@
+# raceGPS Cleveland intro, Scene 4 (sequence 0:30-0:40). DRAFT text-to-video prompt; not yet generated.
+# Target: 16:9, 10 s clip. Callout added in the edit (DaVinci Resolve): LOSE THE HEAT, then the raceGPS logo plate.
+# All on-screen words and the logo are added in post; the prompt asks only for empty glowing panels because video models garble lettering.
+----- PROMPT -----
+Realistic night drive, Cleveland, 10 seconds, the last drive scene. Real route: the Shoreway (I-90 and Route 2 East) along Lake Erie, past the East 55th exit, heading northeast. This scene: the racers dust the police and take off; the frame becomes the logo plate.
+Cars: the same two in every scene: a low candy-blue widebody Japanese-style import coupe and a black American muscle car with a hood scoop.
+[00:00-00:02] Wide side view from the lake side: both cars pass under the green East 55th sign gantry (faces unreadable), the police cruisers far behind and shrinking; red and purple streaks sweep in and leave a clean, empty, glowing panel.
+[00:02-00:04] Rear view in the black muscle car's mirror: the red and blue lights drop away into the distance, the glow fading off the glass and chrome.
+[00:04-00:05] One white flash frame with blue and green speed lines.
+[00:05-00:08] Low wide camera on the shoulder ahead, looking back west: the Cleveland skyline glowing in the distance under a pure black sky with a big full moon above it; both cars rush toward the camera headlights first and blast past, engines roaring.
+[00:08-00:10] The frame settles and holds on the empty freeway, skyline and full moon: a calm logo plate composition with a large band of clean, empty dark space and a thin glowing red line where the logo will go.
+Look: realistic night drive footage, natural color, true blacks, practical light only, glossy wet-sheen asphalt mirroring the lights but no puddles, spray or rain. Real camera rigs: camera car, low bumper mount, chase car, drone. Believable speed, weight, body roll.
+Game-art layer (graphics only, scene stays real): Midnight Club-style light streaks, speed lines, glitch lines and graphic wipes in raceGPS red with purple, green and blue cyber neon sweep across the screen and leave clean, empty, glowing bars and panels with no lettering.
+Police: only seen small in a racer's rearview or side mirror or in a wide side view, never close, no contact; their red and blue light flashes across the cars' glossy paint, chrome, glass and wheels; sirens fade behind as the racers pull away.
+Audio: sirens fading far behind, engines roaring past then fading, a final whoosh-hit, drum-and-bass resolving to a held note.
+Physics: every vehicle drives forward, nose-first in its direction of travel, all the same direction, police too; wheels roll forward and steer into turns; white headlights at the front only, red taillights and brake lights at the rear only; police light bars on roofs only, flashing red and blue; cars upright, real scale, four wheels on the road; lanes and traffic flow correct.
+Avoid: readable text, letters, numbers, logos, badges, plate text, POLICE lettering, HUD, video-game or cartoon look, people on foot, daylight, cars driving backwards or in reverse, cars facing the wrong way, headlights on the rear, taillights on the front, glowing wheels, floating or extra lights, car bodies morphing, merging or splitting, sliding sideways without steering, extra or missing wheels, duplicated cars, close-up police.

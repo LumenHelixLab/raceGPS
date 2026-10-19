@@ -1,0 +1,16 @@
+# raceGPS Cleveland intro, Scene 5 (sequence 0:40-0:50). DRAFT text-to-video prompt; not yet generated.
+# Target: 16:9, 10 s clip. Callout added in the edit (DaVinci Resolve): Outro: credits, announcements and links (see POST-EDIT-OVERLAYS.md).
+# All on-screen words and the logo are added in post; the prompt asks only for empty glowing panels because video models garble lettering.
+----- PROMPT -----
+Realistic night footage, Cleveland, 10 seconds, the outro after a street race. Setting: an empty lakefront pull-off beside the Shoreway at 3 a.m., the Cleveland skyline glowing across the dark water under a pure black sky with a big full moon and its reflection on Lake Erie.
+Cars: the same two in every scene: a low candy-blue widebody Japanese-style import coupe and a black American muscle car with a hood scoop.
+[00:00-00:02] Slow drone push toward the two cars parked side by side, nose-first toward the camera, engines idling, white headlights on, faint heat shimmer from the hoods. Red streaks sweep in from the left and lay down one large clean, empty, glowing panel in the upper center.
+[00:02-00:05] Purple and blue light lines draw a vertical stack of three slim, empty, glowing bars beside the panel, one after another, holding steady.
+[00:05-00:06] One white flash frame.
+[00:06-00:09] Green and blue streaks lay down a row of four small, empty, glowing square tiles along the bottom of the frame, evenly spaced, plus one wide empty bar above them; the camera settles.
+[00:09-00:10] Everything holds still for a clean end frame, moon and skyline behind, panels steady and blank.
+Look: realistic night drive footage, natural color, true blacks, practical light only, glossy wet-sheen asphalt mirroring the lights but no puddles, spray or rain. Real camera rigs: camera car, low bumper mount, chase car, drone. Believable speed, weight, body roll.
+Game-art layer (graphics only, scene stays real): Midnight Club-style light streaks, speed lines, glitch lines and graphic wipes in raceGPS red with purple, green and blue cyber neon sweep across the screen and leave clean, empty, glowing bars and panels with no lettering.
+Audio: engines idling, a low wind off the lake, distant city hum, drum-and-bass outro fading to silence.
+Physics: both cars parked and still, nose toward the camera; white headlights at the front only, red taillights and brake lights at the rear only; cars upright, real scale, four wheels on the road; lanes and traffic flow correct.
+Avoid: readable text, letters, numbers, logos, badges, plate text, POLICE lettering, HUD, video-game or cartoon look, people on foot, daylight, cars driving backwards or in reverse, cars facing the wrong way, headlights on the rear, taillights on the front, glowing wheels, floating or extra lights, car bodies morphing, merging or splitting, sliding sideways without steering, extra or missing wheels, duplicated cars, any police, any people.
