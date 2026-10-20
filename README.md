@@ -1,5 +1,7 @@
 # raceGPS
 
+> **First-release scope update (2026-10-06):** one player + one physical AI on one polished course. See [the approved two-car contact scope and Unreal acceptance checklist](docs/superpowers/specs/2026-10-06-two-car-first-release.md). This supersedes older three-car demo targets; source changes are pending Unreal compilation and playtesting.
+
 <p align="center">
   <img src="docs/assets/hero.svg" alt="raceGPS header" width="100%">
 </p>

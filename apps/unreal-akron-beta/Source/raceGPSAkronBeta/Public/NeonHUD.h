@@ -37,7 +37,7 @@ public:
     void ShowRaceFinished(float FinalTime, const FString& Medal);
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|HUD")
-    void SetPlace(int32 Place, int32 FieldSize = 3);
+    void SetPlace(int32 Place, int32 FieldSize = 2);
 
     UFUNCTION(BlueprintCallable, Category = "raceGPS|HUD")
     void ClearFinished();
@@ -68,7 +68,7 @@ protected:
     int32 CurrentCheckpoint = 0;
     int32 TotalCheckpoints = 0;
     int32 PlayerPlace = 0;
-    int32 FieldSize = 3;
+    int32 FieldSize = 2;
     float SpeedKmh = 0.0f;
     float EngineRPM = 0.0f;
     int32 CurrentGear = 0;
