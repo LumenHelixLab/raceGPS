@@ -1,6 +1,6 @@
 import type { LauncherSettings } from "./schema.ts";
 
-const ROOT = "C:\\projects\\raceGPS-grokbot-cleveland";
+const ROOT = "C:\\projects\\racegps";
 const AKRON = `${ROOT}\\apps\\unreal-akron-beta`;
 
 export const DEFAULT_SETTINGS: LauncherSettings = {
