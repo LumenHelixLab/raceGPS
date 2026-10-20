@@ -27,6 +27,7 @@
 #include "TrafficSpawner.h"
 #include "NeonHUD.h"
 #include "Kismet/GameplayStatics.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
 #include "Engine/GameViewportClient.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -38,16 +39,59 @@
 #include "EngineUtils.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "Misc/PackageName.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonSerializer.h"
 #include "Components/SplineComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/PlayerStart.h"
+#include "Engine/DirectionalLight.h"
+#include "Components/DirectionalLightComponent.h"
+#include "Engine/SkyLight.h"
+#include "Camera/PlayerCameraManager.h"
+#include "Components/InstancedStaticMeshComponent.h"
+#include "Components/HierarchicalInstancedStaticMeshComponent.h"
+#include "Engine/OverlapResult.h"
+#include "HAL/IConsoleManager.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "Misc/App.h"
+#include "Engine/GameViewportClient.h"
+#include "Camera/CameraActor.h"
+#include "HAL/FileManager.h"
+
+// Defined at the bottom of this file (diagnostics section); used earlier by the
+// spawn-clearance guard.
+static FString DiagActorName(const AActor* Actor);
+
+// Defined in the diagnostics section; used by the screenshot confirmation poll.
+static bool DiagFindNewScreenshot(const FString& Dir, const FDateTime& Since, FString& OutPath, int64& OutBytes);
+
+// racegps.Diagnostics: 1 = runtime self-diagnostics (preflight + 15s ticker).
+// Default ON in Development builds; override via [SystemSettings] in
+// DefaultEngine.ini or -racegps.Diagnostics=0 on the command line.
+static TAutoConsoleVariable<int32> CVarRaceGPSDiagnostics(
+    TEXT("racegps.Diagnostics"),
+#if UE_BUILD_DEVELOPMENT
+    1,
+#else
+    0,
+#endif
+    TEXT("1 = emit [raceGPS-PREFLIGHT]/[raceGPS-DIAG] runtime self-diagnostics for the first 15s after StartPlay"),
+    ECVF_Default);
 
 ACruiseSprintGameMode::ACruiseSprintGameMode(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
-    DefaultPawnClass = AChaosVehiclePawn::StaticClass();
+    // Hero vehicle: CARLA Dodge Charger 2024 Blueprint (T5). In UE 5.7
+    // AGameModeBase::DefaultPawnClass is NOT a config property, so the class
+    // must be referenced here, not via ini. Fall back to the bare
+    // AChaosVehiclePawn if the BP is missing (content not staged).
+    static ConstructorHelpers::FClassFinder<APawn> HeroPawnBP(
+        TEXT("/Game/Vehicles/DodgeCharger2024/BP_DodgeCharger2024"));
+    DefaultPawnClass = HeroPawnBP.Succeeded()
+        ? HeroPawnBP.Class.Get()
+        : AChaosVehiclePawn::StaticClass();
     PrimaryActorTick.bCanEverTick = true;
     ScoringSystem = CreateDefaultSubobject<URaceScoringSystem>(TEXT("ScoringSystem"));
 }
@@ -91,6 +135,32 @@ void ACruiseSprintGameMode::StartPlay()
         }
     }
 
+    // --- Baked-map detection (black-screen hotfix) ---------------------------
+    // When the loaded level IS the baked city map for the active city, the map
+    // already contains PlayerStarts, route splines and checkpoint gates at
+    // correct baked (UE Z-up) positions; runtime spawning must stand down or
+    // every gate/spline is duplicated. Detection: persistent-level package
+    // short name == resolved LevelName (PIE "UEDPIE_<n>_" prefix stripped).
+    {
+        FString MapName = FPackageName::GetShortName(GetWorld()->GetOutermost()->GetName());
+        if (MapName.StartsWith(TEXT("UEDPIE_")))
+        {
+            const int32 Sep = MapName.Find(TEXT("_"), ESearchCase::CaseSensitive, ESearchDir::FromStart, 7);
+            if (Sep != INDEX_NONE)
+            {
+                MapName.RightChopInline(Sep + 1);
+            }
+        }
+        bRunningBakedCityMap = !CityLayout.LevelName.IsEmpty() &&
+            MapName.Equals(CityLayout.LevelName, ESearchCase::IgnoreCase);
+        int32 BakedSplines = 0;
+        int32 BakedGates = 0;
+        for (TActorIterator<ARouteSplineActor> It(GetWorld()); It; ++It) { BakedSplines++; }
+        for (TActorIterator<ACheckpointGate> It(GetWorld()); It; ++It) { BakedGates++; }
+        UE_LOG(LogTemp, Log, TEXT("[raceGPS] Map '%s' vs city level '%s' -> baked city map: %s (baked splines: %d, baked gates: %d)"),
+            *MapName, *CityLayout.LevelName, bRunningBakedCityMap ? TEXT("YES") : TEXT("no"), BakedSplines, BakedGates);
+    }
+
     if (!ReplayManager)
     {
         ReplayManager = NewObject<URaceReplayManager>(this);
@@ -130,8 +200,7 @@ void ACruiseSprintGameMode::StartPlay()
 
     // Restore selected vehicle from game instance
     if (UraceGPSGameInstance* GI = Cast<UraceGPSGameInstance>(GetGameInstance()))
-    {
-        if (GI->LastSelectedVehicleTuning)
+    {        if (GI->LastSelectedVehicleTuning)
         {
             SelectedVehicleTuning = GI->LastSelectedVehicleTuning;
         }
@@ -157,11 +226,28 @@ void ACruiseSprintGameMode::StartPlay()
             : GI->LastSelectedHandlingMode;
         SelectedVehicleTuning = BuildMergedVehicleTuning(SelectedVehicleTuning, HandlingMode);
         GI->LastSelectedVehicleTuning = SelectedVehicleTuning;
+        UE_LOG(LogTemp, Log, TEXT("[raceGPS] Vehicle selection: %s"),
+            SelectedVehicleTuning ? *SelectedVehicleTuning->DisplayName : TEXT("<none>"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] GameInstance class is '%s', expected raceGPSGameInstance — vehicle selection inert"),
+            *GetNameSafe(GetGameInstance() ? GetGameInstance()->GetClass() : nullptr));
     }
 
     LoadCityData();
     if (CurrentState == ECruiseSprintState::Failed) return;
 
+    if (bRunningBakedCityMap)
+    {
+        // Baked maps carry terrain/buildings/water in the .umap (T10). The
+        // runtime generators target the legacy flat meter-scale path (and
+        // StreetFurnitureSpawner is hardcoded to the Akron origin), so they
+        // would only produce invisible or misplaced duplicates here.
+        UE_LOG(LogTemp, Log, TEXT("[raceGPS] Baked map: runtime road/building/furniture generation skipped (city content is baked)"));
+    }
+    else
+    {
     // Spawn road meshes asynchronously
     FActorSpawnParameters RoadParams;
     RoadParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -208,9 +294,29 @@ void ACruiseSprintGameMode::StartPlay()
             Furniture->SpawnFurnitureAsync();
         }
     }
+    }
 
     // Tick waits for actual road and collision generation, not a fixed delay.
     StartupWaitSeconds = 0.0f;
+
+    // --- Runtime self-diagnostics (racegps.Diagnostics) ---
+    if (IsDiagnosticsEnabled())
+    {
+        RunDiagnosticsPreflight();
+        DiagSampleCount = 0;
+        bDiagShotDone = false;
+        bDiagShotRequested = false;
+        bDiagShotFallbackFired = false;
+        bDiagShotResultLogged = false;
+        DiagBirdseyeCam.Reset();
+        bDiagBirdseyeShotFired = false;
+        bDiagBirdseyeDone = false;
+        DiagSeriesShotSample = 0;
+        DiagSeriesLabel.Empty();
+        DiagGatesBound = -1;
+        GetWorld()->GetTimerManager().SetTimer(DiagTimerHandle, this,
+            &ACruiseSprintGameMode::DiagnosticsSampleTick, 1.0f, true, 1.0f);
+    }
 }
 
 void ACruiseSprintGameMode::Tick(float DeltaTime)
@@ -445,6 +551,19 @@ void ACruiseSprintGameMode::LoadCityData()
 
 void ACruiseSprintGameMode::SpawnPlayerAtStart()
 {
+    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+    APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+
+    if (bRunningBakedCityMap)
+    {
+        // Baked PlayerStarts are already at correct positions; stock
+        // RestartPlayer placed the pawn there. Only re-apply vehicle tuning.
+        UE_LOG(LogTemp, Log, TEXT("[raceGPS] Baked map: pawn at %s (runtime teleport skipped)"),
+            Pawn ? *Pawn->GetActorLocation().ToString() : TEXT("<no pawn>"));
+        ApplyVehicleTuningToPlayer();
+        return;
+    }
+
     if (LoadedSpawns.Num() == 0) return;
 
     FAkronSpawnPoint& Spawn = LoadedSpawns[0];
@@ -453,10 +572,9 @@ void ACruiseSprintGameMode::SpawnPlayerAtStart()
         Spawn.Location, WorldOriginLat, WorldOriginLon);
     WorldLoc.Z = 50.0f; // 50 cm lift (SOURCE_TO_UNREAL_FRAME_v1: 1uu=1cm)
 
-    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-    if (PC && PC->GetPawn())
+    if (Pawn)
     {
-        PC->GetPawn()->SetActorLocationAndRotation(WorldLoc, Spawn.Rotation, false, nullptr, ETeleportType::ResetPhysics);
+        Pawn->SetActorLocationAndRotation(WorldLoc, Spawn.Rotation, false, nullptr, ETeleportType::ResetPhysics);
     }
 
     // Apply selected vehicle tuning after spawn/teleport
@@ -465,12 +583,21 @@ void ACruiseSprintGameMode::SpawnPlayerAtStart()
 
 void ACruiseSprintGameMode::SpawnRouteSpline()
 {
+    if (bRunningBakedCityMap)
+    {
+        // The selected route's spline is baked into the map; only the ghost
+        // needs runtime wiring, following the baked spline's world points.
+        SpawnGhostOnBakedRoute();
+        return;
+    }
+
     if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
 
     const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
     if (Route.Waypoints.Num() < 2) return;
 
-    // Convert raw lat/lon waypoints to world space
+    // Convert raw lat/lon waypoints to world space. Waypoints store
+    // (lon, ?, -lat) in degrees, so Lat = -Wp.Z, Lon = Wp.X.
     TArray<FVector> WorldWaypoints;
     for (const FVector& Wp : Route.Waypoints)
     {
@@ -503,9 +630,17 @@ void ACruiseSprintGameMode::SpawnRouteSpline()
 
 void ACruiseSprintGameMode::SpawnCheckpoints()
 {
+    if (bRunningBakedCityMap)
+    {
+        // Gates are baked into the map; index/activate/bind them in place.
+        BindBakedCheckpointGates();
+        return;
+    }
+
     if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
 
     const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
+    int32 Spawned = 0;
     for (int32 i = 0; i < Route.CheckpointLocations.Num(); ++i)
     {
         FVector WorldLoc = UAkronXodrImporter::GeoToWorldFromPacked(
@@ -522,8 +657,162 @@ void ACruiseSprintGameMode::SpawnCheckpoints()
             Gate->ActivateGate();
             // Bind delegate to route checkpoint reached
             Gate->OnCheckpointReached.AddDynamic(this, &ACruiseSprintGameMode::OnCheckpointReached);
+            Spawned++;
         }
     }
+    DiagnosticsReportGates(Spawned, Route.CheckpointLocations.Num());
+}
+
+APawn* ACruiseSprintGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
+{
+    FActorSpawnParameters SpawnInfo;
+    SpawnInfo.Instigator = GetInstigator();
+    SpawnInfo.ObjectFlags |= RF_Transient; // never save default player pawns into a map
+    SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+    // --- Spawn-clearance guard -------------------------------------------------
+    // PlayerStart Z comes from spec data; the baked terrain heightfield can sit
+    // decimeters ABOVE it, embedding the car under the surface (camera under
+    // terrain -> fully black viewport; up-trace catches it, down-trace cannot).
+    // Probe the column above/below the spawn: if the nearest surface from above
+    // lies above the spawn origin, lift the spawn to surface + 1m clearance.
+    FVector SpawnLoc = SpawnTransform.GetLocation();
+    {
+        FHitResult SurfHit;
+        FCollisionQueryParams SurfParams(SCENE_QUERY_STAT(RaceGPSSpawnClearance), false);
+        if (GetWorld()->LineTraceSingleByChannel(SurfHit,
+                SpawnLoc + FVector(0, 0, 1000.0), SpawnLoc - FVector(0, 0, 200000.0),
+                ECC_WorldStatic, SurfParams)
+            && SurfHit.GetActor()
+            && !SurfHit.GetActor()->IsA<APlayerStart>())
+        {
+            const float GroundZ = SurfHit.ImpactPoint.Z;
+            if (GroundZ > SpawnLoc.Z)
+            {
+                UE_LOG(LogTemp, Log, TEXT("[raceGPS] Spawn clearance: spawn was %.1f uu under '%s'; lifted to Z=%.1f (ground %.1f + 100 clearance)"),
+                    GroundZ - SpawnLoc.Z, *DiagActorName(SurfHit.GetActor()), GroundZ + 100.0f, GroundZ);
+                SpawnLoc.Z = GroundZ + 100.0f;
+            }
+        }
+    }
+
+    APawn* ResultPawn = GetWorld()->SpawnActor<APawn>(GetDefaultPawnClassForController(NewPlayer),
+        FTransform(SpawnTransform.GetRotation(), SpawnLoc, SpawnTransform.GetScale3D()), SpawnInfo);
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] SpawnDefaultPawn: %s at %s"),
+        *GetNameSafe(ResultPawn), *SpawnLoc.ToString());
+    return ResultPawn;
+}
+
+void ACruiseSprintGameMode::BindBakedCheckpointGates()
+{
+    if (bBakedGatesBound) return;
+    bBakedGatesBound = true;
+    if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
+
+    const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
+
+    TArray<ACheckpointGate*> Gates;
+    for (TActorIterator<ACheckpointGate> It(GetWorld()); It; ++It)
+    {
+        Gates.Add(*It);
+    }
+
+    // Match each loaded checkpoint to the nearest baked gate. Both derive from
+    // the same compiler data (bake remaps (x,y,z)->(x,-z,y); GeoToWorld is now
+    // the same Z-up convention), so correct matches land at ~0 distance.
+    int32 Bound = 0;
+    float MaxMatchDist = 0.0f;
+    for (int32 i = 0; i < Route.CheckpointLocations.Num(); ++i)
+    {
+        const FVector Expected = UAkronXodrImporter::GeoToWorld(
+            -Route.CheckpointLocations[i].Z, Route.CheckpointLocations[i].X, WorldOriginLat, WorldOriginLon);
+
+        ACheckpointGate* Best = nullptr;
+        float BestDist = MAX_FLT;
+        for (ACheckpointGate* Gate : Gates)
+        {
+            const float D = FVector::Dist2D(Gate->GetActorLocation(), Expected);
+            if (D < BestDist)
+            {
+                BestDist = D;
+                Best = Gate;
+            }
+        }
+        if (!Best || BestDist > 5000.0f)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Baked map: no baked gate near checkpoint %d (best dist %.1f)"), i, BestDist);
+            continue;
+        }
+
+        Best->CheckpointIndex = i;
+        Best->ActivateGate();
+        Best->OnCheckpointReached.AddDynamic(this, &ACruiseSprintGameMode::OnCheckpointReached);
+        Gates.Remove(Best); // never bind one gate to two indices
+        Bound++;
+        MaxMatchDist = FMath::Max(MaxMatchDist, BestDist);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] Baked map: bound %d/%d checkpoint gates (world gates total: %d, max match dist %.1f); runtime-spawned gates: 0"),
+        Bound, Route.CheckpointLocations.Num(), Gates.Num() + Bound, MaxMatchDist);
+    DiagnosticsReportGates(Bound, Route.CheckpointLocations.Num());
+}
+
+void ACruiseSprintGameMode::SpawnGhostOnBakedRoute()
+{
+    if (LoadedRoutes.Num() == 0 || SelectedRouteIndex >= LoadedRoutes.Num()) return;
+
+    const FAkronRouteSpline& Route = LoadedRoutes[SelectedRouteIndex];
+    if (Route.Waypoints.Num() < 2) return;
+
+    // Pick the baked route spline whose first point matches the selected
+    // route's first waypoint (nearest-position match; labels are editor-only).
+    const FVector ExpectedStart = UAkronXodrImporter::GeoToWorld(
+        -Route.Waypoints[0].Z, Route.Waypoints[0].X, WorldOriginLat, WorldOriginLon);
+
+    ARouteSplineActor* Best = nullptr;
+    float BestDist = MAX_FLT;
+    int32 SplineCount = 0;
+    for (TActorIterator<ARouteSplineActor> It(GetWorld()); It; ++It)
+    {
+        ARouteSplineActor* Candidate = *It;
+        if (!Candidate->Spline || Candidate->Spline->GetNumberOfSplinePoints() < 2) continue;
+        SplineCount++;
+        const float D = FVector::Dist2D(
+            Candidate->Spline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World), ExpectedStart);
+        if (D < BestDist)
+        {
+            BestDist = D;
+            Best = Candidate;
+        }
+    }
+
+    if (!Best || BestDist > 5000.0f)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[raceGPS] Baked map: no baked route spline matched route %s (%d candidates); ghost disabled"),
+            *Route.RouteId, SplineCount);
+        return;
+    }
+
+    TArray<FVector> WorldWaypoints;
+    const int32 NumPoints = Best->Spline->GetNumberOfSplinePoints();
+    WorldWaypoints.Reserve(NumPoints);
+    for (int32 i = 0; i < NumPoints; ++i)
+    {
+        WorldWaypoints.Add(Best->Spline->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::World));
+    }
+
+    FActorSpawnParameters Params;
+    Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    AGhostVehicle* Ghost = GetWorld()->SpawnActor<AGhostVehicle>(
+        AGhostVehicle::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Params);
+    if (Ghost)
+    {
+        Ghost->SetRouteWaypoints(WorldWaypoints);
+        Ghost->StartGhostRun(CountdownDuration + 2.0f);
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS] Baked map: ghost follows baked route spline (%d pts, %d baked splines, match dist %.1f); runtime-spawned splines: 0"),
+        NumPoints, SplineCount, BestDist);
 }
 
 void ACruiseSprintGameMode::UpdateCountdown(float DeltaTime)
@@ -926,6 +1215,18 @@ void ACruiseSprintGameMode::CreateDefaultVehiclePresets()
         0.6f, 0.05f
     ));
 
+    // CARLA Charger — imported CARLA 0.10.0 Dodge Charger 2024 hero vehicle
+    // (CC-BY 4.0, see Content/Vehicles/CARLA-ATTRIBUTION.txt). Muscle-sports
+    // tuning paired with BP_DodgeCharger2024 (child of AChaosVehiclePawn, so
+    // the arcade handling defaults apply).
+    VehiclePresets.Add(CreatePreset(
+        TEXT("CARLA Charger"), TEXT("CARLA Dodge Charger 2024. Big V8 muscle: heavy, torquey, built for power slides."),
+        EVehicleClass::Sports,
+        1900.0f, 6500.0f, 0.35f, 6,
+        2000.0f, 3800.0f,
+        0.45f, 0.12f
+    ));
+
     UE_LOG(LogTemp, Log, TEXT("[raceGPS] Created %d vehicle presets"), VehiclePresets.Num());
 }
 
@@ -1137,5 +1438,546 @@ void ACruiseSprintGameMode::ApplyVehicleTuningToPlayer()
     {
         Vehicle->SetTuningData(SelectedVehicleTuning);
         UE_LOG(LogTemp, Log, TEXT("[raceGPS] Applied vehicle tuning: %s"), *SelectedVehicleTuning->DisplayName);
+    }
+}
+
+// ============================================================================
+// Runtime self-diagnostics (cvar: racegps.Diagnostics)
+// ============================================================================
+
+// Actor labels are editor-only; fall back to object names in packaged builds.
+static FString DiagActorName(const AActor* Actor)
+{
+    if (!Actor) return TEXT("?");
+#if WITH_EDITOR
+    return Actor->GetActorLabel();
+#else
+    return Actor->GetName();
+#endif
+}
+
+// Newest .png in Dir modified at/after Since (2s tolerance for clock rounding).
+static bool DiagFindNewScreenshot(const FString& Dir, const FDateTime& Since, FString& OutPath, int64& OutBytes)
+{
+    TArray<FString> Pngs;
+    IFileManager::Get().FindFiles(Pngs, *(Dir / TEXT("*.png")), true, false);
+    const FDateTime Threshold = Since - FTimespan::FromSeconds(2.0);
+    FDateTime BestTime = FDateTime::MinValue();
+    bool bFound = false;
+    for (const FString& Name : Pngs)
+    {
+        const FString Full = Dir / Name;
+        const FDateTime Stamp = IFileManager::Get().GetTimeStamp(*Full);
+        if (Stamp >= Threshold && Stamp > BestTime)
+        {
+            BestTime = Stamp;
+            OutPath = Full;
+            bFound = true;
+        }
+    }
+    if (bFound)
+    {
+        OutBytes = IFileManager::Get().FileSize(*OutPath);
+    }
+    return bFound;
+}
+
+bool ACruiseSprintGameMode::IsDiagnosticsEnabled() const
+{
+    return CVarRaceGPSDiagnostics.GetValueOnGameThread() != 0;
+}
+
+void ACruiseSprintGameMode::RunDiagnosticsPreflight()
+{
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    APlayerController* PC = UGameplayStatics::GetPlayerController(World, 0);
+    APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+
+    // --- Lighting rig ---------------------------------------------------------
+    int32 DirLights = 0, SkyLights = 0;
+    for (TActorIterator<ADirectionalLight> It(World); It; ++It) { DirLights++; }
+    for (TActorIterator<ASkyLight> It(World); It; ++It) { SkyLights++; }
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-PREFLIGHT] %s lighting-rig (directional=%d, skylight=%d)"),
+        (DirLights > 0 && SkyLights > 0) ? TEXT("PASS") : TEXT("FAIL"), DirLights, SkyLights);
+
+    // --- Terrain collision: trace from spawn +1000uu straight down ------------
+    FVector ProbeStart;
+    if (Pawn)
+    {
+        ProbeStart = Pawn->GetActorLocation() + FVector(0, 0, 1000.0);
+    }
+    else
+    {
+        APlayerStart* PS = nullptr;
+        for (TActorIterator<APlayerStart> It(World); It; ++It) { PS = *It; break; }
+        ProbeStart = (PS ? PS->GetActorLocation() : FVector::ZeroVector) + FVector(0, 0, 1000.0);
+    }
+    FHitResult TerrainHit;
+    FCollisionQueryParams TraceParams(SCENE_QUERY_STAT(RaceGPSDiag), true);
+    if (Pawn) { TraceParams.AddIgnoredActor(Pawn); }
+    const bool bTerrainHit = World->LineTraceSingleByChannel(
+        TerrainHit, ProbeStart, ProbeStart - FVector(0, 0, 200000.0), ECC_WorldStatic, TraceParams);
+    const bool bTerrainNamed = bTerrainHit && TerrainHit.GetActor() &&
+        (DiagActorName(TerrainHit.GetActor()).Contains(TEXT("Terrain")) ||
+         TerrainHit.GetActor()->GetName().Contains(TEXT("Terrain")));
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-PREFLIGHT] %s terrain-collision (down-trace from spawn+1000uu: %s%s)"),
+        bTerrainHit ? TEXT("PASS") : TEXT("FAIL"),
+        bTerrainHit ? *FString::Printf(TEXT("hit '%s'/'%s' dist=%.1f"),
+            *DiagActorName(TerrainHit.GetActor()),
+            TerrainHit.GetComponent() ? *TerrainHit.GetComponent()->GetName() : TEXT("?"),
+            TerrainHit.Distance) : TEXT("NO HIT"),
+        bTerrainHit && !bTerrainNamed ? TEXT(" [note: hit actor not named Terrain]") : TEXT(""));
+
+    // --- Pawn spawn -----------------------------------------------------------
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-PREFLIGHT] %s pawn-spawn (%s at %s)"),
+        Pawn ? TEXT("PASS") : TEXT("FAIL"),
+        Pawn ? *Pawn->GetName() : TEXT("<no pawn>"),
+        Pawn ? *Pawn->GetActorLocation().ToString() : TEXT("n/a"));
+
+    // --- GameInstance ---------------------------------------------------------
+    const bool bGIOk = Cast<UraceGPSGameInstance>(GetGameInstance()) != nullptr;
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-PREFLIGHT] %s game-instance (class '%s')"),
+        bGIOk ? TEXT("PASS") : TEXT("FAIL"),
+        *GetNameSafe(GetGameInstance() ? GetGameInstance()->GetClass() : nullptr));
+
+    // --- Vehicle tuning -------------------------------------------------------
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-PREFLIGHT] %s vehicle-tuning (%s)"),
+        SelectedVehicleTuning ? TEXT("PASS") : TEXT("FAIL"),
+        SelectedVehicleTuning ? *SelectedVehicleTuning->DisplayName : TEXT("<none>"));
+
+    // --- Gates: expected count; bound count reported once binding resolves ----
+    int32 ExpectedGates = 0;
+    if (LoadedRoutes.IsValidIndex(SelectedRouteIndex))
+    {
+        ExpectedGates = LoadedRoutes[SelectedRouteIndex].CheckpointLocations.Num();
+    }
+    int32 WorldGates = 0;
+    for (TActorIterator<ACheckpointGate> It(World); It; ++It) { WorldGates++; }
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-PREFLIGHT] %s gates-expected (route expects %d, world has %d; bound check follows at race start)"),
+        ExpectedGates > 0 ? TEXT("PASS") : TEXT("FAIL"), ExpectedGates, WorldGates);
+}
+
+void ACruiseSprintGameMode::DiagnosticsReportGates(int32 BoundCount, int32 ExpectedCount)
+{
+    DiagGatesBound = BoundCount;
+    if (!IsDiagnosticsEnabled()) return;
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-PREFLIGHT] %s gates-bound (%d/%d bound)"),
+        BoundCount == ExpectedCount ? TEXT("PASS") : TEXT("FAIL"), BoundCount, ExpectedCount);
+}
+
+void ACruiseSprintGameMode::DiagnosticsSampleTick()
+{
+    UWorld* World = GetWorld();
+    if (!World) return;
+
+    DiagSampleCount++;
+    const float Now = World->GetTimeSeconds();
+
+    APlayerController* PC = UGameplayStatics::GetPlayerController(World, 0);
+    APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+
+    FString PawnStr = TEXT("<no pawn>");
+    FString VelStr = TEXT("n/a");
+    FString DownStr = TEXT("n/a");
+    FString UpStr = TEXT("n/a");
+    FString OverlapStr = TEXT("n/a");
+    bool bDownHit = false;
+    float DownDist = 0.0f;
+    bool bUpClose = false;
+    bool bBuildingOverlap = false;
+    float VelZ = 0.0f;
+
+    if (Pawn)
+    {
+        const FVector Loc = Pawn->GetActorLocation();
+        VelZ = Pawn->GetVelocity().Z;
+        PawnStr = Loc.ToString();
+        VelStr = FString::Printf(TEXT("%.1f"), VelZ);
+
+        FCollisionQueryParams Params(SCENE_QUERY_STAT(RaceGPSDiag), true);
+        Params.AddIgnoredActor(Pawn);
+        FHitResult Hit;
+
+        // Downward trace: ground under the pawn?
+        if (World->LineTraceSingleByChannel(Hit, Loc + FVector(0, 0, 100.0), Loc - FVector(0, 0, 200000.0), ECC_WorldStatic, Params))
+        {
+            bDownHit = true;
+            DownDist = Hit.Distance;
+            DownStr = FString::Printf(TEXT("hit '%s'/'%s' dist=%.1f"),
+                *DiagActorName(Hit.GetActor()),
+                Hit.GetComponent() ? *Hit.GetComponent()->GetName() : TEXT("?"),
+                Hit.Distance);
+        }
+        else
+        {
+            DownStr = TEXT("NO HIT (void below)");
+        }
+
+        // Upward trace: ceiling right above = enclosed in a building?
+        if (World->LineTraceSingleByChannel(Hit, Loc, Loc + FVector(0, 0, 50000.0), ECC_WorldStatic, Params))
+        {
+            bUpClose = Hit.Distance < 1500.0f;
+            UpStr = FString::Printf(TEXT("hit '%s'/'%s' dist=%.1f"),
+                *DiagActorName(Hit.GetActor()),
+                Hit.GetComponent() ? *Hit.GetComponent()->GetName() : TEXT("?"),
+                Hit.Distance);
+        }
+        else
+        {
+            UpStr = TEXT("clear");
+        }
+
+        // Overlap test against building HISMs at pawn location.
+        TArray<FOverlapResult> Overlaps;
+        FCollisionObjectQueryParams ObjParams;
+        ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
+        World->OverlapMultiByObjectType(Overlaps, Loc, FQuat::Identity, ObjParams,
+            FCollisionShape::MakeBox(FVector(300.0f)), Params);
+        int32 BuildingHits = 0;
+        FString FirstBuilding;
+        for (const FOverlapResult& Ov : Overlaps)
+        {
+            UPrimitiveComponent* Comp = Ov.GetComponent();
+            if (!Comp) continue;
+            const bool bIsHISM = Comp->IsA<UHierarchicalInstancedStaticMeshComponent>();
+            const FString CompName = Comp->GetName();
+            if (bIsHISM)
+            {
+                BuildingHits++;
+                bBuildingOverlap = true;
+                if (FirstBuilding.IsEmpty())
+                {
+                    FirstBuilding = FString::Printf(TEXT("%s/%s"),
+                        *DiagActorName(Ov.GetActor()), *CompName);
+                }
+            }
+        }
+        OverlapStr = BuildingHits > 0
+            ? FString::Printf(TEXT("%d building HISM(s): %s"), BuildingHits, *FirstBuilding)
+            : FString::Printf(TEXT("0 (of %d overlaps)"), Overlaps.Num());
+    }
+
+    FString CamStr = TEXT("<no cam>");
+    if (PC && PC->PlayerCameraManager)
+    {
+        CamStr = PC->PlayerCameraManager->GetCameraLocation().ToString();
+    }
+
+    int32 WorldGates = 0;
+    for (TActorIterator<ACheckpointGate> It(World); It; ++It) { WorldGates++; }
+
+    UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] t=%.1fs pawn=%s velZ=%s | down: %s | up: %s | overlap: %s | cam=%s | gates bound=%d world=%d | fps=%.1f"),
+        Now, *PawnStr, *VelStr, *DownStr, *UpStr, *OverlapStr, *CamStr,
+        DiagGatesBound, WorldGates, 1.0f / FMath::Max(FApp::GetDeltaTime(), 0.0001f));
+
+    // --- T+10s: screenshot (not under -nullrhi) + verdict ---------------------
+    if (DiagSampleCount == 10 && !bDiagShotDone)
+    {
+        bDiagShotDone = true;
+        if (!FParse::Param(FCommandLine::Get(), TEXT("nullrhi")))
+        {
+            const FString ShotDir = FPaths::ScreenShotDir();
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] capturing HighResShot 1280x720 -> %s"), *ShotDir);
+            // HighResShot is a VIEWPORT command: handled by UGameViewportClient::
+            // Exec (GameViewportClient.cpp routes it to HandleHighresScreenshot
+            // Command). GEngine->Exec never routes there and silently swallows
+            // it (no PNG written). Route via the game viewport instead.
+            if (UGameViewportClient* VC = World->GetGameViewport())
+            {
+                VC->Exec(World, TEXT("HighResShot 1280x720"), *GLog);
+                bDiagShotRequested = true;
+                DiagShotRequestedAt = FDateTime::Now();
+            }
+            else
+            {
+                UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] screenshot FAILED (no game viewport in this session)"));
+                bDiagShotResultLogged = true;
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] HighResShot skipped (-nullrhi)"));
+        }
+
+        FString Verdict;
+        if (!Pawn)
+        {
+            Verdict = TEXT("NO_PAWN");
+        }
+        else if (VelZ < -100.0f || !bDownHit)
+        {
+            Verdict = TEXT("FALLING");
+        }
+        else if (bBuildingOverlap || bUpClose)
+        {
+            Verdict = TEXT("ENCLOSED");
+        }
+        else if (bDownHit && DownDist < 500.0f && FMath::Abs(VelZ) < 50.0f)
+        {
+            Verdict = TEXT("ON_GROUND");
+        }
+        else
+        {
+            Verdict = TEXT("AIRBORNE");
+        }
+        UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] VERDICT %s (pawn=%s velZ=%.1f down=%s gates=%d)"),
+            *Verdict, *PawnStr, VelZ, *DownStr, DiagGatesBound);
+    }
+
+    // --- Screenshot write confirmation / fallback -----------------------------
+    // The capture lands asynchronously (image write queue); poll for a new PNG
+    // once per sample. If nothing appears by T+15s, fall back to the plain
+    // viewport "Shot" command; log written/FAILED either way (greppable).
+    if (bDiagShotRequested && !bDiagShotResultLogged && DiagSampleCount > 10)
+    {
+        FString FoundPath;
+        int64 FoundBytes = 0;
+        if (DiagFindNewScreenshot(FPaths::ScreenShotDir(), DiagShotRequestedAt, FoundPath, FoundBytes))
+        {
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] screenshot written: %s (bytes=%lld)"), *FoundPath, FoundBytes);
+            bDiagShotResultLogged = true;
+        }
+        else if (DiagSampleCount >= 15 && !bDiagShotFallbackFired)
+        {
+            bDiagShotFallbackFired = true;
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] no PNG 5s after HighResShot; falling back to viewport 'Shot' command"));
+            if (UGameViewportClient* VC = World->GetGameViewport())
+            {
+                VC->Exec(World, TEXT("Shot"), *GLog);
+                DiagShotRequestedAt = FDateTime::Now();
+            }
+        }
+        else if (DiagSampleCount >= 18)
+        {
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] screenshot FAILED (no new PNG in %s after HighResShot + Shot fallback)"),
+                *FPaths::ScreenShotDir());
+            bDiagShotResultLogged = true;
+        }
+    }
+
+    // --- Birdseye bisect experiment (T+12/14/16, skipped under -nullrhi) ------
+    // Distinguishes "local occlusion at spawn" from "global render break":
+    // look down at the world from 300m above the pawn and capture a second shot.
+    const bool bDiagRender = !FParse::Param(FCommandLine::Get(), TEXT("nullrhi"));
+
+    if (DiagSampleCount == 12 && bDiagRender && Pawn && !DiagBirdseyeCam.IsValid())
+    {
+        FActorSpawnParameters CamParams;
+        CamParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        const FVector CamLoc = Pawn->GetActorLocation() + FVector(0, 0, 30000.0);
+        ACameraActor* BirdCam = World->SpawnActor<ACameraActor>(
+            ACameraActor::StaticClass(), CamLoc, FRotator(-70.0f, 0.0f, 0.0f), CamParams);
+        if (BirdCam && PC)
+        {
+            DiagBirdseyeCam = BirdCam;
+            PC->SetViewTarget(BirdCam);
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] birdseye camera at %s (pitch -70, 30000uu above pawn %s)"),
+                *BirdCam->GetActorLocation().ToString(), *Pawn->GetActorLocation().ToString());
+        }
+    }
+
+    if (DiagSampleCount == 14 && DiagBirdseyeCam.IsValid() && !bDiagBirdseyeShotFired)
+    {
+        bDiagBirdseyeShotFired = true;
+        DiagBirdseyeShotAt = FDateTime::Now();
+        if (UGameViewportClient* VC = World->GetGameViewport())
+        {
+            VC->Exec(World, TEXT("HighResShot 1280x720"), *GLog);
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] capturing birdseye HighResShot 1280x720"));
+        }
+    }
+
+    if (DiagSampleCount >= 16 && bDiagBirdseyeShotFired && !bDiagBirdseyeDone)
+    {
+        bDiagBirdseyeDone = true;
+        // Restore the pawn view and clean up the temp camera.
+        if (PC && Pawn)
+        {
+            PC->SetViewTarget(Pawn);
+        }
+        if (DiagBirdseyeCam.IsValid())
+        {
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] birdseye camera final location %s; view target restored, camera destroyed"),
+                *DiagBirdseyeCam->GetActorLocation().ToString());
+            DiagBirdseyeCam->Destroy();
+            DiagBirdseyeCam.Reset();
+        }
+        FString FoundPath;
+        int64 FoundBytes = 0;
+        if (DiagFindNewScreenshot(FPaths::ScreenShotDir(), DiagBirdseyeShotAt, FoundPath, FoundBytes))
+        {
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] birdseye captured: %s (bytes=%lld)"), *FoundPath, FoundBytes);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] birdseye FAILED (no new PNG in %s)"), *FPaths::ScreenShotDir());
+        }
+    }
+
+    // --- ShowFlag bisect series (rendering sessions only, samples 17-30) ------
+    // One shot per flag state, ~2s settle after each change, flags restored
+    // between shots. Finds the guilty pipeline stage (post / lighting / sky).
+    if (bDiagRender)
+    {
+        auto ExecViewCmd = [World](const TCHAR* Cmd)
+        {
+            if (UGameViewportClient* VC = World->GetGameViewport())
+            {
+                VC->Exec(World, Cmd, *GLog);
+            }
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] exec: %s"), Cmd);
+        };
+        auto DumpCVar = [](const TCHAR* Name)
+        {
+            IConsoleVariable* CV = IConsoleManager::Get().FindConsoleVariable(Name);
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] cvar %s = %s"), Name,
+                CV ? *CV->GetString() : TEXT("<not found>"));
+        };
+        // Renderer CVars: set directly via the console manager (VC->Exec is for
+        // viewport commands like ShowFlag/HighResShot; plain cvar strings are
+        // more reliable through Set()).
+        auto SetCVar = [](const TCHAR* Name, int32 Value)
+        {
+            if (IConsoleVariable* CV = IConsoleManager::Get().FindConsoleVariable(Name))
+            {
+                CV->Set(Value, ECVF_SetByConsole);
+            }
+            UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] set-cvar: %s %d"), Name, Value);
+        };
+        auto SeriesShot = [&](const TCHAR* Label)
+        {
+            ExecViewCmd(TEXT("HighResShot 1280x720"));
+            DiagSeriesShotAt = FDateTime::Now();
+            DiagSeriesShotSample = DiagSampleCount;
+            DiagSeriesLabel = Label;
+        };
+
+        // Confirm the previous series shot two samples after its request.
+        if (!DiagSeriesLabel.IsEmpty() && DiagSampleCount > DiagSeriesShotSample + 1)
+        {
+            FString FoundPath;
+            int64 FoundBytes = 0;
+            if (DiagFindNewScreenshot(FPaths::ScreenShotDir(), DiagSeriesShotAt, FoundPath, FoundBytes))
+            {
+                UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] flagshot '%s' written: %s (bytes=%lld)"),
+                    *DiagSeriesLabel, *FoundPath, FoundBytes);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] flagshot '%s' FAILED (no new PNG)"), *DiagSeriesLabel);
+            }
+            DiagSeriesLabel.Empty();
+        }
+
+        switch (DiagSampleCount)
+        {
+        case 17:
+            // Runtime cross-check of Part A: what sun does the LIVE scene see?
+            for (TActorIterator<ADirectionalLight> It(World); It; ++It)
+            {
+                if (UDirectionalLightComponent* LC = It->FindComponentByClass<UDirectionalLightComponent>())
+                {
+                    UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] sun '%s' intensity=%.1f color=%s mobility=%d castShadows=%d affectsWorld=%d compVisible=%d actorHidden=%d rotation=%s"),
+                        *DiagActorName(*It), LC->Intensity, *LC->GetLightColor().ToString(),
+                        (int32)LC->Mobility.GetValue(), LC->CastShadows ? 1 : 0,
+                        LC->bAffectsWorld ? 1 : 0, LC->IsVisible() ? 1 : 0,
+                        It->IsHidden() ? 1 : 0, *It->GetActorRotation().ToString());
+                }
+            }
+            ExecViewCmd(TEXT("ShowFlag.PostProcessing 0"));
+            break;
+        case 19:
+            SeriesShot(TEXT("no-post"));
+            break;
+        case 20:
+            ExecViewCmd(TEXT("ShowFlag.PostProcessing 1"));
+            ExecViewCmd(TEXT("ShowFlag.Lighting 0"));
+            break;
+        case 22:
+            SeriesShot(TEXT("unlit"));
+            break;
+        case 23:
+            ExecViewCmd(TEXT("ShowFlag.PostProcessing 0")); // Lighting still 0
+            break;
+        case 25:
+            SeriesShot(TEXT("unlit+no-post"));
+            break;
+        case 26:
+            ExecViewCmd(TEXT("ShowFlag.PostProcessing 1"));
+            ExecViewCmd(TEXT("ShowFlag.Lighting 1"));
+            ExecViewCmd(TEXT("ShowFlag.Atmosphere 0"));
+            break;
+        case 28:
+            SeriesShot(TEXT("no-atmosphere"));
+            break;
+        case 29:
+            ExecViewCmd(TEXT("ShowFlag.Atmosphere 1"));
+            DumpCVar(TEXT("r.DefaultFeature.AutoExposure"));
+            DumpCVar(TEXT("r.Lumen.DiffuseIndirect.Allow"));
+            DumpCVar(TEXT("r.Lumen.Reflections.Allow"));
+            DumpCVar(TEXT("r.GenerateMeshDistanceFields"));
+            DumpCVar(TEXT("r.EyeAdaptationQuality"));
+            break;
+        // --- Round 3: lighting-pipeline isolation (lit, flags normal) ---------
+        case 31:
+            SetCVar(TEXT("r.Lumen.DiffuseIndirect.Allow"), 0);
+            SetCVar(TEXT("r.Lumen.Reflections.Allow"), 0);
+            break;
+        case 33:
+            SeriesShot(TEXT("no-lumen"));
+            break;
+        case 35:
+            SetCVar(TEXT("r.Lumen.DiffuseIndirect.Allow"), 1);
+            SetCVar(TEXT("r.Lumen.Reflections.Allow"), 1);
+            SetCVar(TEXT("r.Shadow.Virtual.Enable"), 0);
+            break;
+        case 37:
+            SeriesShot(TEXT("no-vsm"));
+            break;
+        case 39:
+            SetCVar(TEXT("r.Lumen.DiffuseIndirect.Allow"), 0);
+            SetCVar(TEXT("r.Lumen.Reflections.Allow"), 0); // VSM still 0
+            break;
+        case 41:
+            SeriesShot(TEXT("no-vsm+no-lumen"));
+            break;
+        case 43:
+            SetCVar(TEXT("r.Shadow.Virtual.Enable"), 1);
+            SetCVar(TEXT("r.Lumen.DiffuseIndirect.Allow"), 1);
+            SetCVar(TEXT("r.Lumen.Reflections.Allow"), 1);
+            ExecViewCmd(TEXT("ShowFlag.DirectLighting 0"));
+            break;
+        case 45:
+            SeriesShot(TEXT("no-direct-lighting"));
+            break;
+        case 47:
+            ExecViewCmd(TEXT("ShowFlag.DirectLighting 1"));
+            ExecViewCmd(TEXT("ShowFlag.IndirectLighting 0"));
+            break;
+        case 49:
+            SeriesShot(TEXT("no-indirect-lighting"));
+            break;
+        case 51:
+            ExecViewCmd(TEXT("ShowFlag.IndirectLighting 1"));
+            break;
+        default:
+            break;
+        }
+    }
+
+    // Cheap: stop after 15 samples (-nullrhi) or once the whole bisect series
+    // has landed in a rendering session (last confirm at sample 51; cap 55).
+    const bool bDiagWorkDone =
+        (!bDiagShotRequested || bDiagShotResultLogged) &&
+        (!bDiagBirdseyeShotFired || bDiagBirdseyeDone) &&
+        DiagSeriesLabel.IsEmpty();
+    if (DiagSampleCount >= 55 ||
+        (DiagSampleCount >= 52 && bDiagWorkDone) ||
+        (DiagSampleCount >= 15 && bDiagWorkDone && !bDiagRender))
+    {
+        World->GetTimerManager().ClearTimer(DiagTimerHandle);
+        UE_LOG(LogTemp, Log, TEXT("[raceGPS-DIAG] diagnostics ticker stopped after %d samples"), DiagSampleCount);
     }
 }

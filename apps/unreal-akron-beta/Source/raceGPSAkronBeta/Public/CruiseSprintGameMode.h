@@ -225,7 +225,67 @@ protected:
     void SpawnPlayerAtStart();
     void SpawnRouteSpline();
     void SpawnCheckpoints();
+
+    /**
+     * True when the loaded level IS the baked city map for the active city
+     * (persistent-level package short name == CityLayout.LevelName). The baked
+     * map already contains PlayerStarts, route splines and checkpoint gates at
+     * correct baked (UE Z-up) positions, so runtime spawning/teleporting must
+     * stand down or every gate/spline is duplicated (black-screen hotfix).
+     */
+    bool bRunningBakedCityMap = false;
+    bool bBakedGatesBound = false;
+
+    /** Baked path: index/activate/bind the map's existing checkpoint gates by
+     *  nearest-position match against the selected route's checkpoints. */
+    void BindBakedCheckpointGates();
+    /** Baked path: spawn the ghost on the baked route spline's world points. */
+    void SpawnGhostOnBakedRoute();
+
+    /**
+     * Stock GameModeBase spawns the default pawn with dont-spawn-if-colliding
+     * semantics. The hero Charger's physics hull overlaps the runtime road
+     * meshes at baked PlayerStarts, which failed the spawn outright (no pawn,
+     * dead camera). Force adjust-or-always-spawn so the hero always spawns.
+     */
+    virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
     void UpdateCountdown(float DeltaTime);
+
+    // --- Runtime self-diagnostics (permanent feature) -------------------------
+    // Gated by cvar "racegps.Diagnostics" (default ON in Development builds,
+    // settable via [SystemSettings] in DefaultEngine.ini or -racegps.Diagnostics=1).
+    // Emits greppable [raceGPS-PREFLIGHT] PASS/FAIL lines at StartPlay, then one
+    // structured [raceGPS-DIAG] sample per second for 15 s (traces/overlaps/FPS),
+    // a HighResShot at T+10s (skipped under -nullrhi) and a final VERDICT line.
+    // Zero cost after the ticker stops; no per-frame work.
+    bool IsDiagnosticsEnabled() const;
+    void RunDiagnosticsPreflight();
+    void DiagnosticsSampleTick();
+    /** Emits "[raceGPS-PREFLIGHT] PASS/FAIL gates-bound ..." once gates resolve. */
+    void DiagnosticsReportGates(int32 BoundCount, int32 ExpectedCount);
+
+    FTimerHandle DiagTimerHandle;
+    int32 DiagSampleCount = 0;
+    /** Capture request fired (guards the one-shot at T+10s). */
+    bool bDiagShotDone = false;
+    /** Capture actually requested (false under -nullrhi). */
+    bool bDiagShotRequested = false;
+    bool bDiagShotFallbackFired = false;
+    bool bDiagShotResultLogged = false;
+    FDateTime DiagShotRequestedAt;
+    // Birdseye bisect experiment: temp camera 30000uu above the pawn (T+12s),
+    // second HighResShot (T+14s), restore+confirm (T+16s). Skipped under -nullrhi.
+    TWeakObjectPtr<class ACameraActor> DiagBirdseyeCam;
+    bool bDiagBirdseyeShotFired = false;
+    bool bDiagBirdseyeDone = false;
+    FDateTime DiagBirdseyeShotAt;
+    // ShowFlag bisect series state (rendering sessions only; samples 17-30).
+    FDateTime DiagSeriesShotAt;
+    int32 DiagSeriesShotSample = 0;
+    FString DiagSeriesLabel;
+    /** Gates bound for the active route; -1 = not resolved yet. */
+    int32 DiagGatesBound = -1;
+
     void InitHUDWidgets();
     void CreateDefaultVehiclePresets();
     void LoadHandlingModePresets();

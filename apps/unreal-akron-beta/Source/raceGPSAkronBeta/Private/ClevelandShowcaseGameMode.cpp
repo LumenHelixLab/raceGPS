@@ -28,12 +28,13 @@
 #include "HAL/FileManager.h"
 #include "Misc/FileHelper.h"
 #include "HAL/PlatformMisc.h"
+#include "Misc/App.h" // TEMP Track B dig
 
 AClevelandShowcaseGameMode::AClevelandShowcaseGameMode()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	ProductTitle = TEXT("raceGPS");
-	CircuitTitle = TEXT("Cleveland Historic Circuit");
+	CircuitTitle = TEXT("CLEVELAND HISTORIC CIRCUIT");
 	DefaultPawnClass = nullptr; // grid manager spawns the Chaos pawn
 	HUDClass = ANeonHUD::StaticClass();
 	SessionManager = CreateDefaultSubobject<URaceSessionManager>(TEXT("SessionManager"));
@@ -374,6 +375,42 @@ void AClevelandShowcaseGameMode::BeginCountdownAndRace()
 void AClevelandShowcaseGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	// >>> TEMP Track B dig (Phase A) — strip after Gate 1 ViewportClosed dig closes <<<
+	{
+		static float TrackBAcc = 0.f;
+		static bool bTrackBLastVP = true;
+		static bool bTrackBLostWarned = false;
+		TrackBAcc += DeltaSeconds;
+
+		UWorld* TrackBWorld = GetWorld();
+		const bool bWorldVP = TrackBWorld && TrackBWorld->GetGameViewport() != nullptr;
+		const bool bEngineVP = GEngine && GEngine->GameViewport != nullptr;
+		const bool bVP = bWorldVP && bEngineVP;
+		const bool bFocus = FApp::HasFocus();
+		const ERaceSessionState TrackBState = SessionManager
+			? SessionManager->GetCurrentState()
+			: ERaceSessionState::Menu;
+		const bool bRacing = (TrackBState == ERaceSessionState::Racing);
+
+		if (!bVP && bTrackBLastVP && bRacing && !bTrackBLostWarned)
+		{
+			bTrackBLostWarned = true;
+			UE_LOG(LogTemp, Warning,
+				TEXT("raceGPS TrackB: VIEWPORT LOST while Racing worldVP=%d engineVP=%d focus=%d state=%s"),
+				bWorldVP ? 1 : 0, bEngineVP ? 1 : 0, bFocus ? 1 : 0,
+				*UEnum::GetValueAsString(TrackBState));
+		}
+		if (TrackBAcc >= 1.f)
+		{
+			TrackBAcc = 0.f;
+			UE_LOG(LogTemp, Log,
+				TEXT("raceGPS TrackB: heartbeat worldVP=%d engineVP=%d focus=%d state=%s"),
+				bWorldVP ? 1 : 0, bEngineVP ? 1 : 0, bFocus ? 1 : 0,
+				*UEnum::GetValueAsString(TrackBState));
+		}
+		bTrackBLastVP = bVP;
+	}
+	// <<< TEMP Track B dig (Phase A) <<<
 	if (SessionManager)
 	{
 		SessionManager->TickSession(DeltaSeconds);

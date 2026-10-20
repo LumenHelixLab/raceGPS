@@ -266,6 +266,8 @@ private:
     TArray<TObjectPtr<class UStaticMeshComponent>> CarlaDoorMeshes;
     void UpdateClevelandShowcaseChaseFraming();
     bool bClevelandShowcaseChaseFraming = false;
+    /** true = V15 world-south skyline hero cam (auto-lap showcase); false = V16 behind-car race follow (human). */
+    bool bShowcaseHeroCam = false;
     void InitChaosVehicleMovement();
     /** Fill torque curve / mech / gears BEFORE Chaos CreateVehicle (empty curve disables mech). */
     void EnsureEngineDriveConfig();

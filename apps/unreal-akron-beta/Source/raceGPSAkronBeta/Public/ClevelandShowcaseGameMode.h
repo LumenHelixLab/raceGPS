@@ -38,7 +38,7 @@ public:
 	FString ProductTitle = TEXT("raceGPS");
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Cleveland")
-	FString CircuitTitle = TEXT("Cleveland Historic Circuit");
+	FString CircuitTitle = TEXT("CLEVELAND HISTORIC CIRCUIT");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland")
 	FString CityPackRelativeDir = TEXT("citypacks/cleveland/burke_gp_1997");

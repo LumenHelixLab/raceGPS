@@ -1,0 +1,19 @@
+outcome=finished
+state=ERaceSessionState::Finished
+place=1
+pawnClass=BP_DodgeCharger2024_C
+nextCP=12 total=12 playerFinished=1
+elapsed=1675.54 speed=19.57 sawSpeed=1 zeroT=0.0
+throttle=1.00 brake=0.00 hb=0 override=1
+checkpoints:
+1	T1 Vortex (right hairpin)	356.86
+2	T2	434.81
+3	T3	486.12
+4	T4	541.63
+5	T5	1167.28
+6	T6	1233.67
+7	T7	1282.02
+8	T8	1347.46
+9	T9 (chicane)	1575.33
+10	T10 (chicane)	1610.51
+11	Start/Finish (lap wrap)	1675.54

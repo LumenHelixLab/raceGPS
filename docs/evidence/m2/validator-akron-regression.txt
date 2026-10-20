@@ -1,0 +1,21 @@
+raceGPS runtime-readiness check
+  city_id:  akron-oh-beta-001 (from --city)
+  root:     C:\projects\racegps-reconcile
+
+  [WARN] ribbon_certificate: ribbon_spec.json missing (run tools/universal-city-compiler/road_ribbon_spec.py)
+  [WARN] no buildings file (optional; BuildingMeshGenerator gets nothing)
+  [FAIL] AkronWorld.umap: no lighting actors baked in (missing DirectionalLight, SkyAtmosphere, SkyLight) — map will render black; run tools/ue5-headless-lighting-rig.py
+
+  [OK]   citypack directory: C:\projects\racegps-reconcile\citypacks\akron-oh-beta-001
+  [OK]   manifest: akron_semantic_manifest.json
+  [OK]   display name: Akron, Ohio (display_name)
+  [OK]   origin: (41.06999999999999, -81.525)
+  [OK]   routes file akron_routes.json: 2 route(s) loadable
+  [OK]   spawn_points file akron_spawn_points.json: 2 entries loadable
+  [OK]   pois file akron_pois.json: 590 entries loadable
+  [OK]   road graph: akron_road_graph.json
+  [OK]   XODR: akron.xodr
+  [OK]   level spec: AkronWorld_LevelSpec.json (level_name: AkronWorld)
+
+Result: 1 error(s), 2 warning(s)
+FAILED — the runtime will not fully load this city.

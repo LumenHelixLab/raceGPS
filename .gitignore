@@ -51,6 +51,9 @@ citypacks/*/
 generated/*/
 *.osm
 
+# T10 city-import prep artifacts (regenerable)
+generated/*_ueimport*.json
+
 # UE app local artifacts
 apps/unreal-akron-beta/Temp/
 apps/unreal-akron-beta/citypacks/
@@ -61,9 +64,7 @@ apps/unreal-akron-beta/Saved/
 apps/unreal-akron-beta/Binaries/
 apps/unreal-akron-beta/Intermediate/
 
-# Transient UE import progress/result dumps and diagnostic captures
-generated/*_ueimport.json
-generated/*_ueimport_progress.json
+# Diagnostic captures
 generated/diag_*.png
 
 # Reproducible local compiler outputs; retain only pinned inputs and evidence.

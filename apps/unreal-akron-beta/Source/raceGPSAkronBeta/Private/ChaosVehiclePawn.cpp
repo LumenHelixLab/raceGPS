@@ -13,6 +13,7 @@
 #include "CruiseSprintGameMode.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Misc/CommandLine.h"
 #include "Animation/AnimInstance.h"
 #include "PhysicsEngine/BodyInstance.h"
 
@@ -1325,12 +1326,24 @@ void AChaosVehiclePawn::UpdateCameraView()
 
 void AChaosVehiclePawn::UpdateClevelandShowcaseChaseFraming()
 {
-    // V16: race follow — no world-south look-at into empty void.
-    // SpringArm inherits yaw; keep a stable mild dive on the car.
     if (!SpringArm || !bClevelandShowcaseChaseFraming)
     {
         return;
     }
+    if (bShowcaseHeroCam)
+    {
+        // V15 WORLD-SOUTH hero framing (auto-lap showcase): pivot on the car, look
+        // west+south so downtown stays in frame regardless of pawn yaw. Downtown is
+        // lit/attached in the reconciled build, so this no longer frames a void.
+        const FVector Pivot = GetActorLocation() + FVector(0.0f, 0.0f, 60.0f);
+        const FVector LookAt = Pivot + FVector(-8500.0f, -15000.0f, 8.0f);
+        FRotator WorldRot = (LookAt - Pivot).Rotation();
+        WorldRot.Roll = 0.0f;
+        WorldRot.Pitch = FMath::Clamp(WorldRot.Pitch, -4.5f, 0.10f);
+        SpringArm->SetWorldRotation(WorldRot);
+        return;
+    }
+    // V16: race follow — SpringArm inherits yaw; keep a stable mild dive on the car.
     const FRotator Rel = SpringArm->GetRelativeRotation();
     const float DesiredPitch = -12.0f;
     if (!FMath::IsNearlyEqual(Rel.Pitch, DesiredPitch, 0.05f) || !FMath::IsNearlyZero(Rel.Roll, 0.05f))
@@ -1345,29 +1358,47 @@ void AChaosVehiclePawn::ApplyClevelandShowcaseChaseFraming()
     {
         return;
     }
-    // V16 RACE-FOLLOW: sit behind the car, inherit yaw, kill absolute world-south lock
-    // that was framing black void when downtown/-Y wasn't lit in view.
+    // Framing mode: hero (world-south skyline, V15 pixel-proven) for auto-lap showcase;
+    // race-follow (behind car, V16 G5/G6-proven) for human driving.
+    // -ClevelandAutoLap / -ClevelandHeroCam select hero; default is race-follow.
+    bShowcaseHeroCam = FParse::Param(FCommandLine::Get(), TEXT("ClevelandAutoLap"))
+        || FParse::Param(FCommandLine::Get(), TEXT("ClevelandHeroCam"));
     bClevelandShowcaseChaseFraming = true;
     SpringArm->bUsePawnControlRotation = false;
     SpringArm->bInheritPitch = false;
     SpringArm->bInheritRoll = false;
-    SpringArm->bInheritYaw = true;
-    SpringArm->SetUsingAbsoluteRotation(false);
-    SpringArm->TargetArmLength = 680.0f;
-    SpringArm->SocketOffset = FVector(0.0f, 0.0f, 140.0f);
-    SpringArm->TargetOffset = FVector(40.0f, 0.0f, 35.0f);
-    SpringArm->bDoCollisionTest = false;
-    SpringArm->ProbeSize = 16.0f;
-    SpringArm->SetRelativeRotation(FRotator(-12.0f, 0.0f, 0.0f));
-    ChaseCamera->SetFieldOfView(75.0f);
+    if (bShowcaseHeroCam)
+    {
+        SpringArm->bInheritYaw = false;
+        SpringArm->SetUsingAbsoluteRotation(true);
+        SpringArm->TargetArmLength = 1880.0f;
+        SpringArm->SocketOffset = FVector(0.0f, 200.0f, 36.0f);
+        SpringArm->TargetOffset = FVector(-220.0f, -560.0f, 18.0f);
+        SpringArm->bDoCollisionTest = false;
+        SpringArm->ProbeSize = 16.0f;
+        ChaseCamera->SetFieldOfView(66.0f);
+    }
+    else
+    {
+        SpringArm->bInheritYaw = true;
+        SpringArm->SetUsingAbsoluteRotation(false);
+        SpringArm->TargetArmLength = 680.0f;
+        SpringArm->SocketOffset = FVector(0.0f, 0.0f, 140.0f);
+        SpringArm->TargetOffset = FVector(40.0f, 0.0f, 35.0f);
+        SpringArm->bDoCollisionTest = false;
+        SpringArm->ProbeSize = 16.0f;
+        SpringArm->SetRelativeRotation(FRotator(-12.0f, 0.0f, 0.0f));
+        ChaseCamera->SetFieldOfView(75.0f);
+    }
     ChaseCamera->bUsePawnControlRotation = false;
     ActiveCameraIndex = 0;
     UpdateCameraView();
     UpdateClevelandShowcaseChaseFraming();
     const FRotator ArmW = SpringArm->GetComponentRotation();
     const FRotator PawnW = GetActorRotation();
-    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: applied chase framing V16 RACE-FOLLOW arm=680 FOV=75 pawnYaw=%.1f armYaw=%.1f armPitch=%.1f (behind car, no void lock)"),
-        PawnW.Yaw, ArmW.Yaw, ArmW.Pitch);
+    UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: applied chase framing %s arm=%.0f FOV=%.0f pawnYaw=%.1f armYaw=%.1f armPitch=%.1f"),
+        bShowcaseHeroCam ? TEXT("V15 HERO world-south") : TEXT("V16 RACE-FOLLOW"),
+        SpringArm->TargetArmLength, ChaseCamera->FieldOfView, PawnW.Yaw, ArmW.Yaw, ArmW.Pitch);
 }
 
 float AChaosVehiclePawn::GetSpeedKmh() const

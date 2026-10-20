@@ -198,6 +198,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "raceGPS|Akron")
     static FVector GeoToWorldFromPacked(const FVector& PackedLon0NegLat, double OriginLat, double OriginLon);
 
+    /** Sprint-2 scale: 1 uu = 1 cm; compiler/spec data is meters. */
+    static constexpr float MetersToUU = 100.0f;
+
 private:
     static double MetersPerDegreeLon(double Lat);
     static double MetersPerDegreeLat();

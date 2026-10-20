@@ -72,7 +72,9 @@ def _spawn_actor(actor_class, location: dict, rotation: dict, label: str):
     """Spawn an actor in the level or print the command."""
     if HAS_UNREAL:
         loc = _spec_to_ue(location, globals().get("_ACTIVE_SPEC_FRAME"))
-        rot = unreal.Rotator(rotation["pitch"], rotation["yaw"], rotation["roll"])
+        # unreal.Rotator binds POSITIONAL args alphabetically (pitch, roll, yaw) ->
+        # always pass keywords, else pitch/roll swap and lighting points straight up (2e441b6).
+        rot = unreal.Rotator(roll=rotation["roll"], pitch=rotation["pitch"], yaw=rotation["yaw"])
         actor = unreal.EditorLevelLibrary.spawn_actor_from_class(actor_class, loc, rot)
         if actor:
             actor.set_actor_label(label)
@@ -81,7 +83,7 @@ def _spawn_actor(actor_class, location: dict, rotation: dict, label: str):
     print(f"actor = unreal.EditorLevelLibrary.spawn_actor_from_class(")
     print(f"    {actor_class},")
     print(f"    unreal.Vector({location['x']}, {location['y']}, {location['z']}),")
-    print(f"    unreal.Rotator({rotation['pitch']}, {rotation['yaw']}, {rotation['roll']})")
+    print(f"    unreal.Rotator(roll={rotation['roll']}, pitch={rotation['pitch']}, yaw={rotation['yaw']})")
     print(f")")
     print(f"actor.set_actor_label('{label}')")
     print()
@@ -93,8 +95,10 @@ def _add_spline_points(actor, points: list[dict], label: str):
     if HAS_UNREAL:
         comp = actor.get_component_by_class(unreal.SplineComponent)
         if not comp:
-            # Actor.add_component_by_class does not exist in UE5.7 Python; create
-            # the component directly and register it on the spawned actor.
+            # Actor.add_component_by_class / add_instance_component do not exist
+            # in UE5.7 Python; create the component and attach it (used only as
+            # a fallback — routes normally spawn as ARouteSplineActor, which
+            # provides its own SplineComponent).
             comp = unreal.new_object(unreal.SplineComponent, actor)
             if actor.root_component:
                 comp.attach_to_component(
@@ -105,9 +109,6 @@ def _add_spline_points(actor, points: list[dict], label: str):
                     unreal.AttachmentRule.KEEP_WORLD,
                     False,
                 )
-            if hasattr(comp, "register_component"):
-                comp.register_component()
-            actor.add_instance_component(comp)
         if comp:
             comp.clear_spline_points()
             for pt in points:
@@ -210,13 +211,13 @@ def main() -> int:
     if HAS_UNREAL:
         for a in unreal.EditorLevelLibrary.get_all_level_actors():
             if a.get_class().get_name() == "DirectionalLight":
-                a.set_actor_rotation(unreal.Rotator(sun_rot["pitch"], sun_rot["yaw"], sun_rot["roll"]))
+                a.set_actor_rotation(unreal.Rotator(roll=sun_rot["roll"], pitch=sun_rot["pitch"], yaw=sun_rot["yaw"]))
                 break
     else:
         print(f"# Set Directional Light for time-of-day ({lighting.get('time_of_day', 14)}:00)")
         print("for a in unreal.EditorLevelLibrary.get_all_level_actors():")
         print("    if a.get_class().get_name() == 'DirectionalLight':")
-        print(f"        a.set_actor_rotation(unreal.Rotator({sun_rot['pitch']}, {sun_rot['yaw']}, {sun_rot['roll']}))")
+        print(f"        a.set_actor_rotation(unreal.Rotator(roll={sun_rot['roll']}, pitch={sun_rot['pitch']}, yaw={sun_rot['yaw']}))")
         print("        break")
         print()
 

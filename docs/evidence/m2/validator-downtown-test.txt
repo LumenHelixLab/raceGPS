@@ -1,0 +1,21 @@
+raceGPS runtime-readiness check
+  city_id:  downtown-test (from positional pack dir)
+  root:     C:\projects\racegps-reconcile
+
+  [FAIL] cleveland_downtown_routes.json: 1/1 route(s) missing route_id/distance/points
+  [FAIL] no generated/*_LevelSpec.json with city_id 'cleveland-downtown-test'
+
+  [OK]   citypack directory: C:\projects\racegps-reconcile\citypacks\cleveland\downtown-test
+  [OK]   manifest: cleveland_downtown_semantic_manifest.json
+  [OK]   display name: Cleveland Downtown (test) (display_name)
+  [OK]   origin: (41.5, -81.6925)
+  [OK]   spawn_points file cleveland_downtown_spawn_points.json: 1 entries loadable
+  [OK]   pois file cleveland_downtown_pois.json: 0 entries loadable
+  [OK]   road graph: cleveland_downtown_road_graph.json
+  [OK]   XODR: cleveland_downtown.xodr
+  [OK]   ribbon_certificate: 432 ribbon(s) 1:1 with cleveland_downtown.xodr (dropped_stubs=0) sha256=fcffa1f86060…
+  [OK]   ribbon_certificate: spawn spawn_cleveland_downtown_001 snapped 0.00 m from centerline (tol 11.00 m)
+  [OK]   buildings: cleveland_downtown_buildings.json
+
+Result: 2 error(s), 0 warning(s)
+FAILED — the runtime will not fully load this city.

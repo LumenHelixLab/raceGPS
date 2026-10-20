@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/ExponentialHeightFog.h"
+#include "Engine/PointLight.h"
 #include "ClevelandLookDirector.generated.h"
 
 /**
@@ -9,6 +11,7 @@
  * Exact names required by gate: Sunset / Twilight / Midnight.
  * Same dry-surface physics/geometry; only lighting/grade change.
  * Does not change GlobalDefaultGameMode (CruiseSprint stays default).
+ * Midnight carries the V15 Midnight-Club night toolbox (fog, lamps, wet apron, city glow).
  */
 UENUM(BlueprintType)
 enum class EClevelandVisualMode : uint8
@@ -54,19 +57,56 @@ protected:
 	void ApplyMidnight();
 	void LogFinalLook(const TCHAR* Tag) const;
 
+	// V15 night toolbox (invoked by ApplyMidnight / ApplyVisualMode failsafe).
+	void ApplyLookToEnvironment() const;
+	void EnsureLightingFailsafe() const;
+	void EnsureNightFogAndLamps();
+	void ApplyNightSkyFix() const;
+	void ApplyNightCityHISMGlow() const;
+	void ApplyNightGroundWetness() const;
+	void HideSprawlBuildingHISM();
+	void QuietCesiumTilesets() const;
+	void EnsureBurkeWetApron();
+
 	UPROPERTY()
 	TObjectPtr<class ADayNightCycle> Cycle;
 
 	UPROPERTY()
 	TObjectPtr<class APostProcessController> Post;
 
-	/** WE recapture: unbound, high-priority PPV that clamps night auto-exposure (EV100). */
+	UPROPERTY()
+	TObjectPtr<class AExponentialHeightFog> NightFog;
+
+	UPROPERTY()
+	TArray<TObjectPtr<class APointLight>> NightLamps;
+
+	/** Runtime-only wet apron under Burke. Not saved. */
+	UPROPERTY()
+	TObjectPtr<class AStaticMeshActor> BurkeWetApron;
+
+	/** Runtime-only south downtown HISM band. Original T10 HISMs stay on disk, hidden. */
+	UPROPERTY()
+	TObjectPtr<AActor> DowntownBandActor;
+
+	bool bSprawlHidden = false;
+
+	/** October WE recapture (opt-in): unbound, high-priority PPV that clamps night auto-exposure (EV100). */
 	UPROPERTY()
 	TObjectPtr<class APostProcessVolume> NightExposureVolume;
 
 	void ApplyNightExposureFloor(bool bEnable);
 
 public:
+	/**
+	 * Midnight lighting version switch.
+	 * false (default) = September V15 night toolbox (fog, lamps, wet apron, city glow) -
+	 *                   the look that ran the verified Sept 9 full lap.
+	 * true            = October WE recapture: night exposure clamp + navy sky luminance,
+	 *                   AutoExposureBias 0, V15 toolbox skipped. Not yet build-verified.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Look")
+	bool bUseOctoberNightExposure = false;
+
 	/** Midnight auto-exposure clamp, EV100 (project has ExtendDefaultLuminanceRange=True). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Look")
 	float MidnightExposureMinEV100 = -1.0f;
