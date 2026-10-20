@@ -26,26 +26,41 @@ from pathlib import Path
 # Sprint metadata — edit this dict when a new sprint starts.
 # ---------------------------------------------------------------------------
 SPRINT = {
-    "sprint_name": "Sprint 2 — Make Cleveland Real",
+    "sprint_name": "raceGPS Program — 20-Milestone Plan (Phase 0/I active)",
     "sprint_goal": (
-        "Cleveland looks and plays like Cleveland: water under its bridges, "
-        "closed circuit routes, snapped junctions, real checkpoint gates, "
-        "and a CARLA hero car on arcade tires."
+        "Reconciled baseline (integration/reconciled: Sprint-2 + showcase + grokbot two-app/rgpack + master installer) "
+        "marching to a shipped real-world street-racing game. Plan: docs/20-milestone-plan.md (ECC-gated)."
     ),
     "stories": [
-        {"id": "T1", "title": "Route loop-closer (circuit 873m gap)", "status": "done", "owner": "WG-1"},
-        {"id": "T2", "title": "Water extractor fix (Cuyahoga + lakefront)", "status": "done", "owner": "WG-2"},
-        {"id": "T3", "title": "Junction endpoint snapping (<2m pairs)", "status": "done", "owner": "WG-1"},
-        {"id": "T4", "title": "BP_CheckpointGate via headless commandlet", "status": "done", "owner": "ASSET-1"},
-        {"id": "T5", "title": "CARLA hero car + attribution", "status": "done", "owner": "ASSET-1"},
-        {"id": "T6", "title": "Recompile + validate both cities", "status": "done", "owner": "QA-1"},
-        {"id": "T7", "title": "Validator + status in CI", "status": "done", "owner": "TOOLS-1"},
-        {"id": "T8", "title": "Editor-drive fast-follows (2 fixes shipped)", "status": "done", "owner": "ORCH"},
-        {"id": "T10", "title": "Headless full-city import (terrain+buildings+water)", "status": "done", "owner": "WG-3"},
-        {"id": "T9", "title": "MassEntity staggered traffic (stretch)", "status": "carry-over", "owner": "unassigned"},
-        {"id": "M2", "title": "Real roads: ribbon specs + certificate done; UE bake pending", "status": "blocked:ue-bake-ram", "owner": "WG-1"},
+        {"id": "M1", "title": "P0 Reconciliation & toolchain health (merge done, 303 tests green; C++ link blocked by host RAM)", "status": "in-progress", "owner": "ORCH"},
+        {"id": "M2", "title": "P1 Real Roads — ribbon specs + certificate done; UE bake pending", "status": "blocked:ue-bake-ram", "owner": "WG-1"},
+        {"id": "M3", "title": "P1 Visual Pass 1 — materials, sidewalks, CARLA deps", "status": "pending", "owner": "WG-2"},
+        {"id": "M4", "title": "P1 Handling & Input — Chaos presets, Enhanced Input, wheel/FFB", "status": "pending", "owner": "WG-3"},
+        {"id": "M5", "title": "P1 Race Loop Complete — NeonHUD, results, records, ghosts", "status": "pending", "owner": "WG-1"},
+        {"id": "M6", "title": "P2 Living Traffic — MassEntity, lane AI, signals", "status": "pending", "owner": "WG-3"},
+        {"id": "M7", "title": "P2 World Atmosphere — presets + weather + wet grip", "status": "pending", "owner": "WG-2"},
+        {"id": "M8", "title": "P2 Runtime Repair — bake parity, legacy removal", "status": "pending", "owner": "WG-1"},
+        {"id": "M9", "title": "P2 Performance Envelope — World Partition, 60fps gate", "status": "pending", "owner": "QA-1"},
+        {"id": "M10", "title": "P3 garageGPS Workshop — car-kit editor via rgpack", "status": "pending", "owner": "TOOLS-1"},
+        {"id": "M11", "title": "P3 Career & Progression — achievements, leaderboards", "status": "pending", "owner": "WG-2"},
+        {"id": "M12", "title": "P3 Onboarding & Accessibility — tutorial, assists", "status": "pending", "owner": "WG-3"},
+        {"id": "M13", "title": "P3 Audio & Feel — engine audio, SFX, mix", "status": "pending", "owner": "ASSET-1"},
+        {"id": "M14", "title": "P4 Identity & Session Backend — cookies + WebSocket rooms", "status": "pending", "owner": "TOOLS-1"},
+        {"id": "M15", "title": "P4 Signal Challenges — flash/rev/pin/ghost", "status": "pending", "owner": "WG-1"},
+        {"id": "M16", "title": "P4 Live Lobbies & Async Ghosts", "status": "pending", "owner": "WG-2"},
+        {"id": "M17", "title": "P4 Hot Pursuit — cop-vs-runner", "status": "pending", "owner": "WG-3"},
+        {"id": "M18", "title": "P5 Cartographer Pipeline — player-facing city compiler", "status": "pending", "owner": "TOOLS-1"},
+        {"id": "M19", "title": "P5 Content & Certification — all GATES PASS", "status": "pending", "owner": "QA-1"},
+        {"id": "M20", "title": "P5 Ship It — cooked installer, crash reporting, docs", "status": "pending", "owner": "ORCH"},
     ],
     "followups": [
+        "RECONCILED 2026-09-29: integration/reconciled = feature showcase + grokbot (rgpack, two-app, G-gates) + codex + master; 26 conflicts union-resolved; 303 pytest green",
+        "M1 blocker: host RAM exhaustion kills UBT SharedPCH compile (42.7/44.9GB) — rerun Build.bat on quiet machine or with -MaxParallelActions=2; UHT headers verified clean",
+        "Akron pack must be REGENERATED by graph-native compiler (old artifacts fail new citypack_audit: missing node certificates + akron_buildings.json)",
+        "Sprint agent committed eb03b9c (Track B viewport-loss diagnostics, TEMP — strip after Gate 1) on top of the merge; preserved",
+        "CONSOLIDATED 2026-10-19: grokbot (+saved WIP), reconciled, showcase-demo, two-car contact, akron-pin CityPack v2 and Cleveland intro merged into master; pre-merge tips tagged pre-merge-2026-10-19/*",
+        "Owner pushes via Claude Code; codex/d1 branch fully contained in grokbot line",
+        "Plan doc: docs/20-milestone-plan.md on integration/reconciled (supersedes 10-milestone plan)",
         "M2 real roads: ribbon_spec pinned for burke_gp_1997 (1 ribbon) + downtown-test (432 ribbons, 392 junctions, 1 spawn); validator certificate PASS on both; full gate 317 passed. UE headless bake NOT run — host RAM 6.0 GB free (OOM blocker). Evidence: docs/evidence/m2/",
         "Owner re-drive pending: Cleveland now has terrain+119k buildings+water+gates",
         "Runtime C++ BuildingMeshGenerator schema mismatch (lat/lon vs x/y) — runtime spawning builds 0 buildings; baked maps work around it. Sprint 3 C++ story.",
