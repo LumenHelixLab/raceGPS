@@ -1,0 +1,100 @@
+﻿# Log excerpt - recapture 2026-10-05 (b205), commit 9604d0b + uncommitted local edits
+# Source: Saved/Logs editor log (copied to %TEMP%\we_p1\editor_run_b205.log); timestamps are UTC (02:53Z = 22:53 ET)
+
+## UBT build (raceGPSAkronBetaEditor Win64 Development, -MaxParallelActions=1 -NoUBA -NoXGE)
+Total time in Parallel executor: 38.56 seconds
+
+Result: Succeeded
+Total execution time: 55.30 seconds
+
+## Editor log cues
+LogWindows: Failed to load 'aqProf.dll' (GetLastError=126)
+LogWindows: Failed to load 'VtuneApi.dll' (GetLastError=126)
+LogWindows: Failed to load 'VtuneApi32e.dll' (GetLastError=126)
+LogCsvProfiler: Display: Metadata set : commandline="" C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject /Game/Maps/Cleveland5_0KmWorld -d3d12 -log -NoSplash -ExecCmds="py C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_we_fix_skyline_mat.py, py C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_we_modeb_st
+LogWindows: Failed to load 'WinPixGpuCapturer.dll' (GetLastError=126)
+PixWinPlugin: PIX capture plugin failed to initialize! Check that the process is launched from PIX.
+LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld -d3d12 -log -NoSplash -ExecCmds="py C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_we_fix_skyline_mat.py, py C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_we_modeb_stills_capture.py"
+[2026.10.06-02.53.54:994][  0]LogRHI: Using Forced RHI: D3D12
+[2026.10.06-02.53.55:368][  0]LogD3D12RHI: Chosen D3D12 Adapter Id = 0
+[2026.10.06-02.53.55:368][  0]LogRHI: RHI D3D12 with Feature Level SM6 is supported and will be used.
+[2026.10.06-02.53.56:184][  0]LogObj: Display: Attempting to load config data for Default__SlateThemeManager before the Class has been constructed/registered/linked (likely during module loading or early startup). This will result in the load silently failing and should be fixed.
+[2026.10.06-02.53.56:682][  0]LogRHI: Using Forced RHI: D3D12
+[2026.10.06-02.53.56:686][  0]LogRHI: RHI D3D12 with Feature Level SM6 is supported and will be used.
+[2026.10.06-02.54.01:752][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_128x.png' error.
+[2026.10.06-02.54.01:756][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_24x.png' error.
+[2026.10.06-02.54.06:720][  0]LogMaterial: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\00_MastersOpt\M_CarPaint_Master_New.uasset: Failed to compile Material for platform PCD3D_SM6, Default Material will be used in game.
+[2026.10.06-02.54.07:766][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Plugins/Animation/EaseCurveTool/Resources/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.54.08:313][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.54.08:317][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/./Editor/Slate/Icons/doc_16x.png' error.
+[2026.10.06-02.54.08:724][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_128x.png' error.
+[2026.10.06-02.54.08:728][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_24x.png' error.
+[2026.10.06-02.54.08:755][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Plugins/Animation/EaseCurveTool/Resources/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.54.08:757][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.54.08:758][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/./Editor/Slate/Icons/doc_16x.png' error.
+[2026.10.06-02.54.08:982][  0]LogWindows: Failed to load 'Wintab32.dll' (GetLastError=126)
+[2026.10.06-02.54.10:366][  0]LogAudio: Display: No default SoundConcurrencyObject specified (or failed to load).
+[2026.10.06-02.54.13:291][  0]LogPlacementMode: Display: The Asset Registry is not yet fully loaded so some placeable classes might be missing.
+[2026.10.06-02.54.13:327][  0]LogSlate: The tab "Unknown" attempted to spawn in layout 'LevelEditor_Layout_v1.8' but failed for some reason. It will not be displayed.
+[2026.10.06-02.54.13:328][  0]LogSlate: The tab "Unknown" attempted to spawn in layout 'LevelEditor_Layout_v1.8' but failed for some reason. It will not be displayed.
+[2026.10.06-02.54.19:533][  0]Cmd: py C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_we_fix_skyline_mat.py
+[2026.10.06-02.54.19:633][  0]LogPython: Warning: [WE skyline-mat] before: {'is_sky': 'True', 'blend_mode': '<BlendMode.BLEND_OPAQUE: 0>', 'shading_model': '<MaterialShadingModel.MSM_UNLIT: 0>', 'two_sided': 'True', 'use_translucency_vertex_fog': 'True'}
+[2026.10.06-02.54.22:105][  0]LogLinker: Conditionally flushing loading for linker(s) (/Game/Materials/M_SkylineBackdrop)
+[2026.10.06-02.54.22:106][  0]LogFileHelpers: Saving Package: /Game/Materials/M_SkylineBackdrop
+[2026.10.06-02.54.22:109][  0]OBJ SavePackage: Generating thumbnails for [1] asset(s) in package [/Game/Materials/M_SkylineBackdrop] ([1] browsable assets)...
+[2026.10.06-02.54.23:408][  0]OBJ SavePackage:     Rendered thumbnail for [Material /Game/Materials/M_SkylineBackdrop.M_SkylineBackdrop]
+[2026.10.06-02.54.23:409][  0]OBJ SavePackage: Finished generating thumbnails for package [/Game/Materials/M_SkylineBackdrop]
+[2026.10.06-02.54.23:411][  0]Cmd: OBJ SAVEPACKAGE PACKAGE="/Game/Materials/M_SkylineBackdrop" FILE="../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Materials/M_SkylineBackdrop.uasset" SILENT=true
+[2026.10.06-02.54.23:528][  0]LogSavePackage: Moving output files for package: /Game/Materials/M_SkylineBackdrop
+[2026.10.06-02.54.23:530][  0]LogSavePackage: Moving '../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Saved/M_SkylineBackdropA7CFAC87493365F268F9DF809F96CE9F.tmp' to '../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Materials/M_SkylineBackdrop.uasset'
+[2026.10.06-02.54.23:581][  0]LogPython: Warning: [WE skyline-mat] after: {'is_sky': 'False', 'blend_mode': '<BlendMode.BLEND_TRANSLUCENT: 2>', 'shading_model': '<MaterialShadingModel.MSM_UNLIT: 0>', 'two_sided': 'True', 'use_translucency_vertex_fog': 'False', 'apply_cloud_fogging': 'False'} saved=True (ONLY /Game/Materials/M_SkylineBackdrop)
+[2026.10.06-02.54.23:585][  0]Cmd: py C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_we_modeb_stills_capture.py
+[2026.10.06-02.54.24:385][  1]AssetCheck: /Game/Materials/M_SkylineBackdrop Validating asset
+[2026.10.06-02.54.27:574][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:575][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_HangarLarge'
+[2026.10.06-02.54.27:577][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Props/SM_AirportHangar'
+[2026.10.06-02.54.27:578][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/StaticMesh/SM_Hangar'
+[2026.10.06-02.54.27:578][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Architecture/SM_Hangar'
+[2026.10.06-02.54.27:579][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:580][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_HangarLarge'
+[2026.10.06-02.54.27:580][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Props/SM_AirportHangar'
+[2026.10.06-02.54.27:580][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/StaticMesh/SM_Hangar'
+[2026.10.06-02.54.27:582][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Architecture/SM_Hangar'
+[2026.10.06-02.54.27:583][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:583][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:583][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:583][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:584][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:585][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:585][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:594][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:594][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:595][ 29]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.10.06-02.54.27:596][ 29]LogTemp: raceGPS Cleveland env: photo skyline backdrop built (radius 2600 m, span 110 deg)
+[2026.10.06-02.54.27:597][ 29]LogTemp: raceGPS Cleveland env: backdrop centre=205.0 deg mirrorU=1 emissiveScale=0.45 (V upright)
+[2026.10.06-02.54.27:699][ 29]LogTemp: [raceGPS Cleveland] night exposure floor enabled=1 EV100=[-1.00,0.50] skyLum=(0.35,0.40,0.62)
+[2026.10.06-02.54.27:701][ 29]LogUObjectGlobals: Warning: Failed to find object 'MaterialInterface /Game/Materials/M_Water_Blue.M_Water_Blue'
+[2026.10.06-02.54.27:702][ 29]LogUObjectGlobals: Warning: Failed to find object 'MaterialInterface /Game/Materials/M_NightWindow.M_NightWindow'
+[2026.10.06-02.54.27:703][ 29]LogUObjectGlobals: Warning: Failed to find object 'MaterialInterface /Game/Materials/M_NightAsphalt.M_NightAsphalt'
+[2026.10.06-02.55.16:967][365]Cmd: HighResShot 1920x1080 filename=C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S1_skyline_hero_b205_midnight_9604d0b.png
+[2026.10.06-02.55.16:968][365]LogPython: Warning: [WE stills] S1_skyline_hero HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\recapture-2026-10-05\S1_skyline_hero_b205_midnight_9604d0b.png
+[2026.10.06-02.55.22:549][482]Cmd: HighResShot 1920x1080 filename=C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S2_lake_skyline_split_b205_midnight_9604d0b.png
+[2026.10.06-02.55.22:552][482]LogPython: Warning: [WE stills] S2_lake_skyline_split HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\recapture-2026-10-05\S2_lake_skyline_split_b205_midnight_9604d0b.png
+[2026.10.06-02.55.27:269][603]Cmd: HighResShot 1920x1080 filename=C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S3_car_midground_b205_midnight_9604d0b.png
+[2026.10.06-02.55.27:270][603]LogPython: Warning: [WE stills] S3_car_midground HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\recapture-2026-10-05\S3_car_midground_b205_midnight_9604d0b.png
+[2026.10.06-02.55.32:033][720]Cmd: HighResShot 1920x1080 filename=C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S3b_car_close_b205_midnight_9604d0b.png
+[2026.10.06-02.55.32:035][720]LogPython: Warning: [WE stills] S3b_car_close HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\recapture-2026-10-05\S3b_car_close_b205_midnight_9604d0b.png
+[2026.10.06-02.55.33:585][728]LogPython: Warning: [WE stills] Grep the editor log for 'photo skyline backdrop built' vs 'M_SkylineBackdrop missing'.
+[2026.10.06-02.55.33:845][729]LogExit: Preparing to exit.
+[2026.10.06-02.55.34:771][729]LogExit: Editor shut down
+[2026.10.06-02.55.34:773][729]LogExit: Transaction tracking system shut down
+[2026.10.06-02.55.35:155][729]LogExit: Object subsystem successfully closed.
+[2026.10.06-02.55.35:224][729]LogShaderCompilers: Display: Shaders left to compile 0
+[2026.10.06-02.55.37:649][729]LogExit: Exiting.
+
+## Negative checks (counts of matching lines in full log)
+SKYDOME : 0
+bIsSky : 0
+box skyline fallback : 0
+texture missing : 0
+backdrop missing : 1

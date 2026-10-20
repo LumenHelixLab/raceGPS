@@ -1114,11 +1114,13 @@ void AClevelandEnvironmentActor::BuildSkylineBackdrop()
 		return;
 	}
 
-	constexpr double CenterBearingDeg = 205.0; // downtown SSW of Burke
-	constexpr double HalfSpanDeg = 55.0;       // 110 deg of coverage
-	constexpr float RadiusCm = 260000.f;       // 2.6 km
-	constexpr float HeightCm = 60000.f;        // 600 m; building band lands ~0..350 m
-	constexpr float BaseZCm = -8000.f;         // photo waterline sits at grade
+	// WE recapture: arc params are UPROPERTYs (defaults = previous constants: 205 deg,
+	// 110 deg span, 2.6 km, 600 m, -80 m).
+	const double CenterBearingDeg = SkylineBackdropCenterBearingDeg;
+	const double HalfSpanDeg = 0.5 * FMath::Clamp<double>(SkylineBackdropSpanDeg, 10.0, 180.0);
+	const float RadiusCm = SkylineBackdropRadiusCm;
+	const float HeightCm = SkylineBackdropHeightCm;
+	const float BaseZCm = SkylineBackdropBaseZCm;
 	constexpr int32 Segments = 64;
 
 	TArray<FVector> Verts;
@@ -1143,8 +1145,11 @@ void AClevelandEnvironmentActor::BuildSkylineBackdrop()
 		Verts.Add(FVector(X, Y, BaseZCm + HeightCm));
 		Normals.Add(Inward);
 		Normals.Add(Inward);
-		UVs.Add(FVector2D(static_cast<float>(Frac), 0.f));
-		UVs.Add(FVector2D(static_cast<float>(Frac), 1.f));
+		// Texture V=0 is the image TOP: bottom vertex V=1, top vertex V=0 (photo upright).
+		// U mirrored for the left-handed Frame A render (see bSkylineBackdropMirrorU).
+		const float U = bSkylineBackdropMirrorU ? 1.f - static_cast<float>(Frac) : static_cast<float>(Frac);
+		UVs.Add(FVector2D(U, 1.f)); // bottom vertex
+		UVs.Add(FVector2D(U, 0.f)); // top vertex
 	}
 	for (int32 i = 0; i < Segments; ++i)
 	{
@@ -1156,9 +1161,17 @@ void AClevelandEnvironmentActor::BuildSkylineBackdrop()
 	TArray<FLinearColor> EmptyColors;
 	TArray<FProcMeshTangent> EmptyTangents;
 	SkylineBackdropMesh->CreateMeshSection_LinearColor(0, Verts, Tris, Normals, UVs, EmptyColors, EmptyTangents, false);
-	SkylineBackdropMesh->SetMaterial(0, Mat);
+	UMaterialInterface* AppliedMat = Mat;
+	if (UMaterialInstanceDynamic* BackdropMid = UMaterialInstanceDynamic::Create(Mat, this))
+	{
+		BackdropMid->SetScalarParameterValue(TEXT("BackdropEmissiveScale"), SkylineBackdropEmissiveScale);
+		AppliedMat = BackdropMid;
+	}
+	SkylineBackdropMesh->SetMaterial(0, AppliedMat);
 	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland env: photo skyline backdrop built (radius %.0f m, span %.0f deg)"),
 		RadiusCm / 100.f, 2.0 * HalfSpanDeg);
+	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland env: backdrop centre=%.1f deg mirrorU=%d emissiveScale=%.2f (V upright)"),
+		CenterBearingDeg, bSkylineBackdropMirrorU ? 1 : 0, SkylineBackdropEmissiveScale);
 }
 
 UMaterialInstanceDynamic* AClevelandEnvironmentActor::MakeLookMID(const TCHAR* SlotName, bool bMidnightRun, bool bGlass)
@@ -1270,8 +1283,9 @@ void AClevelandEnvironmentActor::ApplyCommonMIDParams(UMaterialInstanceDynamic* 
 	}
 	if (bWater)
 	{
+		// WE recapture: midnight floor lifted from (0.012,0.035,0.070) - lake rendered dead black.
 		const FLinearColor Tint = bMidnightRun
-			? FLinearColor(0.012f, 0.035f, 0.070f)
+			? FLinearColor(0.028f, 0.070f, 0.125f)
 			: FLinearColor(0.030f, 0.110f, 0.165f);
 		Mid->SetVectorParameterValue(TEXT("BaseColor"), Tint);
 		Mid->SetVectorParameterValue(TEXT("Color"), Tint);

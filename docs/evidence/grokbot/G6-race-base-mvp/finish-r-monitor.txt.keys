@@ -1,0 +1,8 @@
+KEY 2026-09-24T23:19:45.6993941-04:00
+[2026.09.25-03.19.36:443][  0]LogTemp: raceGPS Cleveland: flags playtest=0 autodive=1 skipIntro=1 proofFinishR=1
+[2026.09.25-03.19.42:831][746]LogTemp: Warning: raceGPS Cleveland: ProofFinishR invoking Exec ClevelandForceFinish (AutoDrive unattended; expect stuck thr/speed 0)
+[2026.09.25-03.19.42:835][746]LogTemp: raceGPS Cleveland: EndRace place=1/3 nextCP=1 time=3.00
+[2026.09.25-03.19.42:835][746]LogTemp: raceGPS Cleveland: HUD finish shown place=1ST time=3.00 (R=RestartShowcase)
+[2026.09.25-03.19.42:835][746]LogTemp: raceGPS Cleveland: human EndRace - stay in session, RestartShowcase on R
+[2026.09.25-03.19.44:330][423]LogTemp: raceGPS Cleveland: RestartShowcase via R
+[2026.09.25-03.19.44:331][423]LogTemp: raceGPS Cleveland: RestartShowcase (no RequestExit)

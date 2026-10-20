@@ -1,0 +1,38 @@
+LogCsvProfiler: Display: Metadata set : commandline="" C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -log -windowed -ResX=1600 -ResY=900""
+LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -log -windowed -ResX=1600 -ResY=900
+[2026.09.25-03.25.31:857][  0]PIE: Warning: AttachTo: '/Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.Root' is not static , cannot attach '/Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.HangarPropISM' which is static to it. Aborting.
+[2026.09.25-03.25.31:879][  0]LogTemp: raceGPS Cleveland env: spawned ADayNightCycle at 14.0 h
+[2026.09.25-03.25.31:899][  0]r.SkyAtmosphere = "1"
+[2026.09.25-03.25.31:900][  0]LogTemp: [raceGPS Cleveland] Sunset applied V16 (18:45 warm western sun, sky fill + race chase)
+[2026.09.25-03.25.31:900][  0]LogTemp: [raceGPS Cleveland] look FINAL [Sunset]: hour=18.75 sunI=4.20 sunPitch=15.6 sunYaw=-78.7 skyI=2.40 (Frame A X=east Y=north)
+[2026.09.25-03.25.31:900][  0]r.SkyAtmosphere = "1"
+[2026.09.25-03.25.31:901][  0]LogTemp: [raceGPS Cleveland] Sunset applied V16 (18:45 warm western sun, sky fill + race chase)
+[2026.09.25-03.25.31:901][  0]LogTemp: [raceGPS Cleveland] look FINAL [Sunset]: hour=18.75 sunI=4.20 sunPitch=15.6 sunYaw=-78.7 skyI=2.40 (Frame A X=east Y=north)
+[2026.09.25-03.25.31:901][  0]LogTemp: raceGPS Cleveland race: look preset=Sunset
+[2026.09.25-03.25.31:914][  0]LogTemp: Warning: raceGPS Cleveland: EnsureCarlaChargerDoors attached=9 missing=0 pawn=BP_DodgeCharger2024_C_0
+[2026.09.25-03.25.31:914][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Materials/M_NightCarPaint (0xE11DB4916C844F3C) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.25.31:916][  0]LogUObjectGlobals: Warning: Failed to find object 'MaterialInterface /Game/Materials/M_NightCarPaint.M_NightCarPaint'
+[2026.09.25-03.25.31:916][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:941][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=1 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_0
+[2026.09.25-03.25.31:942][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:942][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=0 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_0
+[2026.09.25-03.25.31:943][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:943][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=0 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_0
+[2026.09.25-03.25.31:944][  0]LogTemp: Warning: raceGPS Cleveland: EnsureCarlaChargerDoors attached=9 missing=0 pawn=BP_DodgeCharger2024_C_1
+[2026.09.25-03.25.31:944][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:945][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=1 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_1
+[2026.09.25-03.25.31:945][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:945][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=0 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_1
+[2026.09.25-03.25.31:946][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:946][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=0 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_1
+[2026.09.25-03.25.31:947][  0]LogTemp: Warning: raceGPS Cleveland: EnsureCarlaChargerDoors attached=9 missing=0 pawn=BP_DodgeCharger2024_C_2
+[2026.09.25-03.25.31:947][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:947][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=1 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_2
+[2026.09.25-03.25.31:948][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:948][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=0 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_2
+[2026.09.25-03.25.31:949][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)
+[2026.09.25-03.25.31:949][  0]LogTemp: Warning: raceGPS Cleveland: V17 paint floor bodySlots=0 bodyMI=BasicShapeMaterial pawn=BP_DodgeCharger2024_C_2
+[2026.09.25-03.25.31:952][  0]LogTemp: raceGPS Cleveland: applied chase framing V16 RACE-FOLLOW arm=680 FOV=75 pawnYaw=-157.7 armYaw=-157.7 armPitch=-12.0 (behind car, no void lock)
+[2026.09.25-03.25.31:952][  0]LogTemp: raceGPS Cleveland: applied chase framing V16 RACE-FOLLOW arm=680 FOV=75 pawnYaw=-157.7 armYaw=-157.7 armPitch=-12.0 (behind car, no void lock)
+[2026.09.25-03.25.31:977][  0]LogMaterial: Warning: Material /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.BP_DodgeCharger2024_C_0.VehicleMesh.MID_BasicShapeMaterial_0 missing bUsedWithSkeletalMesh=True! Default Material will be used in game.
+[2026.09.25-03.25.43:028][333]LogTemp: raceGPS Cleveland: applied chase framing V16 RACE-FOLLOW arm=680 FOV=75 pawnYaw=-168.7 armYaw=-168.9 armPitch=-10.7 (behind car, no void lock)

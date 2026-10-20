@@ -1,0 +1,93 @@
+Using bundled DotNet SDK version: 8.0.412 win-x64
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" raceGPSAkronBetaEditor Win64 Development -Project=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject -WaitMutex -FromMsBuild
+Log file: C:\Users\cgp22\AppData\Local\UnrealBuildTool\Log.txt
+Building raceGPSAkronBetaEditor...
+Using Visual Studio 2022 14.44.35226 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207) and Windows 10.0.26100.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from raceGPSAkronBeta unity file: AchievementSystem.cpp, AkronHUD.cpp, AkronXodrImporter.cpp, BuildingMeshGenerator.cpp, ChampionshipManager.cpp, ChaosVehiclePawn.cpp, CheckpointGate.cpp, CompassWidget.cpp, ConsoleCommands.cpp, ContributionCaptureComponent.cpp, CourseCreatorWidget.cpp, CruiseSprintGameMode.cpp, DayNightCycle.cpp, DeveloperConsole.cpp, DriftScoreSystem.cpp, GhostVehicle.cpp, GhostVehicleSystem.cpp, LANBrowserWidget.cpp, LANSessionManager.cpp, LeaderboardSystem.cpp, LeaderboardWidget.cpp, LoadingScreenWidget.cpp, MainMenuGameMode.cpp, MainMenuWidget.cpp, MinimapRenderer.cpp, MinimapWidget.cpp, NeonHUD.cpp, NotificationManager.cpp, OnboardingManager.cpp, PauseMenuWidget.cpp, PhotoModeController.cpp, PlayerProfileSaveGame.cpp, PostProcessController.cpp, PostRaceStatsWidget.cpp, PreflightSystem.cpp, raceGPSAkronBeta.cpp, RaceGPSBackendClient.cpp, raceGPSGameInstance.cpp, RaceGPSMaterialProvider.cpp, RaceReplayManager.cpp, RaceReplayPlayer.cpp, RaceReplayRecorder.cpp, RaceScoringSystem.cpp, RaceSessionManager.cpp, RaceTimerSystem.cpp, RoadMeshGenerator.cpp, RouteSplineActor.cpp, RuntimeCityLoader.cpp, SettingsAutoConfigurator.cpp, SettingsSystem.cpp, SettingsWidget.cpp, StreetFurnitureSpawner.cpp, TrafficAISpawner.cpp, TrafficSpawner.cpp, TrafficVehicle.cpp, TutorialSystem.cpp, TutorialWidget.cpp, UnlockSystem.cpp, VehicleAudioComponent.cpp, VehicleSelectionWidget.cpp, VisualQualitySettings.cpp, WeatherSystem.cpp, WorldContentInstaller.cpp, raceGPSGameplayTests.cpp
+Determining max actions to execute in parallel (10 physical cores, 20 logical cores)
+  Executing up to 10 processes, one per physical core
+Using Unreal Build Accelerator local executor to run 76 action(s)
+  Storage capacity 40Gb
+---- Starting trace: 260907_175328 ----
+UbaServer - Listening on 0.0.0.0:1345
+[1/76] Resource Default.rc2
+[2/76] Compile [x64] SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.cpp
+[3/76] Compile [x64] AkronHUD.cpp
+[4/76] Compile [x64] AchievementSystem.cpp
+[5/76] Compile [x64] AkronXodrImporter.cpp
+[6/76] Compile [x64] BuildingMeshGenerator.cpp
+[7/76] Compile [x64] ChampionshipManager.cpp
+[8/76] Compile [x64] CheckpointGate.cpp
+[9/76] Compile [x64] CompassWidget.cpp
+[10/76] Compile [x64] ChaosVehiclePawn.cpp
+[11/76] Compile [x64] ConsoleCommands.cpp
+[12/76] Compile [x64] ContributionCaptureComponent.cpp
+[13/76] Compile [x64] CourseCreatorWidget.cpp
+[14/76] Compile [x64] DayNightCycle.cpp
+[15/76] Compile [x64] DeveloperConsole.cpp
+[16/76] Compile [x64] DriftScoreSystem.cpp
+[17/76] Compile [x64] CruiseSprintGameMode.cpp
+[18/76] Compile [x64] GhostVehicle.cpp
+[19/76] Compile [x64] GhostVehicleSystem.cpp
+[20/76] Compile [x64] LANSessionManager.cpp
+[21/76] Compile [x64] LeaderboardSystem.cpp
+[22/76] Compile [x64] LANBrowserWidget.cpp
+[23/76] Compile [x64] LeaderboardWidget.cpp
+[24/76] Compile [x64] LoadingScreenWidget.cpp
+[25/76] Compile [x64] MainMenuGameMode.cpp
+[26/76] Compile [x64] MinimapRenderer.cpp
+[27/76] Compile [x64] MainMenuWidget.cpp
+[28/76] Compile [x64] MinimapWidget.cpp
+[29/76] Compile [x64] Module.raceGPSAkronBeta.1.cpp
+[30/76] Compile [x64] Module.raceGPSAkronBeta.2.cpp
+[31/76] Compile [x64] Module.raceGPSAkronBeta.3.cpp
+[32/76] Compile [x64] Module.raceGPSAkronBeta.4.cpp
+[33/76] Compile [x64] Module.raceGPSAkronBeta.5.cpp
+[34/76] Compile [x64] Module.raceGPSAkronBeta.6.cpp
+[35/76] Compile [x64] NeonHUD.cpp
+[36/76] Compile [x64] NotificationManager.cpp
+[37/76] Compile [x64] OnboardingManager.cpp
+[38/76] Compile [x64] Module.raceGPSAkronBeta.7.cpp
+[39/76] Compile [x64] PhotoModeController.cpp
+[40/76] Compile [x64] PlayerProfileSaveGame.cpp
+[41/76] Compile [x64] PauseMenuWidget.cpp
+[42/76] Compile [x64] PostProcessController.cpp
+[43/76] Compile [x64] PreflightSystem.cpp
+[44/76] Compile [x64] PostRaceStatsWidget.cpp
+[45/76] Compile [x64] RaceGPSBackendClient.cpp
+[46/76] Compile [x64] RaceGPSMaterialProvider.cpp
+[47/76] Compile [x64] RaceReplayPlayer.cpp
+[48/76] Compile [x64] RaceReplayManager.cpp
+[49/76] Compile [x64] RaceScoringSystem.cpp
+[50/76] Compile [x64] RaceSessionManager.cpp
+[51/76] Compile [x64] RaceReplayRecorder.cpp
+[52/76] Compile [x64] RoadMeshGenerator.cpp
+[53/76] Compile [x64] RaceTimerSystem.cpp
+[54/76] Compile [x64] RouteSplineActor.cpp
+[55/76] Compile [x64] SettingsAutoConfigurator.cpp
+[56/76] Compile [x64] RuntimeCityLoader.cpp
+[57/76] Compile [x64] SettingsSystem.cpp
+[58/76] Compile [x64] StreetFurnitureSpawner.cpp
+[59/76] Compile [x64] TrafficSpawner.cpp
+[60/76] Compile [x64] TrafficAISpawner.cpp
+[61/76] Compile [x64] SettingsWidget.cpp
+[62/76] Compile [x64] TrafficVehicle.cpp
+[63/76] Compile [x64] TutorialSystem.cpp
+[64/76] Compile [x64] UnlockSystem.cpp
+[65/76] Compile [x64] TutorialWidget.cpp
+[66/76] Compile [x64] VehicleAudioComponent.cpp
+[67/76] Compile [x64] VisualQualitySettings.cpp
+[68/76] Compile [x64] VehicleSelectionWidget.cpp
+[69/76] Compile [x64] WorldContentInstaller.cpp
+C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Source\raceGPSAkronBeta\Private\WorldContentInstaller.cpp(3,1): fatal error C1083: Cannot open include file: 'WorldContentInstaller.h': No such file or directory
+#include "WorldContentInstaller.h"
+^
+[70/76] Compile [x64] raceGPSAkronBeta.cpp
+[71/76] Compile [x64] raceGPSGameInstance.cpp
+[72/76] Compile [x64] WeatherSystem.cpp
+[73/76] Compile [x64] raceGPSGameplayTests.cpp
+Trace written to file C:/Users/cgp22/AppData/Local/UnrealBuildTool/Log.uba with size 26.5kb
+Total time in Unreal Build Accelerator local executor: 96.69 seconds
+
+Result: Failed (OtherCompilationError)
+Total execution time: 97.75 seconds

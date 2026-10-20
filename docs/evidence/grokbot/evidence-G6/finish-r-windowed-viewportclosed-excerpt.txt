@@ -1,0 +1,30 @@
+Excerpt from finish-r-windowed-viewportclosed.log (freeze-safe; for human RCA)
+Generated 2026-09-25 by Prototyper. Full log kept alongside. NOT a PASS.
+
+15: LogCore: No trace connection. Tracing to in-memory cache.
+17: LogTrace: Finished trace initialization.
+30: LogCsvProfiler: Display: Metadata set : commandline="" C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -ClevelandSkipIntro -ClevelandAutoDrive -log -windowed -ResX=1600 -ResY=900""
+329: LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -ClevelandSkipIntro -ClevelandAutoDrive -log -windowed -ResX=1600 -ResY=900
+415: [2026.09.25-03.21.08:931][  0]LogConfig: Set CVar [[r.RayTracing:0]]
+626: [2026.09.25-03.21.08:960][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.TracingOctahedronResolution:8]]
+637: [2026.09.25-03.21.08:961][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyVolume.TracingOctahedronResolution:3]]
+640: [2026.09.25-03.21.08:961][  0]LogConfig: Set CVar [[r.RayTracing.Scene.BuildMode:1]]
+834: [2026.09.25-03.21.09:767][  0]LogD3D12RHI: D3D12 ray tracing tier 1.1 and bindless resources are supported.
+841: [2026.09.25-03.21.09:768][  0]LogD3D12RHI: Bindless is enabled (Configuration=RayTracing). Initializing allocators with 32768 Resource and 2048 Sampler descriptors
+874: [2026.09.25-03.21.09:910][  0]LogRendererCore: Ray tracing is disabled. Reason: disabled through project setting (r.RayTracing=0).
+1097: [2026.09.25-03.21.17:055][  0]LogNNEDenoiser: Ray Tracing is not enabled, therefore NNEDenoiser is not registered!
+1103: [2026.09.25-03.21.17:360][  0]LogGlobalStatus: UEngine::Browse Started Browse: "/Game/Maps/Cleveland5_0KmWorld?Name=Player?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode"
+1104: [2026.09.25-03.21.17:361][  0]LogNet: Browse: /Game/Maps/Cleveland5_0KmWorld?Name=Player?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode
+1105: [2026.09.25-03.21.17:361][  0]LogLoad: LoadMap: /Game/Maps/Cleveland5_0KmWorld?Name=Player?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode
+1113: [2026.09.25-03.21.17:448][  0]LogLoad: Game class is 'ClevelandShowcaseGameMode'
+1116: [2026.09.25-03.21.17:466][  0]LogTemp: raceGPS Cleveland: flags playtest=0 autodive=1 skipIntro=1 proofFinishR=0
+1118: [2026.09.25-03.21.17:470][  0]LogTemp: raceGPS Cleveland: loaded 410 samples, track=327582.8 cm from ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/citypacks/cleveland/burke_gp_1997/racing_line.json
+1259: [2026.09.25-03.21.17:577][  0]LogTemp: raceGPS Cleveland: grid spawned (3 pawns) before countdown
+1263: [2026.09.25-03.21.17:582][  0]LogTemp: raceGPS Cleveland: skip intro (playtest)
+1270: [2026.09.25-03.21.17:582][  0]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Countdown
+1271: [2026.09.25-03.21.17:582][  0]LogTemp: raceGPS Cleveland: race armed state=ERaceSessionState::Countdown countdown=3.0 checkpoints=12 autodive=1
+1326: [2026.09.25-03.21.21:398][ 82]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Racing
+1402: [2026.09.25-03.21.23:246][146]LogWindows: FPlatformMisc::RequestExit(0, UGameEngine::Tick.ViewportClosed)
+1403: [2026.09.25-03.21.23:246][146]LogWindows: FPlatformMisc::RequestExitWithStatus(0, 0, UGameEngine::Tick.ViewportClosed)
+1404: [2026.09.25-03.21.23:246][146]LogCore: Engine exit requested (reason: Win RequestExit)
+

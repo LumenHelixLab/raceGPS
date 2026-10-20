@@ -1,0 +1,28 @@
+# VA body MI verify log excerpt (D3D12 editor GUI, not -game)
+
+## Cite: recapture-2026-10-05 DefaultMaterial root cause
+From docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/capture_log_excerpt_midnight_b205_9604d0b.txt:
+  LogMaterial: Warning: ... M_CarPaint_Master_New.uasset: Failed to compile Material for platform PCD3D_SM6, Default Material will be used in game.
+
+## NEW mat — no Failed to compile for M_BodyPaint_SkeletalSafe / MI_ChargerBody_SkeletalSafe
+(see greps below)
+
+## C++ paint floor cue
+1088:[2026.10.06-03.50.39:783][  0]LogMaterial: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\00_MastersOpt\M_CarPaint_Master_New.uasset: Failed to compile Material for platform PCD3D_SM6, Default Material will be used in game.
+1310:[2026.10.06-03.50.54:865][  0]LogPython: Warning: [VA body-mi verify] registered tick; out=C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\va-body-mi-2026-10-05 quit=True commit=9604d0b
+1320:[2026.10.06-03.50.55:419][  1]LogPython: Warning: [VA body-mi verify] perf settings skip: DeveloperSettings: Failed to find property 'throttle_cpu_when_not_foreground' for attribute 'throttle_cpu_when_not_foreground' on 'EditorPerformanceSettings'
+1322:[2026.10.06-03.50.55:465][  1]LogPython: Warning: [VA body-mi verify] material checks: master=True skel=True mi=True
+1333:[2026.10.06-03.50.55:549][  1]LogPython: Warning: [VA body-mi verify] spawned BP_DodgeCharger2024_C_0
+1334:[2026.10.06-03.50.55:549][  1]LogTemp: Warning: raceGPS Cleveland: V17 paint floor using MI_ChargerBody_SkeletalSafe
+1341:[2026.10.06-03.50.55:697][  1]LogPython: Warning: [VA body-mi verify] called apply_charger_visual_material_floor
+1342:[2026.10.06-03.50.55:697][  1]LogPython: Warning: [VA body-mi verify] apply_vehicle_look failed: module 'unreal' has no attribute 'EVehicleLook'
+1343:[2026.10.06-03.50.55:697][  1]LogPython: Warning: [VA body-mi verify] slot inspect: 'ChaosVehiclePawn' object has no attribute 'get_mesh'
+1344:[2026.10.06-03.50.55:697][  1]LogPython: Warning: [VA body-mi verify] body slots: []
+1354:[2026.10.06-03.50.55:714][  1]LogPython: Warning: [VA body-mi verify] warmup 35.0s
+1355:[2026.10.06-03.50.55:714][  1]LogPython: Warning: [VA body-mi verify] phase -> warmup
+1367:[2026.10.06-03.51.30:805][103]Cmd: HighResShot 1920x1080 filename=C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/va-body-mi-2026-10-05/S_car_body_paint_close.png
+1368:[2026.10.06-03.51.30:809][103]LogPython: Warning: [VA body-mi verify] HighResShot 1920x1080 -> C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/va-body-mi-2026-10-05/S_car_body_paint_close.png (shot_dir=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Saved\Screenshots\WindowsEditor)
+1369:[2026.10.06-03.51.30:809][103]LogPython: Warning: [VA body-mi verify] phase -> flush
+1372:[2026.10.06-03.51.32:802][111]LogPython: Warning: [VA body-mi verify] still ready C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/va-body-mi-2026-10-05/S_car_body_paint_close.png (393290 bytes)
+1373:[2026.10.06-03.51.32:805][111]LogPython: Warning: [VA body-mi verify] wrote C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\va-body-mi-2026-10-05\verify_checks.json ok=True
+1374:[2026.10.06-03.51.32:837][111]LogPython: Warning: [VA body-mi verify] RGPS_STILLS_QUIT=1 -> quit_editor (no save)

@@ -1,0 +1,37 @@
+{
+  "certification": {
+    "notes": "Workshop Overpass\u2192rgpack export proof; provisional. Not a citypack XODR adapter. Race must not call Overpass. source=live-overpass",
+    "status": "provisional"
+  },
+  "checkpoints": "checkpoints.json",
+  "contentHash": "sha256:015b37c1cabf4429bb99772a3b52f873c0932cacb11355b558b39a4581f6f118",
+  "defaults": {
+    "environmentPreset": "Sunset"
+  },
+  "displayName": "Burke Live Overpass Try",
+  "environment": "environment.json",
+  "frame": {
+    "originAltM": 0.0,
+    "originLat": 41.5083139,
+    "originLon": -81.6939936,
+    "unitsPerMeter": 100,
+    "xEast": true,
+    "yNorth": true,
+    "zUp": true
+  },
+  "packId": "burke_overpass_live_try",
+  "schemaVersion": 1,
+  "source": {
+    "attribution": "\u00a9 OpenStreetMap contributors (Overpass API)",
+    "bbox": [
+      -81.695,
+      41.51,
+      -81.685,
+      41.52
+    ],
+    "retrievedAt": "2026-09-28T00:44:40Z",
+    "type": "osm"
+  },
+  "spawn": "spawn.json",
+  "streets": "streets.json"
+}

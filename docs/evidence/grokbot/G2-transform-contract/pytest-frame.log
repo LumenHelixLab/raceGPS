@@ -1,0 +1,15 @@
+.................F.FF.                                                   [100%]
+================================== FAILURES ===================================
+E   assert -81.01303999604117 <= -81.43
+C:\projects\raceGPS-grokbot-cleveland\tests\test_levelspec.py:151: assert -81.01303999604117 <= -81.43
+E   AssertionError: Route akron_cruise_sprint_001 spline length 414816m differs from stated 6152m by 6642.8%
+    assert 66.42782916124837 <= 0.15
+C:\projects\raceGPS-grokbot-cleveland\tests\test_levelspec.py:178: AssertionError: Route akron_cruise_sprint_001 spline length 414816m differs from stated 6152m by 6642.8%
+E   AssertionError: Checkpoint cp_001 is 195m from nearest spline point
+    assert 194.7059999999983 <= 100
+C:\projects\raceGPS-grokbot-cleveland\tests\test_levelspec.py:194: AssertionError: Checkpoint cp_001 is 195m from nearest spline point
+=========================== short test summary info ===========================
+FAILED tests/test_levelspec.py::TestSpawnPointsInBounds::test_all_spawns_inside_manifest_bounds
+FAILED tests/test_levelspec.py::TestRouteDistances::test_spline_path_length_approximates_distance
+FAILED tests/test_levelspec.py::TestRouteDistances::test_checkpoints_near_spline
+3 failed, 19 passed in 0.18s

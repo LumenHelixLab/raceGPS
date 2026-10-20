@@ -59,4 +59,22 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class APostProcessController> Post;
+
+	/** WE recapture: unbound, high-priority PPV that clamps night auto-exposure (EV100). */
+	UPROPERTY()
+	TObjectPtr<class APostProcessVolume> NightExposureVolume;
+
+	void ApplyNightExposureFloor(bool bEnable);
+
+public:
+	/** Midnight auto-exposure clamp, EV100 (project has ExtendDefaultLuminanceRange=True). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Look")
+	float MidnightExposureMinEV100 = -1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Look")
+	float MidnightExposureMaxEV100 = 0.5f;
+
+	/** Scales SkyAtmosphere sky luminance at Midnight: >0 keeps a deep-navy sky instead of void. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Look")
+	FLinearColor MidnightSkyLuminanceFactor = FLinearColor(0.35f, 0.40f, 0.62f, 1.0f);
 };

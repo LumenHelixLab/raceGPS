@@ -1,0 +1,14 @@
+{
+  "commit": "9604d0b",
+  "master_loaded": true,
+  "master_used_with_skeletal_mesh": true,
+  "mi_loaded": true,
+  "rhi": "d3d12(expected)",
+  "ground_z": 0.0,
+  "body_slots": [],
+  "floor_cpp_called": true,
+  "car_spawned": true,
+  "still": "C:/projects/raceGPS-grokbot-cleveland/docs/evidence/grokbot/burke-ez-ribbon/stills/va-body-mi-2026-10-05/S_car_body_paint_close.png",
+  "still_bytes": 393290,
+  "ok": true
+}

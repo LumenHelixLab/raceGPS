@@ -1,0 +1,1747 @@
+﻿Log file open, 09/24/26 23:07:03
+LogWindows: Failed to load 'aqProf.dll' (GetLastError=126)
+LogWindows: File 'aqProf.dll' does not exist
+LogProfilingDebugging: Loading WinPixEventRuntime.dll for PIX profiling (from ../../../Engine/Binaries/ThirdParty/Windows/WinPixEventRuntime/x64).
+LogWindows: Failed to load 'VtuneApi.dll' (GetLastError=126)
+LogWindows: File 'VtuneApi.dll' does not exist
+LogWindows: Failed to load 'VtuneApi32e.dll' (GetLastError=126)
+LogWindows: File 'VtuneApi32e.dll' does not exist
+LogWindows: Started CrashReportClient (pid=28624)
+LogWindows: Custom abort handler registered for crash reporting.
+LogInit: Display: Running engine for game: raceGPSAkronBeta
+LogCore: UTS: Unreal Trace Server launched successfully
+LogTrace: Initializing trace...
+LogCore: Display: Requested channels: 'cpu,gpu,frame,log,bookmark,screenshot,region'
+LogCore: No trace connection. Tracing to in-memory cache.
+LogTrace: Display: Control listening on port 1985
+LogTrace: Finished trace initialization.
+LogCsvProfiler: Display: Metadata set : platform="Windows"
+LogCsvProfiler: Display: Metadata set : config="Development"
+LogCsvProfiler: Display: Metadata set : buildversion="++UE5+Release-5.7-CL-51494982"
+LogCsvProfiler: Display: Metadata set : engineversion="5.7.4-51494982+++UE5+Release-5.7"
+LogCsvProfiler: Display: Metadata set : enginereleaseversion="5.7.4"
+LogCsvProfiler: Display: Metadata set : os="Windows 11 (25H2) [10.0.26200.9550] "
+LogCsvProfiler: Display: Metadata set : cpu="AuthenticAMD|AMD Ryzen AI 9 365 w/ Radeon 880M"
+LogCsvProfiler: Display: Metadata set : pgoenabled="0"
+LogCsvProfiler: Display: Metadata set : pgoprofilingenabled="0"
+LogCsvProfiler: Display: Metadata set : ltoenabled="0"
+LogCsvProfiler: Display: Metadata set : asan="0"
+LogCsvProfiler: Display: Metadata set : mergedmodules="0"
+LogCsvProfiler: Display: Metadata set : commandline="" C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -ClevelandSkipIntro -ClevelandAutoDrive -log -windowed -ResX=1600 -ResY=900""
+LogCsvProfiler: Display: Metadata set : loginid="0d71114a451b49ec9778d1204d291e75"
+LogCsvProfiler: Display: Metadata set : llm="0"
+LogStats: Stats thread started at 0.405455
+LogCsvProfiler: Display: Metadata set : systemresolution.resx="1280"
+LogCsvProfiler: Display: Metadata set : systemresolution.resy="720"
+LogICUInternationalization: ICU TimeZone Detection - Raw Offset: -5:00, Platform Override: ''
+LogInit: Session CrashGUID >====================================================
+         Session CrashGUID >   UECC-Windows-B52496204592CA3A5B56308BC6EADBDA
+         Session CrashGUID >====================================================
+LogConfig: No local boot hotfix file found at: [../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Saved/PersistentDownloadDir/HotfixForNextBoot.txt]
+LogAudio: Display: Pre-Initializing Audio Device Manager...
+LogAudio: Display: AudioInfo: 'OPUS' Registered
+LogAudioDebug: Display: Lib vorbis DLL was dynamically loaded.
+LogAudio: Display: AudioInfo: 'OGG' Registered
+LogAudio: Display: AudioInfo: 'ADPCM' Registered
+LogAudio: Display: AudioInfo: 'PCM' Registered
+LogAudio: Display: AudioInfo: 'BINKA' Registered
+LogAudio: Display: AudioInfo: 'RADA' Registered
+LogAudio: Display: Audio Device Manager Pre-Initialized
+LogPluginManager: Looking for build plugins target receipt
+LogPluginManager: Found matching target receipt: ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Binaries/Win64/raceGPSAkronBetaEditor.target
+LogPluginManager: Looking for enabled plugins target receipt
+LogConfig: Display: Loading Mac ini files took 0.06 seconds
+LogConfig: Display: Loading VulkanPC ini files took 0.06 seconds
+LogConfig: Display: Loading IOS ini files took 0.06 seconds
+LogPluginManager: Found matching target receipt: ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Binaries/Win64/raceGPSAkronBetaEditor.target
+LogConfig: Display: Loading Android ini files took 0.07 seconds
+LogConfig: Display: Loading TVOS ini files took 0.07 seconds
+LogConfig: Display: Loading Unix ini files took 0.08 seconds
+LogConfig: Display: Loading Windows ini files took 0.08 seconds
+LogConfig: Display: Loading VisionOS ini files took 0.08 seconds
+LogConfig: Display: Loading Linux ini files took 0.08 seconds
+LogPluginManager: Mounting Engine plugin AudioInsights
+LogPluginManager: Mounting Engine plugin BaseMaterial
+LogPluginManager: Mounting Engine plugin Bridge
+LogPluginManager: Mounting Engine plugin ChaosCloth
+LogPluginManager: Mounting Engine plugin ChaosInsights
+LogPluginManager: Mounting Engine plugin ChaosVD
+LogPluginManager: Mounting Engine plugin CmdLinkServer
+LogPluginManager: Mounting Engine plugin EnhancedInput
+LogPluginManager: Mounting Engine plugin Fab
+LogPluginManager: Mounting Engine plugin IoStoreInsights
+LogPluginManager: Mounting Engine plugin MassInsights
+LogPluginManager: Mounting Engine plugin MeshPainting
+LogPluginManager: Mounting Engine plugin RenderGraphInsights
+LogPluginManager: Mounting Engine plugin TraceUtilities
+LogPluginManager: Mounting Engine plugin UbaController
+LogPluginManager: Mounting Engine plugin XGEController
+LogPluginManager: Mounting Engine plugin WorldMetrics
+LogPluginManager: Mounting Engine plugin ACLPlugin
+LogPluginManager: Mounting Engine plugin AnimationData
+LogPluginManager: Mounting Engine plugin AnimationModifierLibrary
+LogPluginManager: Mounting Engine plugin BlendSpaceMotionAnalysis
+LogPluginManager: Mounting Engine plugin ControlRigModules
+LogPluginManager: Mounting Engine plugin ControlRig
+LogPluginManager: Mounting Engine plugin ControlRigSpline
+LogPluginManager: Mounting Engine plugin DeformerGraph
+LogPluginManager: Mounting Engine plugin EaseCurveTool
+LogPluginManager: Mounting Engine plugin GameplayInsights
+LogPluginManager: Mounting Engine plugin IKRig
+LogPluginManager: Mounting Engine plugin SkeletalMeshModelingTools
+LogPluginManager: Mounting Engine plugin RigLogic
+LogPluginManager: Mounting Engine plugin TweeningUtils
+LogPluginManager: Mounting Engine plugin AssetManagerEditor
+LogPluginManager: Mounting Engine plugin OodleNetwork
+LogPluginManager: Mounting Engine plugin BlueprintHeaderView
+LogPluginManager: Mounting Engine plugin ChangelistReview
+LogPluginManager: Mounting Engine plugin ColorGrading
+LogPluginManager: Mounting Engine plugin CurveEditorTools
+LogPluginManager: Mounting Engine plugin CryptoKeys
+LogPluginManager: Mounting Engine plugin DataValidation
+LogPluginManager: Mounting Engine plugin EditorScriptingUtilities
+LogPluginManager: Mounting Engine plugin EngineAssetDefinitions
+LogPluginManager: Mounting Engine plugin EditorDebugTools
+LogPluginManager: Mounting Engine plugin GeometryMode
+LogPluginManager: Mounting Engine plugin GameplayTagsEditor
+LogPluginManager: Mounting Engine plugin MacGraphicsSwitching
+LogPluginManager: Mounting Engine plugin FacialAnimation
+LogPluginManager: Mounting Engine plugin MaterialAnalyzer
+LogPluginManager: Mounting Engine plugin MeshLODToolset
+LogPluginManager: Mounting Engine plugin ModelingToolsEditorMode
+LogPluginManager: Mounting Engine plugin MobileLauncherProfileWizard
+LogPluginManager: Mounting Engine plugin ProxyLODPlugin
+LogPluginManager: Mounting Engine plugin PluginBrowser
+LogPluginManager: Mounting Engine plugin SpeedTreeImporter
+LogPluginManager: Mounting Engine plugin SequencerAnimTools
+LogPluginManager: Mounting Engine plugin StylusInput
+LogPluginManager: Mounting Engine plugin UMGWidgetPreview
+LogPluginManager: Mounting Engine plugin UVEditor
+LogPluginManager: Mounting Engine plugin AlembicImporter
+LogPluginManager: Mounting Engine plugin WorldPartitionHLODUtilities
+LogPluginManager: Mounting Engine plugin InterchangeEditor
+LogPluginManager: Mounting Engine plugin InterchangeAssets
+LogPluginManager: Mounting Engine plugin ActorSequence
+LogPluginManager: Mounting Engine plugin Interchange
+LogPluginManager: Mounting Engine plugin LevelSequenceEditor
+LogPluginManager: Mounting Engine plugin SequenceValidator
+LogPluginManager: Mounting Engine plugin SequencerScripting
+LogPluginManager: Mounting Engine plugin TemplateSequence
+LogPluginManager: Mounting Engine plugin EOSShared
+LogPluginManager: Mounting Engine plugin OnlineBase
+LogPluginManager: Mounting Engine plugin OnlineServices
+LogPluginManager: Mounting Engine plugin OnlineSubsystem
+LogPluginManager: Mounting Engine plugin OnlineSubsystemNull
+LogPluginManager: Mounting Engine plugin OnlineSubsystemUtils
+LogPluginManager: Mounting Engine plugin ActorLayerUtilities
+LogPluginManager: Mounting Engine plugin AndroidFileServer
+LogPluginManager: Mounting Engine plugin AndroidDeviceProfileSelector
+LogPluginManager: Mounting Engine plugin AndroidMoviePlayer
+LogPluginManager: Mounting Engine plugin AndroidPermission
+LogPluginManager: Mounting Engine plugin AppleImageUtils
+LogPluginManager: Mounting Engine plugin AppleMoviePlayer
+LogPluginManager: Mounting Engine plugin AssetTags
+LogPluginManager: Mounting Engine plugin AudioCapture
+LogPluginManager: Mounting Engine plugin ArchVisCharacter
+LogPluginManager: Mounting Engine plugin CableComponent
+LogPluginManager: Mounting Engine plugin AudioWidgets
+LogPluginManager: Mounting Engine plugin AudioSynesthesia
+LogPluginManager: Mounting Engine plugin ChunkDownloader
+LogPluginManager: Mounting Engine plugin ComputeFramework
+LogPluginManager: Mounting Engine plugin CustomMeshComponent
+LogPluginManager: Mounting Engine plugin ExampleDeviceProfileSelector
+LogPluginManager: Mounting Engine plugin GeometryProcessing
+LogPluginManager: Mounting Engine plugin GoogleCloudMessaging
+LogPluginManager: Mounting Engine plugin GeometryCache
+LogPluginManager: Mounting Engine plugin GooglePAD
+LogPluginManager: Mounting Engine plugin HairStrands
+LogPluginManager: Mounting Engine plugin InputDebugging
+LogPluginManager: Mounting Engine plugin IOSDeviceProfileSelector
+LogPluginManager: Mounting Engine plugin LinuxDeviceProfileSelector
+LogPluginManager: Mounting Engine plugin LocationServicesBPLibrary
+LogPluginManager: Mounting Engine plugin MeshModelingToolset
+LogPluginManager: Mounting Engine plugin Metasound
+LogPluginManager: Mounting Engine plugin MobilePatchingUtils
+LogPluginManager: Mounting Engine plugin MsQuic
+LogPluginManager: Mounting Engine plugin ProceduralMeshComponent
+LogPluginManager: Mounting Engine plugin PropertyAccessEditor
+LogPluginManager: Mounting Engine plugin PropertyBindingUtils
+LogPluginManager: Mounting Engine plugin ResonanceAudio
+LogPluginManager: Mounting Engine plugin SignificanceManager
+LogPluginManager: Mounting Engine plugin RigVM
+LogPluginManager: Mounting Engine plugin SoundFields
+LogPluginManager: Mounting Engine plugin StateTree
+LogPluginManager: Mounting Engine plugin WaveTable
+LogPluginManager: Mounting Engine plugin WebMMoviePlayer
+LogPluginManager: Mounting Engine plugin WindowsMoviePlayer
+LogPluginManager: Mounting Engine plugin WindowsDeviceProfileSelector
+LogPluginManager: Mounting Engine plugin AnimationSharing
+LogPluginManager: Mounting Engine plugin CLionSourceCodeAccess
+LogPluginManager: Mounting Engine plugin CodeLiteSourceCodeAccess
+LogPluginManager: Mounting Engine plugin DumpGPUServices
+LogPluginManager: Mounting Engine plugin GitSourceControl
+LogPluginManager: Mounting Engine plugin GPUReshape
+LogPluginManager: Mounting Engine plugin KDevelopSourceCodeAccess
+LogPluginManager: Mounting Engine plugin NullSourceCodeAccess
+LogPluginManager: Mounting Engine plugin N10XSourceCodeAccess
+LogPluginManager: Mounting Engine plugin NamingTokens
+LogPluginManager: Mounting Engine plugin PixWinPlugin
+LogPluginManager: Mounting Engine plugin PerforceSourceControl
+LogPluginManager: Mounting Engine plugin PlasticSourceControl
+LogPluginManager: Mounting Engine plugin PluginUtils
+LogPluginManager: Mounting Engine plugin ProjectLauncher
+LogPluginManager: Mounting Engine plugin PropertyAccessNode
+LogPluginManager: Mounting Engine plugin RenderDocPlugin
+LogPluginManager: Mounting Engine plugin RiderSourceCodeAccess
+LogPluginManager: Mounting Engine plugin TextureFormatOodle
+LogPluginManager: Mounting Engine plugin SubversionSourceControl
+LogPluginManager: Mounting Engine plugin UObjectPlugin
+LogPluginManager: Mounting Engine plugin VisualStudioCodeSourceCodeAccess
+LogPluginManager: Mounting Engine plugin VisualStudioSourceCodeAccess
+LogPluginManager: Mounting Engine plugin XCodeSourceCodeAccess
+LogPluginManager: Mounting Engine plugin DatasmithContent
+LogPluginManager: Mounting Engine plugin GLTFExporter
+LogPluginManager: Mounting Engine plugin Synthesis
+LogPluginManager: Mounting Engine plugin VariantManager
+LogPluginManager: Mounting Engine plugin Cascade
+LogPluginManager: Mounting Engine plugin Niagara
+LogPluginManager: Mounting Engine plugin NiagaraSimCaching
+LogPluginManager: Mounting Engine plugin NiagaraPreviewContent
+LogPluginManager: Mounting Engine plugin AndroidMedia
+LogPluginManager: Mounting Engine plugin AvfMedia
+LogPluginManager: Mounting Engine plugin VariantManagerContent
+LogPluginManager: Mounting Engine plugin ImgMedia
+LogPluginManager: Mounting Engine plugin MediaCompositing
+LogPluginManager: Mounting Engine plugin MediaPlate
+LogPluginManager: Mounting Engine plugin MediaPlayerEditor
+LogPluginManager: Mounting Engine plugin WmfMedia
+LogPluginManager: Mounting Engine plugin WebMMedia
+LogPluginManager: Mounting Engine plugin UdpMessaging
+LogPluginManager: Mounting Engine plugin TcpMessaging
+LogPluginManager: Mounting Engine plugin NNEDenoiser
+LogPluginManager: Mounting Engine plugin LauncherChunkInstaller
+LogPluginManager: Mounting Engine plugin InterchangeTests
+LogPluginManager: Mounting Engine plugin AISupport
+LogPluginManager: Mounting Engine plugin NNERuntimeORT
+LogPluginManager: Mounting Engine plugin Paper2D
+LogPluginManager: Mounting Engine plugin EnvironmentQueryEditor
+LogPluginManager: Mounting Engine plugin CameraShakePreviewer
+LogPluginManager: Mounting Engine plugin EngineCameras
+LogPluginManager: Mounting Engine plugin GameplayCameras
+LogPluginManager: Mounting Engine plugin CompositeCore
+LogPluginManager: Mounting Engine plugin AdvancedRenamer
+LogPluginManager: Mounting Engine plugin AutomationUtils
+LogPluginManager: Mounting Engine plugin BackChannel
+LogPluginManager: Mounting Engine plugin ChaosCaching
+LogPluginManager: Mounting Engine plugin ChaosEditor
+LogPluginManager: Mounting Engine plugin ChaosNiagara
+LogPluginManager: Mounting Engine plugin ChaosSolverPlugin
+LogPluginManager: Mounting Engine plugin ChaosUserDataPT
+LogPluginManager: Mounting Engine plugin ChaosVehiclesPlugin
+LogPluginManager: Mounting Engine plugin Dataflow
+LogPluginManager: Mounting Engine plugin EditorDataStorage
+LogPluginManager: Mounting Engine plugin EditorTelemetry
+LogPluginManager: Mounting Engine plugin EditorDataStorageFeatures
+LogPluginManager: Mounting Engine plugin Fracture
+LogPluginManager: Mounting Engine plugin FullBodyIK
+LogPluginManager: Mounting Engine plugin CharacterAI
+LogPluginManager: Mounting Engine plugin GeometryCollectionPlugin
+LogPluginManager: Mounting Engine plugin GeometryDataflow
+LogPluginManager: Mounting Engine plugin GeometryFlow
+LogPluginManager: Mounting Engine plugin EditorPerformance
+LogPluginManager: Mounting Engine plugin GlobalConfigurationData
+LogPluginManager: Mounting Engine plugin LevelSequenceNavigatorBridge
+LogPluginManager: Mounting Engine plugin LocalizableMessage
+LogPluginManager: Mounting Engine plugin MeshModelingToolsetExp
+LogPluginManager: Mounting Engine plugin NFORDenoise
+LogPluginManager: Mounting Engine plugin PlanarCut
+LogPluginManager: Mounting Engine plugin PlatformCrypto
+LogPluginManager: Mounting Engine plugin LowLevelNetTrace
+LogPluginManager: Mounting Engine plugin PythonScriptPlugin
+LogPluginManager: Mounting Engine plugin RuntimeTelemetry
+LogPluginManager: Mounting Engine plugin SequenceNavigator
+LogPluginManager: Mounting Engine plugin SkeletalReduction
+LogPluginManager: Mounting Engine plugin ToolPresets
+LogPluginManager: Mounting Engine plugin MetaHumanSDK
+LogPluginManager: Mounting Engine plugin Takes
+LogPluginManager: Mounting Engine plugin XInputDevice
+LogPluginManager: Mounting Engine plugin LightMixer
+LogPluginManager: Mounting Engine plugin PortableObjectFileDataSource
+LogPluginManager: Mounting Engine plugin ObjectMixer
+LogPluginManager: Mounting Engine plugin OnlineSubsystemIOS
+LogPluginManager: Mounting Engine plugin OnlineSubsystemGooglePlay
+LogPluginManager: Mounting Engine plugin BaseCharacterFXEditor
+LogPluginManager: Mounting Engine plugin ContentBrowserClassDataSource
+LogPluginManager: Mounting Engine plugin ContentBrowserAssetDataSource
+LogPluginManager: Mounting Engine plugin ContentBrowserFileDataSource
+SourceControl: Revision control is disabled
+SourceControl: Revision control is disabled
+SourceControl: Revision control is disabled
+LogEOSShared: Loaded "C:/Program Files/Epic Games/UE_5.7/Engine/Binaries/Win64/EOSSDK-Win64-Shipping.dll"
+LogEOSShared: FEOSSDKManager::Initialize Initializing EOSSDK Version:1.19.0.3-49960398
+LogInit: Using libcurl 8.12.1
+LogInit:  - built for Windows
+LogInit:  - supports SSL with OpenSSL/1.1.1t
+LogInit:  - supports HTTP deflate (compression) using libz 1.3
+LogInit:  - other features:
+LogInit:      CURL_VERSION_SSL
+LogInit:      CURL_VERSION_LIBZ
+LogInit:      CURL_VERSION_IPV6
+LogInit:      CURL_VERSION_ASYNCHDNS
+LogInit:      CURL_VERSION_LARGEFILE
+LogInit:      CURL_VERSION_TLSAUTH_SRP
+LogInit:      CURL_VERSION_HTTP2
+LogInit:  CurlRequestOptions (configurable via config and command line):
+LogInit:  - bVerifyPeer = true  - Libcurl will verify peer certificate
+LogInit:  - bUseHttpProxy = false  - Libcurl will NOT use HTTP proxy
+LogInit:  - CVarHttpCurlReuseConnectionEnabled = true  - Libcurl will reuse connections
+LogInit:  - MaxHostConnections = 16  - Libcurl will limit the number of connections to a host
+LogInit:  - LocalHostAddr = Default
+LogInit:  - BufferSize = 65536
+LogInit: CreateHttpThread using FCurlMultiPollEventLoopHttpThread
+LogInit: Creating http thread with maximum 256 concurrent requests
+LogInit: WinSock: version 1.1 (2.2), MaxSocks=32767, MaxUdp=65467
+LogOnline: OSS: Created online subsystem instance for: NULL
+LogOnline: OSS: TryLoadSubsystemAndSetDefault: Loaded subsystem for type [NULL]
+LogWindows: Failed to load 'WinPixGpuCapturer.dll' (GetLastError=126)
+LogWindows: File 'WinPixGpuCapturer.dll' does not exist
+PixWinPlugin: PIX capture plugin failed to initialize! Check that the process is launched from PIX.
+LogConfig: Applying CVar settings from Section [/Script/RenderDocPlugin.RenderDocPluginSettings] File [Engine]
+RenderDocPlugin: Display: RenderDoc plugin will not be loaded. Use '-AttachRenderDoc' on the cmd line or enable 'renderdoc.AutoAttach' in the plugin settings.
+LogConfig: Applying CVar settings from Section [/Script/CompositeCore.CompositeCorePluginSettings] File [Engine]
+LogNFORDenoise: NFORDenoise function starting up
+LogStudioTelemetry: Started StudioTelemetry Session
+LogInit: ExecutableName: UnrealEditor.exe
+LogInit: Build: ++UE5+Release-5.7-CL-51494982
+LogInit: Platform=WindowsEditor
+LogInit: MachineId=0d71114a451b49ec9778d1204d291e75
+LogInit: DeviceId=
+LogInit: Engine Version: 5.7.4-51494982+++UE5+Release-5.7
+LogInit: Compatible Engine Version: 5.7.0-47537391+++UE5+Release-5.7
+LogInit: Net CL: 47537391
+LogInit: OS: Windows 11 (25H2) [10.0.26200.9550] (), CPU: AMD Ryzen AI 9 365 w/ Radeon 880M              , GPU: AMD Radeon(TM) 880M Graphics
+LogInit: CPU Model ID: 1a240, microcode revision: b20401b
+LogInit: Compiled (64-bit): Mar  6 2026 12:43:05
+LogInit: Architecture: x64
+LogInit: Compiled with Visual C++: 19.44.35223.00
+LogInit: Build Configuration: Development
+LogInit: Branch Name: ++UE5+Release-5.7
+LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -game -ClevelandPreset=Sunset -ClevelandSkipIntro -ClevelandAutoDrive -log -windowed -ResX=1600 -ResY=900
+LogInit: Base Directory: C:/Program Files/Epic Games/UE_5.7/Engine/Binaries/Win64/
+LogInit: Allocator: Mimalloc
+LogInit: Installed Engine Build: 1
+LogInit: This binary is optimized with LTO: no, PGO: no, instrumented for PGO data collection: no
+LogDevObjectVersion: Number of dev versions registered: 36
+LogDevObjectVersion:   Dev-Blueprints (B0D832E4-1F89-4F0D-ACCF-7EB736FD4AA2): 10
+LogDevObjectVersion:   Dev-Build (E1C64328-A22C-4D53-A36C-8E866417BD8C): 0
+LogDevObjectVersion:   Dev-Core (375EC13C-06E4-48FB-B500-84F0262A717E): 4
+LogDevObjectVersion:   Dev-Editor (E4B068ED-F494-42E9-A231-DA0B2E46BB41): 40
+LogDevObjectVersion:   Dev-Framework (CFFC743F-43B0-4480-9391-14DF171D2073): 37
+LogDevObjectVersion:   Dev-Mobile (B02B49B5-BB20-44E9-A304-32B752E40360): 3
+LogDevObjectVersion:   Dev-Networking (A4E4105C-59A1-49B5-A7C5-40C4547EDFEE): 0
+LogDevObjectVersion:   Dev-Online (39C831C9-5AE6-47DC-9A44-9C173E1C8E7C): 0
+LogDevObjectVersion:   Dev-Physics (78F01B33-EBEA-4F98-B9B4-84EACCB95AA2): 20
+LogDevObjectVersion:   Dev-Platform (6631380F-2D4D-43E0-8009-CF276956A95A): 0
+LogDevObjectVersion:   Dev-Rendering (12F88B9F-8875-4AFC-A67C-D90C383ABD29): 49
+LogDevObjectVersion:   Dev-Sequencer (7B5AE74C-D270-4C10-A958-57980B212A5A): 13
+LogDevObjectVersion:   Dev-VR (D7296918-1DD6-4BDD-9DE2-64A83CC13884): 3
+LogDevObjectVersion:   Dev-LoadTimes (C2A15278-BFE7-4AFE-6C17-90FF531DF755): 1
+LogDevObjectVersion:   Private-Geometry (6EACA3D4-40EC-4CC1-B786-8BED09428FC5): 3
+LogDevObjectVersion:   Dev-AnimPhys (29E575DD-E0A3-4627-9D10-D276232CDCEA): 17
+LogDevObjectVersion:   Dev-Anim (AF43A65D-7FD3-4947-9873-3E8ED9C1BB05): 15
+LogDevObjectVersion:   Dev-ReflectionCapture (6B266CEC-1EC7-4B8F-A30B-E4D90942FC07): 1
+LogDevObjectVersion:   Dev-Automation (0DF73D61-A23F-47EA-B727-89E90C41499A): 1
+LogDevObjectVersion:   FortniteMain (601D1886-AC64-4F84-AA16-D3DE0DEAC7D6): 225
+LogDevObjectVersion:   FortniteValkyrie (8DBC2C5B-54A7-43E0-A768-FCBB7DA29060): 8
+LogDevObjectVersion:   FortniteSeason (5B4C06B7-2463-4AF8-805B-BF70CDF5D0DD): 15
+LogDevObjectVersion:   FortniteRelease (E7086368-6B23-4C58-8439-1B7016265E91): 17
+LogDevObjectVersion:   Dev-Enterprise (9DFFBCD6-494F-0158-E221-12823C92A888): 11
+LogDevObjectVersion:   Dev-Niagara (F2AED0AC-9AFE-416F-8664-AA7FFA26D6FC): 1
+LogDevObjectVersion:   Dev-Destruction (174F1F0B-B4C6-45A5-B13F-2EE8D0FB917D): 10
+LogDevObjectVersion:   Dev-Physics-Ext (35F94A83-E258-406C-A318-09F59610247C): 41
+LogDevObjectVersion:   Dev-PhysicsMaterial-Chaos (B68FC16E-8B1B-42E2-B453-215C058844FE): 1
+LogDevObjectVersion:   Dev-CineCamera (B2E18506-4273-CFC2-A54E-F4BB758BBA07): 1
+LogDevObjectVersion:   Dev-VirtualProduction (64F58936-FD1B-42BA-BA96-7289D5D0FA4E): 1
+LogDevObjectVersion:   UE5-Main (697DD581-E64F-41AB-AA4A-51ECBEB7B628): 121
+LogDevObjectVersion:   UE5-Release (D89B5E42-24BD-4D46-8412-ACA8DF641779): 61
+LogDevObjectVersion:   UE5-SpecialProject (59DA5D52-1232-4948-B878-597870B8E98B): 9
+LogDevObjectVersion:   Dev-MediaFramework (6F0ED827-A609-4895-9C91-998D90180EA4): 2
+LogDevObjectVersion:   Dev-NaniteResearch (30D58BE3-95EA-4282-A6E3-B159D8EBB06A): 1
+LogDevObjectVersion:   Dev-ComputeFramework (6304A3E7-0059-4F59-8CFC-21BD7721FD4E): 0
+LogInit: Presizing for max 25165824 objects, including 0 objects not considered by GC.
+LogInit: Object subsystem initialized
+LogConfig: Set CVar [[con.DebugEarlyDefault:1]]
+[2026.09.25-03.07.04:229][  0]LogConfig: CVar [[con.DebugLateDefault:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:229][  0]LogConfig: CVar [[con.DebugLateCheat:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:229][  0]LogConfig: CVar [[LogNamedEventFilters:Frame *]] deferred - dummy variable created
+[2026.09.25-03.07.04:229][  0]LogConfig: Set CVar [[r.setres:1280x720]]
+[2026.09.25-03.07.04:229][  0]LogConfig: CVar [[framepro.ScopeMinTimeMicroseconds:10]] deferred - dummy variable created
+[2026.09.25-03.07.04:230][  0]LogConfig: Set CVar [[fx.NiagaraAllowRuntimeScalabilityChanges:1]]
+[2026.09.25-03.07.04:230][  0]LogConfig: CVar [[QualityLevelMapping:high]] deferred - dummy variable created
+[2026.09.25-03.07.04:230][  0]LogConfig: CVar [[r.Occlusion.SingleRHIThreadStall:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:230][  0]LogConfig: Set CVar [[r.Nanite.Streaming.ReservedResources:1]]
+[2026.09.25-03.07.04:230][  0]LogConfig: CVar [[D3D12.Bindless.ResourceDescriptorHeapSize:32768]] deferred - dummy variable created
+[2026.09.25-03.07.04:230][  0]LogConfig: CVar [[D3D12.Bindless.SamplerDescriptorHeapSize:2048]] deferred - dummy variable created
+[2026.09.25-03.07.04:230][  0]LogConfig: Set CVar [[r.PSOPrecache.GlobalShaders:1]]
+[2026.09.25-03.07.04:230][  0]LogConfig: Set CVar [[r.VRS.EnableSoftware:1]]
+[2026.09.25-03.07.04:230][  0]LogConfig: Set CVar [[r.VRS.ContrastAdaptiveShading:1]]
+[2026.09.25-03.07.04:231][  0]LogConfig: CVar [[con.DebugLateDefault:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:231][  0]LogConfig: CVar [[con.DebugLateCheat:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:231][  0]LogConfig: CVar [[LogNamedEventFilters:Frame *]] deferred - dummy variable created
+[2026.09.25-03.07.04:231][  0]LogConfig: CVar [[framepro.ScopeMinTimeMicroseconds:10]] deferred - dummy variable created
+[2026.09.25-03.07.04:231][  0]LogConfig: CVar [[QualityLevelMapping:high]] deferred - dummy variable created
+[2026.09.25-03.07.04:231][  0]LogConfig: CVar [[r.Occlusion.SingleRHIThreadStall:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:232][  0]LogConfig: CVar [[D3D12.Bindless.ResourceDescriptorHeapSize:32768]] deferred - dummy variable created
+[2026.09.25-03.07.04:232][  0]LogConfig: CVar [[D3D12.Bindless.SamplerDescriptorHeapSize:2048]] deferred - dummy variable created
+[2026.09.25-03.07.04:232][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererSettings] File [Engine]
+[2026.09.25-03.07.04:232][  0]LogConfig: CVar [[VisualizeCalibrationColorMaterialPath:/Engine/EngineMaterials/PPM_DefaultCalibrationColor.PPM_DefaultCalibrationColor]] deferred - dummy variable created
+[2026.09.25-03.07.04:232][  0]LogConfig: CVar [[VisualizeCalibrationGrayscaleMaterialPath:/Engine/EngineMaterials/PPM_DefaultCalibrationGrayscale.PPM_DefaultCalibrationGrayscale]] deferred - dummy variable created
+[2026.09.25-03.07.04:233][  0]LogConfig: Set CVar [[r.GPUCrashDebugging:0]]
+[2026.09.25-03.07.04:233][  0]LogConfig: CVar [[MaxSkinBones:(Default=65536,PerPlatform=(("Mobile", 256)))]] deferred - dummy variable created
+[2026.09.25-03.07.04:233][  0]LogConfig: Set CVar [[r.Shaders.RemoveUnusedInterpolators:1]]
+[2026.09.25-03.07.04:233][  0]LogConfig: Set CVar [[r.Shadow.DetectVertexShaderLayerAtRuntime:1]]
+[2026.09.25-03.07.04:233][  0]LogConfig: Set CVar [[r.Substrate.RoughDiffuse:1]]
+[2026.09.25-03.07.04:233][  0]LogConfig: Set CVar [[r.Substrate.SheenQuality:1]]
+[2026.09.25-03.07.04:233][  0]LogConfig: Set CVar [[r.Substrate.ShadingQuality:1]]
+[2026.09.25-03.07.04:234][  0]LogConfig: Set CVar [[r.Substrate.TileCoord8bits:0]]
+[2026.09.25-03.07.04:234][  0]LogConfig: Set CVar [[r.Substrate.Glints:1]]
+[2026.09.25-03.07.04:234][  0]LogConfig: Set CVar [[r.Substrate.ClosuresPerPixel:4]]
+[2026.09.25-03.07.04:234][  0]LogConfig: Set CVar [[r.Refraction.Blur:1]]
+[2026.09.25-03.07.04:234][  0]LogConfig: Set CVar [[r.DefaultFeature.AutoExposure.ExtendDefaultLuminanceRange:1]]
+[2026.09.25-03.07.04:234][  0]LogConfig: Set CVar [[r.Shadow.Virtual.Enable:1]]
+[2026.09.25-03.07.04:234][  0]LogConfig: Set CVar [[r.DynamicGlobalIlluminationMethod:1]]
+[2026.09.25-03.07.04:235][  0]LogConfig: Set CVar [[r.ReflectionMethod:1]]
+[2026.09.25-03.07.04:235][  0]LogConfig: Set CVar [[r.SkinCache.CompileShaders:1]]
+[2026.09.25-03.07.04:235][  0]LogConfig: Set CVar [[r.RayTracing:0]]
+[2026.09.25-03.07.04:235][  0]LogConfig: Set CVar [[r.GenerateMeshDistanceFields:1]]
+[2026.09.25-03.07.04:235][  0]LogConfig: CVar [[r.DefaultFeature.AntiAliasing:2]] deferred - dummy variable created
+[2026.09.25-03.07.04:236][  0]LogConfig: CVar [[r.PostProcessAAQuality:4]] deferred - dummy variable created
+[2026.09.25-03.07.04:236][  0]LogConfig: CVar [[r.TemporalAA.Algorithm:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:239][  0]LogConfig: Set CVar [[r.TemporalAA.Upsampling:0]]
+[2026.09.25-03.07.04:239][  0]LogConfig: Set CVar [[r.TemporalAA.R11G11B10History:1]]
+[2026.09.25-03.07.04:239][  0]LogConfig: Set CVar [[r.TemporalAA.HistoryScreenPercentage:100]]
+[2026.09.25-03.07.04:239][  0]LogConfig: CVar [[r.FidelityFX.FSR2.Enabled:0]] deferred - dummy variable created
+[2026.09.25-03.07.04:239][  0]LogConfig: CVar [[r.FidelityFX.FSR2.QualityMode:2]] deferred - dummy variable created
+[2026.09.25-03.07.04:239][  0]LogConfig: CVar [[r.FidelityFX.FSR2.Sharpness:0.7]] deferred - dummy variable created
+[2026.09.25-03.07.04:239][  0]LogConfig: Set CVar [[r.Shadow.CSM.MaxCascades:4]]
+[2026.09.25-03.07.04:239][  0]LogConfig: Set CVar [[r.Shadow.CSM.TransitionScale:1.0]]
+[2026.09.25-03.07.04:240][  0]LogConfig: CVar [[r.Shadow.CSM.SplitPenumbraScale:1.0]] deferred - dummy variable created
+[2026.09.25-03.07.04:240][  0]LogConfig: Set CVar [[r.Shadow.Virtual.MaxPhysicalPages:4096]]
+[2026.09.25-03.07.04:240][  0]LogConfig: Set CVar [[r.Shadow.Virtual.ResolutionLodBiasDirectional:0.0]]
+[2026.09.25-03.07.04:240][  0]LogConfig: Set CVar [[r.Shadow.Virtual.ResolutionLodBiasLocal:0.0]]
+[2026.09.25-03.07.04:240][  0]LogConfig: CVar [[r.Shadow.ContactLength:0.05]] deferred - dummy variable created
+[2026.09.25-03.07.04:240][  0]LogConfig: Set CVar [[r.Shadow.DistanceScale:1.0]]
+[2026.09.25-03.07.04:240][  0]LogConfig: Set CVar [[r.Nanite.MaxPixelsPerEdge:1.5]]
+[2026.09.25-03.07.04:240][  0]LogConfig: Set CVar [[r.Nanite.MaxCandidateClusters:16777216]]
+[2026.09.25-03.07.04:240][  0]LogConfig: CVar [[r.Nanite.MaxClusterPixelsPerBucket:256]] deferred - dummy variable created
+[2026.09.25-03.07.04:240][  0]LogConfig: Set CVar [[r.Nanite.Streaming.NumInitialRootPages:512]]
+[2026.09.25-03.07.04:241][  0]LogConfig: CVar [[r.Nanite.Streaming.MaxPageAge:4]] deferred - dummy variable created
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Lumen.Reflections.Allow:1]]
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Lumen.Reflections.MaxRoughnessToTrace:0.4]]
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Lumen.Reflections.TraceMeshSDFs:1]]
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Lumen.DiffuseIndirect.Allow:1]]
+[2026.09.25-03.07.04:241][  0]LogConfig: CVar [[r.Lumen.DiffuseIndirect.GatherFromTexelDensity:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.RadianceCache:1]]
+[2026.09.25-03.07.04:241][  0]LogConfig: CVar [[r.Lumen.ScreenProbeGather.FullSpeed:0]] deferred - dummy variable created
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Streaming.PoolSize:2048]]
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Streaming.LimitPoolSizeToVRAM:1]]
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Streaming.MaxTempMemoryAllowed:128]]
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Streaming.UsePerTextureBias:1]]
+[2026.09.25-03.07.04:241][  0]LogConfig: Set CVar [[r.Streaming.MipBias:0.0]]
+[2026.09.25-03.07.04:242][  0]LogConfig: Set CVar [[r.Streaming.FramesForFullUpdate:1]]
+[2026.09.25-03.07.04:242][  0]LogConfig: Set CVar [[r.PRT.ReducedMemory:0]]
+[2026.09.25-03.07.04:242][  0]LogConfig: Set CVar [[r.MaxAnisotropy:8]]
+[2026.09.25-03.07.04:242][  0]LogConfig: Set CVar [[r.VirtualTexturedLightmaps:1]]
+[2026.09.25-03.07.04:242][  0]LogConfig: CVar [[r.VirtualTexturedBuildVolume:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:242][  0]LogConfig: Set CVar [[r.BloomQuality:5]]
+[2026.09.25-03.07.04:242][  0]LogConfig: Set CVar [[r.SceneColorFringeQuality:1]]
+[2026.09.25-03.07.04:242][  0]LogConfig: Set CVar [[r.EyeAdaptationQuality:1]]
+[2026.09.25-03.07.04:242][  0]LogConfig: CVar [[r.AutoExposure.Method:1]] deferred - dummy variable created
+[2026.09.25-03.07.04:242][  0]LogConfig: CVar [[r.AutoExposure.Bias:0.0]] deferred - dummy variable created
+[2026.09.25-03.07.04:242][  0]LogConfig: CVar [[r.AutoExposure.HistogramLogMin:-8.0]] deferred - dummy variable created
+[2026.09.25-03.07.04:243][  0]LogConfig: CVar [[r.AutoExposure.HistogramLogMax:4.0]] deferred - dummy variable created
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.MotionBlurQuality:3]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.MotionBlur.Amount:0.5]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.MotionBlur.Max:1.0]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.AmbientOcclusionLevels:2]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.AmbientOcclusionRadiusScale:1.0]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.AmbientOcclusion.Compute:1]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.DepthOfFieldQuality:2]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.SSR.Quality:2]]
+[2026.09.25-03.07.04:243][  0]LogConfig: Set CVar [[r.SSR.HalfResSceneColor:0]]
+[2026.09.25-03.07.04:244][  0]LogConfig: Set CVar [[r.RefractionQuality:2]]
+[2026.09.25-03.07.04:244][  0]LogConfig: Set CVar [[r.VolumetricCloud:1]]
+[2026.09.25-03.07.04:244][  0]LogConfig: Set CVar [[r.VolumetricCloud.SkyAO:1]]
+[2026.09.25-03.07.04:244][  0]LogConfig: Set CVar [[r.VolumetricFog:1]]
+[2026.09.25-03.07.04:244][  0]LogConfig: Set CVar [[r.SkyAtmosphere:1]]
+[2026.09.25-03.07.04:244][  0]LogConfig: Set CVar [[r.SceneColorFormat:4]]
+[2026.09.25-03.07.04:244][  0]LogConfig: Set CVar [[r.DetailMode:1]]
+[2026.09.25-03.07.04:245][  0]LogConfig: Set CVar [[r.TranslucencyLightingVolume.Dim:48]]
+[2026.09.25-03.07.04:245][  0]LogConfig: Set CVar [[r.ViewDistanceScale:1.0]]
+[2026.09.25-03.07.04:245][  0]LogConfig: Set CVar [[r.SkeletalMeshLODBias:0]]
+[2026.09.25-03.07.04:245][  0]LogConfig: Set CVar [[r.StaticMeshLODDistanceScale:0.75]]
+[2026.09.25-03.07.04:245][  0]LogConfig: CVar [[r.LandscapeLOD:0]] deferred - dummy variable created
+[2026.09.25-03.07.04:245][  0]LogConfig: CVar [[r.LandscapeLODBias:0]] deferred - dummy variable created
+[2026.09.25-03.07.04:245][  0]LogConfig: CVar [[r.Foliage.DensityScale:0.8]] deferred - dummy variable created
+[2026.09.25-03.07.04:245][  0]LogConfig: CVar [[r.Grass.DensityScale:0.8]] deferred - dummy variable created
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[r.ParticleLightQuality:2]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererOverrideSettings] File [Engine]
+[2026.09.25-03.07.04:246][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.StreamingSettings] File [Engine]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.MinBulkDataSizeForAsyncLoading:131072]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.AsyncLoadingThreadEnabled:1]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.EventDrivenLoaderEnabled:1]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.WarnIfTimeLimitExceeded:0]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.TimeLimitExceededMultiplier:1.5]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.TimeLimitExceededMinTime:0.005]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.UseBackgroundLevelStreaming:1]]
+[2026.09.25-03.07.04:246][  0]LogConfig: Set CVar [[s.PriorityAsyncLoadingExtraTime:15.0]]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[s.LevelStreamingActorsUpdateTimeLimit:5.0]]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[s.PriorityLevelStreamingActorsUpdateExtraTime:5.0]]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[s.LevelStreamingComponentsRegistrationGranularity:10]]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[s.UnregisterComponentsTimeLimit:1.0]]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[s.LevelStreamingComponentsUnregistrationGranularity:5]]
+[2026.09.25-03.07.04:247][  0]LogConfig: CVar [[s.MaxPackageSummarySize:16384]] deferred - dummy variable created
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[s.FlushStreamingOnExit:1]]
+[2026.09.25-03.07.04:247][  0]LogConfig: CVar [[FixedBootOrder:/Script/Engine/Default__SoundBase]] deferred - dummy variable created
+[2026.09.25-03.07.04:247][  0]LogConfig: CVar [[FixedBootOrder:/Script/Engine/Default__MaterialInterface]] deferred - dummy variable created
+[2026.09.25-03.07.04:247][  0]LogConfig: CVar [[FixedBootOrder:/Script/Engine/Default__DeviceProfileManager]] deferred - dummy variable created
+[2026.09.25-03.07.04:247][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.GarbageCollectionSettings] File [Engine]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[gc.MaxObjectsNotConsideredByGC:1]]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[gc.FlushStreamingOnGC:0]]
+[2026.09.25-03.07.04:247][  0]LogConfig: Set CVar [[gc.NumRetriesBeforeForcingGC:10]]
+[2026.09.25-03.07.04:249][  0]LogConfig: Set CVar [[gc.AllowParallelGC:1]]
+[2026.09.25-03.07.04:249][  0]LogConfig: Set CVar [[gc.TimeBetweenPurgingPendingKillObjects:61.1]]
+[2026.09.25-03.07.04:249][  0]LogConfig: Set CVar [[gc.MaxObjectsInEditor:25165824]]
+[2026.09.25-03.07.04:249][  0]LogConfig: Set CVar [[gc.IncrementalBeginDestroyEnabled:1]]
+[2026.09.25-03.07.04:249][  0]LogConfig: Set CVar [[gc.CreateGCClusters:1]]
+[2026.09.25-03.07.04:249][  0]LogConfig: Set CVar [[gc.MinGCClusterSize:5]]
+[2026.09.25-03.07.04:249][  0]LogConfig: Set CVar [[gc.AssetClustreringEnabled:0]]
+[2026.09.25-03.07.04:250][  0]LogConfig: Set CVar [[gc.ActorClusteringEnabled:0]]
+[2026.09.25-03.07.04:250][  0]LogConfig: Set CVar [[gc.VerifyUObjectsAreNotFGCObjects:0]]
+[2026.09.25-03.07.04:250][  0]LogConfig: Set CVar [[gc.GarbageEliminationEnabled:1]]
+[2026.09.25-03.07.04:250][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.NetworkSettings] File [Engine]
+[2026.09.25-03.07.04:250][  0]LogConfig: CVar [[NetworkEmulationProfiles:(ProfileName="Average",ToolTip="Simulates average internet conditions")]] deferred - dummy variable created
+[2026.09.25-03.07.04:250][  0]LogConfig: CVar [[NetworkEmulationProfiles:(ProfileName="Bad",ToolTip="Simulates laggy internet conditions")]] deferred - dummy variable created
+[2026.09.25-03.07.04:250][  0]LogConfig: CVar [[NetworkEmulationProfiles:(ProfileName="BufferBloat",ToolTip="Simulates a connection affected by buffer bloat (in and out)")]] deferred - dummy variable created
+[2026.09.25-03.07.04:250][  0]LogConfig: Applying CVar settings from Section [/Script/UnrealEd.CookerSettings] File [Engine]
+[2026.09.25-03.07.04:250][  0]LogConfig: CVar [[DefaultASTCQualityBySpeed:2]] deferred - dummy variable created
+[2026.09.25-03.07.04:250][  0]LogConfig: CVar [[DefaultASTCQualityBySize:3]] deferred - dummy variable created
+[2026.09.25-03.07.04:250][  0]LogConfig: CVar [[DefaultASTCQualityBySizeHQ:4]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:WidgetBlueprint]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:GroupActor]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:MetaData]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:ObjectRedirector]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:NavMeshRenderingComponent]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:ReflectionCaptureComponent]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:TextRenderComponent]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:Font]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:InterpCurveEdSetup]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:MaterialExpression]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:NiagaraEmitter]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:NiagaraScript]] deferred - dummy variable created
+[2026.09.25-03.07.04:251][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:ParticleEmitter]] deferred - dummy variable created
+[2026.09.25-03.07.04:252][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:ParticleLODLevel]] deferred - dummy variable created
+[2026.09.25-03.07.04:254][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:ParticleModule]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:SubUVAnimation]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:SoundNode]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:GameplayEffectUIData]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedServer:AmbientSound]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedClient:WidgetBlueprint]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedClient:GroupActor]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedClient:MetaData]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedClient:ObjectRedirector]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[ClassesExcludedOnDedicatedClient:InterpCurveEdSetup]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[VersionedIntRValues:r.AllowStaticLighting]] deferred - dummy variable created
+[2026.09.25-03.07.04:255][  0]LogConfig: CVar [[VersionedIntRValues:r.MaterialEditor.LWCTruncateMode]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.VelocityOutputPass]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.SelectiveBasePassOutputs]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.DBuffer]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.Mobile.DBuffer]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.Shaders.Symbols]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.Shaders.GenerateSymbols]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.Shaders.WriteSymbols]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.Shaders.AllowUniqueSymbols]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.Shaders.ExtraData]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.Shaders.Optimize]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.CompileShadersForDevelopment]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.MobileHDR]] deferred - dummy variable created
+[2026.09.25-03.07.04:256][  0]LogConfig: CVar [[VersionedIntRValues:r.UsePreExposure]] deferred - dummy variable created
+[2026.09.25-03.07.04:257][  0]LogCsvProfiler: Display: Metadata set : systemresolution.resx="1066"
+[2026.09.25-03.07.04:257][  0]LogCsvProfiler: Display: Metadata set : systemresolution.resy="666"
+[2026.09.25-03.07.04:257][  0]LogConfig: Applying CVar settings from Section [ViewDistanceQuality@3] File [Scalability]
+[2026.09.25-03.07.04:257][  0]LogConsoleManager: Warning: Setting the console variable 'r.SkeletalMeshLODBias' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '0'
+[2026.09.25-03.07.04:257][  0]LogConsoleManager: Warning: Setting the console variable 'r.ViewDistanceScale' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:257][  0]LogConfig: Applying CVar settings from Section [AntiAliasingQuality@3] File [Scalability]
+[2026.09.25-03.07.04:257][  0]LogConfig: Set CVar [[r.FXAA.Quality:4]]
+[2026.09.25-03.07.04:257][  0]LogConfig: Set CVar [[r.TemporalAA.Quality:2]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.TSR.History.R11G11B10:1]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.TSR.History.ScreenPercentage:200]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.TSR.History.UpdateQuality:3]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.TSR.ShadingRejection.Flickering:1]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.TSR.RejectionAntiAliasingQuality:2]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.TSR.ReprojectionField:1]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.TSR.Resurrection:1]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Applying CVar settings from Section [ShadowQuality@3] File [Scalability]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.LightFunctionQuality:1]]
+[2026.09.25-03.07.04:258][  0]LogConfig: Set CVar [[r.ShadowQuality:5]]
+[2026.09.25-03.07.04:259][  0]LogConsoleManager: Warning: Setting the console variable 'r.Shadow.CSM.MaxCascades' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '4'
+[2026.09.25-03.07.04:259][  0]LogConfig: Set CVar [[r.Shadow.MaxResolution:2048]]
+[2026.09.25-03.07.04:259][  0]LogConfig: Set CVar [[r.Shadow.MaxCSMResolution:2048]]
+[2026.09.25-03.07.04:259][  0]LogConfig: Set CVar [[r.Shadow.RadiusThreshold:0.01]]
+[2026.09.25-03.07.04:259][  0]LogConsoleManager: Warning: Setting the console variable 'r.Shadow.DistanceScale' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:259][  0]LogConsoleManager: Warning: Setting the console variable 'r.Shadow.CSM.TransitionScale' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:260][  0]LogConfig: Set CVar [[r.Shadow.PreShadowResolutionFactor:1.0]]
+[2026.09.25-03.07.04:260][  0]LogConfig: Set CVar [[r.DistanceFieldShadowing:1]]
+[2026.09.25-03.07.04:260][  0]LogConsoleManager: Warning: Setting the console variable 'r.VolumetricFog' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:260][  0]LogConfig: Set CVar [[r.VolumetricFog.GridPixelSize:8]]
+[2026.09.25-03.07.04:260][  0]LogConfig: Set CVar [[r.VolumetricFog.GridSizeZ:128]]
+[2026.09.25-03.07.04:260][  0]LogConfig: Set CVar [[r.VolumetricFog.HistoryMissSupersampleCount:4]]
+[2026.09.25-03.07.04:260][  0]LogConfig: Set CVar [[r.LightMaxDrawDistanceScale:1]]
+[2026.09.25-03.07.04:260][  0]LogConfig: Set CVar [[r.CapsuleShadows:1]]
+[2026.09.25-03.07.04:260][  0]LogConsoleManager: Warning: Setting the console variable 'r.Shadow.Virtual.MaxPhysicalPages' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '4096'
+[2026.09.25-03.07.04:261][  0]LogConsoleManager: Warning: Setting the console variable 'r.Shadow.Virtual.ResolutionLodBiasDirectional' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '0'
+[2026.09.25-03.07.04:261][  0]LogConfig: Set CVar [[r.Shadow.Virtual.ResolutionLodBiasDirectionalMoving:-1.5]]
+[2026.09.25-03.07.04:261][  0]LogConsoleManager: Warning: Setting the console variable 'r.Shadow.Virtual.ResolutionLodBiasLocal' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '0'
+[2026.09.25-03.07.04:262][  0]LogConfig: Set CVar [[r.Shadow.Virtual.ResolutionLodBiasLocalMoving:1.0]]
+[2026.09.25-03.07.04:262][  0]LogConfig: Set CVar [[r.Shadow.Virtual.SMRT.RayCountDirectional:8]]
+[2026.09.25-03.07.04:262][  0]LogConfig: Set CVar [[r.Shadow.Virtual.SMRT.SamplesPerRayDirectional:4]]
+[2026.09.25-03.07.04:262][  0]LogConfig: Set CVar [[r.Shadow.Virtual.SMRT.RayCountLocal:8]]
+[2026.09.25-03.07.04:262][  0]LogConfig: Set CVar [[r.Shadow.Virtual.SMRT.SamplesPerRayLocal:4]]
+[2026.09.25-03.07.04:262][  0]LogConfig: Set CVar [[r.Shadow.Virtual.MarkCoarsePagesLocal:1]]
+[2026.09.25-03.07.04:262][  0]LogConfig: Applying CVar settings from Section [GlobalIlluminationQuality@3] File [Scalability]
+[2026.09.25-03.07.04:262][  0]LogConfig: Set CVar [[r.DistanceFieldAO:1]]
+[2026.09.25-03.07.04:263][  0]LogConfig: Set CVar [[r.SkylightIntensityMultiplier:1.0]]
+[2026.09.25-03.07.04:263][  0]LogConfig: Set CVar [[r.AOQuality:2]]
+[2026.09.25-03.07.04:263][  0]LogConsoleManager: Warning: Setting the console variable 'r.Lumen.DiffuseIndirect.Allow' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:263][  0]LogConfig: Set CVar [[r.LumenScene.DirectLighting.MaxLightsPerTile:8]]
+[2026.09.25-03.07.04:263][  0]LogConfig: Set CVar [[r.LumenScene.DirectLighting.UpdateFactor:32]]
+[2026.09.25-03.07.04:263][  0]LogConfig: Set CVar [[r.LumenScene.Radiosity.UpdateFactor:64]]
+[2026.09.25-03.07.04:263][  0]LogConfig: Set CVar [[r.LumenScene.Radiosity.ProbeSpacing:4]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.LumenScene.Radiosity.HemisphereProbeResolution:4]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.TraceMeshSDFs.Allow:1]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.RadianceCache.ProbeResolution:32]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.RadianceCache.NumProbesToTraceBudget:100]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.DownsampleFactor:16]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.NumAdaptiveProbes:8]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.TracingOctahedronResolution:8]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.IrradianceFormat:0]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.StochasticInterpolation:0]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.FullResolutionJitterWidth:1]]
+[2026.09.25-03.07.04:264][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.TwoSidedFoliageBackfaceDiffuse:1]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.ScreenTraces.HZBTraversal.FullResDepth:1]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.ShortRangeAO.BentNormal:1]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.ShortRangeAO.HorizonSearch.HZB:0]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.ShortRangeAO.HorizonSearch.ForegroundSampleRejectPower:1]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyVolume.GridPixelSize:32]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyVolume.TraceFromVolume:1]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyVolume.TracingOctahedronResolution:3]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyVolume.RadianceCache.ProbeResolution:8]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyVolume.RadianceCache.NumProbesToTraceBudget:70]]
+[2026.09.25-03.07.04:265][  0]LogConfig: Set CVar [[r.RayTracing.Scene.BuildMode:1]]
+[2026.09.25-03.07.04:266][  0]LogConfig: Applying CVar settings from Section [ReflectionQuality@3] File [Scalability]
+[2026.09.25-03.07.04:266][  0]LogConsoleManager: Warning: Setting the console variable 'r.SSR.Quality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '2'
+[2026.09.25-03.07.04:266][  0]LogConsoleManager: Warning: Setting the console variable 'r.SSR.HalfResSceneColor' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '0'
+[2026.09.25-03.07.04:266][  0]LogConsoleManager: Warning: Setting the console variable 'r.Lumen.Reflections.Allow' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:266][  0]LogConfig: Set CVar [[r.Lumen.Reflections.DownsampleFactor:1]]
+[2026.09.25-03.07.04:266][  0]LogConfig: Set CVar [[r.Lumen.Reflections.MaxRoughnessToTraceForFoliage:0.4]]
+[2026.09.25-03.07.04:266][  0]LogConfig: Set CVar [[r.Lumen.ScreenProbeGather.MaxRoughnessToEvaluateRoughSpecularForFoliage:0.8]]
+[2026.09.25-03.07.04:266][  0]LogConfig: Set CVar [[r.Lumen.Reflections.ScreenSpaceReconstruction.NumSamples:5]]
+[2026.09.25-03.07.04:266][  0]LogConfig: Set CVar [[r.Lumen.Reflections.ScreenSpaceReconstruction.MinWeight:0]]
+[2026.09.25-03.07.04:268][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyReflections.FrontLayer.Allow:1]]
+[2026.09.25-03.07.04:270][  0]LogConfig: Set CVar [[r.Lumen.TranslucencyReflections.FrontLayer.Enable:0]]
+[2026.09.25-03.07.04:270][  0]LogConfig: Applying CVar settings from Section [PostProcessQuality@3] File [Scalability]
+[2026.09.25-03.07.04:270][  0]LogConsoleManager: Warning: Setting the console variable 'r.MotionBlurQuality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '3'
+[2026.09.25-03.07.04:270][  0]LogConfig: Set CVar [[r.MotionBlur.HalfResGather:0]]
+[2026.09.25-03.07.04:270][  0]LogConfig: Set CVar [[r.AmbientOcclusionMipLevelFactor:0.4]]
+[2026.09.25-03.07.04:270][  0]LogConfig: Set CVar [[r.AmbientOcclusionMaxQuality:100]]
+[2026.09.25-03.07.04:270][  0]LogConsoleManager: Warning: Setting the console variable 'r.AmbientOcclusionLevels' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '2'
+[2026.09.25-03.07.04:271][  0]LogConsoleManager: Warning: Setting the console variable 'r.AmbientOcclusionRadiusScale' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:271][  0]LogConsoleManager: Warning: Setting the console variable 'r.DepthOfFieldQuality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '2'
+[2026.09.25-03.07.04:271][  0]LogConfig: Set CVar [[r.RenderTargetPoolMin:400]]
+[2026.09.25-03.07.04:271][  0]LogConfig: Set CVar [[r.LensFlareQuality:2]]
+[2026.09.25-03.07.04:271][  0]LogConsoleManager: Warning: Setting the console variable 'r.SceneColorFringeQuality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:272][  0]LogConsoleManager: Warning: Setting the console variable 'r.EyeAdaptationQuality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:272][  0]LogConsoleManager: Warning: Setting the console variable 'r.BloomQuality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '5'
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.Bloom.ScreenPercentage:50.000]]
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.FastBlurThreshold:100]]
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.Upscale.Quality:3]]
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.LightShaftQuality:1]]
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.Filter.SizeScale:1]]
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.Tonemapper.Quality:5]]
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.DOF.Gather.ResolutionDivisor:2         ; lower gathering resolution]]
+[2026.09.25-03.07.04:272][  0]LogConfig: Set CVar [[r.DOF.Gather.AccumulatorQuality:1        ; higher gathering accumulator quality]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Gather.PostfilterMethod:1          ; Median3x3 postfilering method]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Gather.EnableBokehSettings:0       ; no bokeh simulation when gathering]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Gather.RingCount:4                 ; medium number of samples when gathering]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Scatter.ForegroundCompositing:1    ; additive foreground scattering]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Scatter.BackgroundCompositing:2    ; additive background scattering]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Scatter.EnableBokehSettings:1      ; bokeh simulation when scattering]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Scatter.MaxSpriteRatio:0.1         ; only a maximum of 10% of scattered bokeh]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Recombine.Quality:1                ; cheap slight out of focus]]
+[2026.09.25-03.07.04:273][  0]LogConfig: Set CVar [[r.DOF.Recombine.EnableBokehSettings:0    ; no bokeh simulation on slight out of focus]]
+[2026.09.25-03.07.04:274][  0]LogConfig: Set CVar [[r.DOF.TemporalAAQuality:1                ; more stable temporal accumulation]]
+[2026.09.25-03.07.04:274][  0]LogConfig: Set CVar [[r.DOF.Kernel.MaxForegroundRadius:0.025]]
+[2026.09.25-03.07.04:274][  0]LogConfig: Set CVar [[r.DOF.Kernel.MaxBackgroundRadius:0.025]]
+[2026.09.25-03.07.04:274][  0]LogConfig: Applying CVar settings from Section [TextureQuality@3] File [Scalability]
+[2026.09.25-03.07.04:274][  0]LogConsoleManager: Warning: Setting the console variable 'r.Streaming.MipBias' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '0'
+[2026.09.25-03.07.04:274][  0]LogConfig: Set CVar [[r.Streaming.AmortizeCPUToGPUCopy:0]]
+[2026.09.25-03.07.04:274][  0]LogConfig: Set CVar [[r.Streaming.MaxNumTexturesToStreamPerFrame:0]]
+[2026.09.25-03.07.04:274][  0]LogConfig: Set CVar [[r.Streaming.Boost:1]]
+[2026.09.25-03.07.04:274][  0]LogConsoleManager: Warning: Setting the console variable 'r.MaxAnisotropy' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '8'
+[2026.09.25-03.07.04:274][  0]LogConfig: Set CVar [[r.VT.MaxAnisotropy:8]]
+[2026.09.25-03.07.04:274][  0]LogConsoleManager: Warning: Setting the console variable 'r.Streaming.LimitPoolSizeToVRAM' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:274][  0]LogConsoleManager: Warning: Setting the console variable 'r.Streaming.PoolSize' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '2048'
+[2026.09.25-03.07.04:276][  0]LogConfig: Set CVar [[r.Streaming.MaxEffectiveScreenSize:0]]
+[2026.09.25-03.07.04:276][  0]LogConfig: Applying CVar settings from Section [EffectsQuality@3] File [Scalability]
+[2026.09.25-03.07.04:276][  0]LogConsoleManager: Warning: Setting the console variable 'r.TranslucencyLightingVolume.Dim' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '48'
+[2026.09.25-03.07.04:276][  0]LogConsoleManager: Warning: Setting the console variable 'r.RefractionQuality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '2'
+[2026.09.25-03.07.04:276][  0]LogConsoleManager: Warning: Setting the console variable 'r.SceneColorFormat' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '4'
+[2026.09.25-03.07.04:276][  0]LogConsoleManager: Warning: Setting the console variable 'r.DetailMode' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '1'
+[2026.09.25-03.07.04:276][  0]LogConfig: Set CVar [[r.TranslucencyLightingVolume.Blur:1]]
+[2026.09.25-03.07.04:276][  0]LogConfig: Set CVar [[r.MaterialQualityLevel:1 ; High quality]]
+[2026.09.25-03.07.04:276][  0]LogConfig: Set CVar [[r.SSS.Scale:1]]
+[2026.09.25-03.07.04:276][  0]LogConfig: Set CVar [[r.SSS.SampleSet:2]]
+[2026.09.25-03.07.04:277][  0]LogConfig: Set CVar [[r.SSS.Quality:1]]
+[2026.09.25-03.07.04:277][  0]LogConfig: Set CVar [[r.SSS.HalfRes:0]]
+[2026.09.25-03.07.04:277][  0]LogConfig: Set CVar [[r.SSGI.Quality:3]]
+[2026.09.25-03.07.04:277][  0]LogConfig: Set CVar [[r.EmitterSpawnRateScale:1.0]]
+[2026.09.25-03.07.04:277][  0]LogConsoleManager: Warning: Setting the console variable 'r.ParticleLightQuality' with 'SetByScalability' was ignored as it is lower priority than the previous 'SetByProjectSetting'. Value remains '2'
+[2026.09.25-03.07.04:277][  0]LogConfig: Set CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.FastApplyOnOpaque:1 ; Always have FastSkyLUT 1 in this case to avoid wrong sky]]
+[2026.09.25-03.07.04:277][  0]LogConfig: Set CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.SampleCountMaxPerSlice:4]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.AerialPerspectiveLUT.DepthResolution:16.0]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.FastSkyLUT:1]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMin:4.0]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.FastSkyLUT.SampleCountMax:128.0]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.SampleCountMin:4.0]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.SampleCountMax:128.0]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.TransmittanceLUT.UseSmallFormat:0]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.TransmittanceLUT.SampleCount:10.0]]
+[2026.09.25-03.07.04:278][  0]LogConfig: Set CVar [[r.SkyAtmosphere.MultiScatteringLUT.SampleCount:15.0]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[fx.Niagara.QualityLevel:3]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[r.Refraction.OffsetQuality:1]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[r.HeterogeneousVolumes.DownsampleFactor:2]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[r.HeterogeneousVolumes.MaxStepCount:256]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[r.HeterogeneousVolumes.Shadows.Resolution:512]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[r.HeterogeneousVolumes.Shadows.Precision:0]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[r.HeterogeneousVolumes.UseExistenceMask:0]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Applying CVar settings from Section [FoliageQuality@3] File [Scalability]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[foliage.DensityScale:1.0]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[grass.DensityScale:1.0]]
+[2026.09.25-03.07.04:279][  0]LogConfig: Applying CVar settings from Section [ShadingQuality@3] File [Scalability]
+[2026.09.25-03.07.04:279][  0]LogConfig: Set CVar [[r.HairStrands.SkyLighting.IntegrationType:2]]
+[2026.09.25-03.07.04:280][  0]LogConfig: Set CVar [[r.HairStrands.SkyAO.SampleCount:4]]
+[2026.09.25-03.07.04:280][  0]LogConfig: Set CVar [[r.HairStrands.Visibility.MSAA.SamplePerPixel:4]]
+[2026.09.25-03.07.04:280][  0]LogConfig: Set CVar [[r.AnisotropicMaterials:1]]
+[2026.09.25-03.07.04:280][  0]LogConfig: Applying CVar settings from Section [LandscapeQuality@3] File [Scalability]
+[2026.09.25-03.07.04:280][  0]LogRHI: Using Default RHI: D3D12
+[2026.09.25-03.07.04:280][  0]LogRHI: Using Highest Feature Level of D3D12: SM6
+[2026.09.25-03.07.04:280][  0]LogRHI: Loading RHI module D3D12RHI
+[2026.09.25-03.07.04:280][  0]LogD3D12RHI: Loading WinPixEventRuntime.dll for PIX profiling (from ../../../Engine/Binaries/ThirdParty/Windows/WinPixEventRuntime/x64).
+[2026.09.25-03.07.04:281][  0]LogRHI: Checking if RHI D3D12 with Feature Level SM6 is supported by your system.
+[2026.09.25-03.07.04:424][  0]LogD3D12RHI: Found D3D12 adapter 0: AMD Radeon(TM) 880M Graphics (VendorId: 1002, DeviceId: 150e, SubSysId: 8cdd103c, Revision: 00c4
+[2026.09.25-03.07.04:424][  0]LogD3D12RHI:   Max supported Feature Level 12_2, shader model 6.7, binding tier 3, wave ops supported, atomic64 supported
+[2026.09.25-03.07.04:426][  0]LogD3D12RHI:   Adapter has 284MB of dedicated video memory, 0MB of dedicated system memory, and 16031MB of shared system memory, 1 output[s], UMA:true
+[2026.09.25-03.07.04:426][  0]LogD3D12RHI:   Driver Version: AMD Software: Adrenalin Edition 24.20.10.10 (internal:32.0.12010.10001, unified:32.0.12010.10001)
+[2026.09.25-03.07.04:426][  0]LogD3D12RHI:      Driver Date: 1-6-2025
+[2026.09.25-03.07.04:434][  0]LogD3D12RHI: Found D3D12 adapter 1: Microsoft Basic Render Driver (VendorId: 1414, DeviceId: 008c, SubSysId: 0000, Revision: 0000
+[2026.09.25-03.07.04:435][  0]LogD3D12RHI:   Max supported Feature Level 12_1, shader model 6.7, binding tier 3, wave ops supported, atomic64 supported
+[2026.09.25-03.07.04:435][  0]LogD3D12RHI:   Adapter has 0MB of dedicated video memory, 0MB of dedicated system memory, and 16031MB of shared system memory, 0 output[s], UMA:true
+[2026.09.25-03.07.04:435][  0]LogD3D12RHI:   D3D10Warp Version: 10.0.26100.9549
+[2026.09.25-03.07.04:436][  0]LogD3D12RHI: DirectX Agility SDK runtime found.
+[2026.09.25-03.07.04:436][  0]LogD3D12RHI: Chosen D3D12 Adapter Id = 0
+[2026.09.25-03.07.04:436][  0]LogRHI: RHI D3D12 with Feature Level SM6 is supported and will be used.
+[2026.09.25-03.07.04:436][  0]LogInit: Selected Device Profile: [WindowsEditor]
+[2026.09.25-03.07.04:436][  0]LogHAL: Display: Platform has ~ 32 GB [33620893696 / 34359738368 / 32], which maps to Largest [LargestMinGB=32, LargerMinGB=12, DefaultMinGB=8, SmallerMinGB=6, SmallestMinGB=0)
+[2026.09.25-03.07.04:436][  0]LogDeviceProfileManager: Going up to parent DeviceProfile [Windows]
+[2026.09.25-03.07.04:436][  0]LogDeviceProfileManager: Going up to parent DeviceProfile []
+[2026.09.25-03.07.04:436][  0]LogDeviceProfileManager: Pushing Device Profile CVar: [[UI.SlateSDFText.RasterizationMode:Bitmap -> Msdf]]
+[2026.09.25-03.07.04:436][  0]LogDeviceProfileManager: Pushing Device Profile CVar: [[UI.SlateSDFText.ResolutionLevel:2 -> 2]]
+[2026.09.25-03.07.04:436][  0]LogConfig: Applying CVar settings from Section [Startup] File [../../../Engine/Config/ConsoleVariables.ini]
+[2026.09.25-03.07.04:437][  0]LogConfig: Set CVar [[r.DumpShaderDebugInfo:2]]
+[2026.09.25-03.07.04:437][  0]LogConfig: Set CVar [[p.chaos.AllowCreatePhysxBodies:1]]
+[2026.09.25-03.07.04:437][  0]LogConfig: Set CVar [[fx.SkipVectorVMBackendOptimizations:1]]
+[2026.09.25-03.07.04:437][  0]LogConfig: Applying CVar settings from Section [Startup_Windows] File [../../../Engine/Config/ConsoleVariables.ini]
+[2026.09.25-03.07.04:437][  0]LogConfig: Applying CVar settings from Section [ConsoleVariables] File [Engine]
+[2026.09.25-03.07.04:437][  0]LogConfig: Set CVar [[WindowsApplication.UseWorkerThreadForRawInput:0]]
+[2026.09.25-03.07.04:437][  0]LogConfig: Applying CVar settings from Section [ConsoleVariables] File [C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Saved/Config/WindowsEditor/Editor.ini]
+[2026.09.25-03.07.04:438][  0]LogInit: Computer: OMNI
+[2026.09.25-03.07.04:441][  0]LogInit: User: cgp22
+[2026.09.25-03.07.04:441][  0]LogInit: CPU Page size=4096, Cores=10
+[2026.09.25-03.07.04:441][  0]LogInit: High frequency timer resolution =10.000000 MHz
+[2026.09.25-03.07.04:441][  0]LogInit: Handheld Device: 0
+[2026.09.25-03.07.04:441][  0]LogMemory: Process is running as part of a Windows Job with separate resource limits
+[2026.09.25-03.07.04:441][  0]LogMemory: Memory total: Physical=31.3GB (32GB approx) Virtual=38.1GB
+[2026.09.25-03.07.04:442][  0]LogMemory: Platform Memory Stats for WindowsEditor
+[2026.09.25-03.07.04:442][  0]LogMemory: Process Physical Memory: 567.36 MB used, 628.34 MB peak
+[2026.09.25-03.07.04:442][  0]LogMemory: Process Virtual Memory: 530.81 MB used, 560.03 MB peak
+[2026.09.25-03.07.04:442][  0]LogMemory: Physical Memory: 16973.96 MB used,  15089.42 MB free, 32063.38 MB total
+[2026.09.25-03.07.04:442][  0]LogMemory: Virtual Memory: 26726.74 MB used,  12248.64 MB free, 38975.38 MB total
+[2026.09.25-03.07.04:442][  0]LogCsvProfiler: Display: Metadata set : extradevelopmentmemorymb="0"
+[2026.09.25-03.07.04:442][  0]LogWindows: WindowsPlatformFeatures enabled
+[2026.09.25-03.07.04:443][  0]LogSpline: Registered spline type: TypeId=0x54E3AD22, Impl=MultiSpline, Value=Vector
+[2026.09.25-03.07.04:444][  0]LogChaosDD: Chaos Debug Draw Startup
+[2026.09.25-03.07.04:444][  0]LogInit: Physics initialised using underlying interface: Chaos
+[2026.09.25-03.07.04:444][  0]LogInit: Using OS detected language (en-US).
+[2026.09.25-03.07.04:444][  0]LogInit: Using OS detected locale (en-US).
+[2026.09.25-03.07.04:452][  0]LogTextLocalizationManager: No specific localization for 'en-US' exists, so 'en' will be used for the language.
+[2026.09.25-03.07.04:901][  0]LogWindowsTextInputMethodSystem: Available input methods:
+[2026.09.25-03.07.04:902][  0]LogWindowsTextInputMethodSystem:   - English (United States) - (Keyboard).
+[2026.09.25-03.07.04:903][  0]LogWindowsTextInputMethodSystem:   - English (United States) - Touch Input Correction (TSF IME).
+[2026.09.25-03.07.04:903][  0]LogWindowsTextInputMethodSystem: Activated input method: English (United States) - (Keyboard).
+[2026.09.25-03.07.04:920][  0]LogWindowsTouchpad: Display: CacheForceMaxTouchpadSensitivityMode SetMaxTouchpadSensitivity
+[2026.09.25-03.07.04:924][  0]LogObj: Display: Attempting to load config data for Default__SlateThemeManager before the Class has been constructed/registered/linked (likely during module loading or early startup). This will result in the load silently failing and should be fixed.
+[2026.09.25-03.07.04:929][  0]LogSlate: New Slate User Created. Platform User Id 0, User Index 0, Is Virtual User: 0
+[2026.09.25-03.07.04:930][  0]LogSlate: Slate User Registered.  User Index 0, Is Virtual User: 0
+[2026.09.25-03.07.04:968][  0]LogRHI: Using Default RHI: D3D12
+[2026.09.25-03.07.04:968][  0]LogRHI: Using Highest Feature Level of D3D12: SM6
+[2026.09.25-03.07.04:970][  0]LogRHI: Loading RHI module D3D12RHI
+[2026.09.25-03.07.04:970][  0]LogRHI: Checking if RHI D3D12 with Feature Level SM6 is supported by your system.
+[2026.09.25-03.07.04:970][  0]LogRHI: RHI D3D12 with Feature Level SM6 is supported and will be used.
+[2026.09.25-03.07.04:970][  0]LogD3D12RHI: Integrated GPU (iGPU): true
+[2026.09.25-03.07.04:970][  0]LogD3D12RHI: Display: Creating D3D12 RHI with Max Feature Level SM6
+[2026.09.25-03.07.04:970][  0]LogWindows: Attached monitors:
+[2026.09.25-03.07.04:971][  0]LogWindows:     resolution: 1280x800, work area: (0, 0) -> (1280, 752), device: '\\.\DISPLAY1' [PRIMARY]
+[2026.09.25-03.07.04:971][  0]LogWindows: Found 1 attached monitors.
+[2026.09.25-03.07.04:971][  0]LogWindows: Gathering driver information using Windows Setup API
+[2026.09.25-03.07.04:971][  0]LogRHI: RHI Adapter Info:
+[2026.09.25-03.07.04:971][  0]LogRHI:             Name: AMD Radeon(TM) 880M Graphics
+[2026.09.25-03.07.04:971][  0]LogRHI:   Driver Version: AMD Software: Adrenalin Edition 24.20.10.10 (internal:32.0.12010.10001, unified:32.0.12010.10001)
+[2026.09.25-03.07.04:971][  0]LogRHI:      Driver Date: 1-6-2025
+[2026.09.25-03.07.04:971][  0]LogD3D12RHI:     GPU DeviceId: 0x150e (for the marketing name, search the web for "GPU Device Id")
+[2026.09.25-03.07.04:997][  0]LogD3D12RHI: InitD3DDevice: -D3DDebug = off -D3D12GPUValidation = off
+[2026.09.25-03.07.04:998][  0]LogD3D12RHI: Emitting draw events for PIX profiling.
+[2026.09.25-03.07.05:122][  0]LogD3D12RHI: ID3D12Device1 is supported.
+[2026.09.25-03.07.05:122][  0]LogD3D12RHI: ID3D12Device2 is supported.
+[2026.09.25-03.07.05:123][  0]LogD3D12RHI: ID3D12Device3 is supported.
+[2026.09.25-03.07.05:123][  0]LogD3D12RHI: ID3D12Device4 is supported.
+[2026.09.25-03.07.05:123][  0]LogD3D12RHI: ID3D12Device5 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: ID3D12Device6 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: ID3D12Device7 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: ID3D12Device8 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: ID3D12Device9 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: ID3D12Device10 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: ID3D12Device11 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: ID3D12Device12 is supported.
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: Bindless is supported. MaxNonSamplerDescriptors: 33554432, MaxSamplerDescriptors: 4096
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: Stencil ref from pixel shader is supported
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: Raster order views are supported
+[2026.09.25-03.07.05:124][  0]LogD3D12RHI: Wave Operations are supported (wave size: min=32 max=64).
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI:      Legacy Barriers Present in Build: Yes
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI:    Enhanced Barriers Present in Build: Yes
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI:      Enhanced Barriers Driver Support: Yes
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI: Preferred Barrier Implementation Type: Legacy
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI:         Chosen Barrier Implementation: D3D12LegacyBarriers
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI: D3D12 ray tracing tier 1.1 and bindless resources are supported.
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI: Mesh shader tier 1.0 is supported
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI: AtomicInt64OnTypedResource is supported
+[2026.09.25-03.07.05:125][  0]LogD3D12RHI: AtomicInt64OnGroupShared is supported
+[2026.09.25-03.07.05:126][  0]LogD3D12RHI: AtomicInt64OnDescriptorHeapResource is supported
+[2026.09.25-03.07.05:126][  0]LogD3D12RHI: Shader Model 6.6 atomic64 is supported
+[2026.09.25-03.07.05:126][  0]LogD3D12RHI: Work Graphs are supported
+[2026.09.25-03.07.05:126][  0]LogD3D12RHI: Bindless is enabled (Configuration=RayTracing). Initializing allocators with 32768 Resource and 2048 Sampler descriptors
+[2026.09.25-03.07.05:147][  0]LogD3D12RHI: [GPUBreadCrumb] Successfully setup breadcrumb resource for DiagnosticBuffer (Queue: 0x000001ED875F0B80)
+[2026.09.25-03.07.05:148][  0]LogD3D12RHI: [GPUBreadCrumb] Successfully setup breadcrumb resource for DiagnosticBuffer (Queue: 0x000001ED875F0E40)
+[2026.09.25-03.07.05:148][  0]LogD3D12RHI: [GPUBreadCrumb] Successfully setup breadcrumb resource for DiagnosticBuffer (Queue: 0x000001ED875F1100)
+[2026.09.25-03.07.05:148][  0]LogD3D12RHI: Display: Not using pipeline state disk cache per r.D3D12.PSO.DiskCache=0
+[2026.09.25-03.07.05:149][  0]LogD3D12RHI: Display: Not using driver-optimized pipeline state disk cache per r.D3D12.PSO.DriverOptimizedDiskCache=0
+[2026.09.25-03.07.05:149][  0]LogD3D12RHI: AMD hit token extension is supported
+[2026.09.25-03.07.05:149][  0]LogRHI: Texture pool is 9795 MB (70% of 13993 MB)
+[2026.09.25-03.07.05:149][  0]LogD3D12RHI: Async texture creation enabled
+[2026.09.25-03.07.05:149][  0]LogD3D12RHI: RHI has support for 64 bit atomics
+[2026.09.25-03.07.05:164][  0]LogVRS: Current RHI supports per-draw and screenspace Variable Rate Shading
+[2026.09.25-03.07.05:169][  0]LogCsvProfiler: Display: Metadata set : verbatimrhiname="D3D12"
+[2026.09.25-03.07.05:169][  0]LogCsvProfiler: Display: Metadata set : rhiname="D3D12"
+[2026.09.25-03.07.05:169][  0]LogCsvProfiler: Display: Metadata set : rhifeaturelevel="SM6"
+[2026.09.25-03.07.05:169][  0]LogCsvProfiler: Display: Metadata set : shaderplatform="PCD3D_SM6"
+[2026.09.25-03.07.05:170][  0]LogInit: Initializing FReadOnlyCVARCache
+[2026.09.25-03.07.05:172][  0]LogTurnkeySupport: Running Turnkey SDK detection: ' -ScriptsForProject="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" Turnkey -utf8output -WaitForUATMutex -command=VerifySdk -ReportFilename="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyReport_0.log" -log="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyLog_0.log" -project="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject"  -platform=all'
+[2026.09.25-03.07.05:173][  0]LogMonitoredProcess: Running Serialized UAT: [ cmd.exe /c ""C:/Program Files/Epic Games/UE_5.7/Engine/Build/BatchFiles/RunUAT.bat"  -ScriptsForProject="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" Turnkey -utf8output -WaitForUATMutex -command=VerifySdk -ReportFilename="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyReport_0.log" -log="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyLog_0.log" -project="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject"  -platform=all" ]
+[2026.09.25-03.07.05:190][  0]LogTextureFormatASTC: Display: ASTCEnc version 5.0.1 library loaded
+[2026.09.25-03.07.05:191][  0]LogTextureFormatManager: Display: Loaded Base TextureFormat: TextureFormatASTC
+[2026.09.25-03.07.05:191][  0]LogTextureFormatManager: Display: Loaded Base TextureFormat: TextureFormatDXT
+[2026.09.25-03.07.05:191][  0]LogTextureFormatManager: Display: Loaded Base TextureFormat: TextureFormatETC2
+[2026.09.25-03.07.05:191][  0]LogTextureFormatManager: Display: Loaded Base TextureFormat: TextureFormatIntelISPCTexComp
+[2026.09.25-03.07.05:191][  0]LogTextureFormatManager: Display: Loaded Base TextureFormat: TextureFormatUncompressed
+[2026.09.25-03.07.05:191][  0]LogTextureFormatOodle: Display: Oodle Texture TFO init; latest sdk version = 2.9.14
+[2026.09.25-03.07.05:191][  0]LogTextureFormatOodle: Display: Oodle Texture loading DLL: oo2tex_win64_2.9.14.dll
+[2026.09.25-03.07.05:191][  0]LogTextureFormatOodle: Display: Oodle Texture loading DLL: oo2tex_win64_2.9.5.dll
+[2026.09.25-03.07.05:193][  0]LogTextureFormatManager: Display: Loaded Base TextureFormat: TextureFormatOodle
+[2026.09.25-03.07.05:226][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'Windows'
+[2026.09.25-03.07.05:226][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsEditor'
+[2026.09.25-03.07.05:227][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsServer'
+[2026.09.25-03.07.05:227][  0]LogTargetPlatformManager: Display: Loaded TargetPlatform 'WindowsClient'
+[2026.09.25-03.07.05:227][  0]LogTargetPlatformManager: Display: Building Assets For WindowsEditor
+[2026.09.25-03.07.05:278][  0]LogRendererCore: Ray tracing is disabled. Reason: disabled through project setting (r.RayTracing=0).
+[2026.09.25-03.07.05:282][  0]LogDerivedDataCache: Display: Memory: Max Cache Size: -1 MB
+[2026.09.25-03.07.05:282][  0]LogDerivedDataCache: FDerivedDataBackendGraph: Pak pak cache file ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/DerivedDataCache/DDC.ddp not found, will not use a pak cache.
+[2026.09.25-03.07.05:283][  0]LogDerivedDataCache: Unable to find inner node Pak for hierarchy Hierarchy.
+[2026.09.25-03.07.05:283][  0]LogDerivedDataCache: FDerivedDataBackendGraph: CompressedPak pak cache file ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/DerivedDataCache/Compressed.ddp not found, will not use a pak cache.
+[2026.09.25-03.07.05:283][  0]LogDerivedDataCache: Unable to find inner node CompressedPak for hierarchy Hierarchy.
+[2026.09.25-03.07.05:654][  0]LogDerivedDataCache: Display: ../../../Engine/DerivedDataCache/Compressed.ddp: Opened pak cache for reading. (1729 MiB)
+[2026.09.25-03.07.05:654][  0]LogDerivedDataCache: FDerivedDataBackendGraph: EnterprisePak pak cache file ../../../Enterprise/DerivedDataCache/Compressed.ddp not found, will not use a pak cache.
+[2026.09.25-03.07.05:656][  0]LogDerivedDataCache: Unable to find inner node EnterprisePak for hierarchy Hierarchy.
+[2026.09.25-03.07.05:656][  0]LogZenServiceInstance: Found Zen config default=C:/Users/cgp22/AppData/Local/UnrealEngine/Common/Zen/Data
+[2026.09.25-03.07.05:656][  0]LogZenServiceInstance: Display: Launching zen utility 'C:/Program Files/Epic Games/UE_5.7/Engine/Binaries/Win64/zen.exe service status'.
+[2026.09.25-03.07.05:964][  0]LogZenServiceInstance: Display: Launching zen utility 'C:/Program Files/Epic Games/UE_5.7/Engine/Binaries/Win64/zen.exe service status'.
+[2026.09.25-03.07.06:184][  0]LogTurnkeySupport: Completed SDK detection: ExitCode = 0
+[2026.09.25-03.07.06:271][  0]LogZenServiceInstance: Display: Read zen version cache file from 'C:/Users/cgp22/AppData/Local/UnrealEngine/5.7/Saved/Zen/zen.version', version: '5.7.6-202510061608-windows-x64-release-9a1ebb9'
+[2026.09.25-03.07.06:271][  0]LogZenServiceInstance: InTree version at 'C:/Program Files/Epic Games/UE_5.7/Engine/Binaries/Win64/zenserver.exe' is '5.7.6-202510061608-windows-x64-release-9a1ebb9'
+[2026.09.25-03.07.06:272][  0]LogZenServiceInstance: Display: Read zen version cache file from 'C:/Users/cgp22/AppData/Local/UnrealEngine/Common/Zen/Install/zen.version', version: '5.7.6-202510061608-windows-x64-release-9a1ebb9'
+[2026.09.25-03.07.06:272][  0]LogZenServiceInstance: Installed version at 'C:/Users/cgp22/AppData/Local/UnrealEngine/Common/Zen/Install/zenserver.exe' is '5.7.6-202510061608-windows-x64-release-9a1ebb9'
+[2026.09.25-03.07.06:272][  0]LogZenServiceInstance: Display: Installed service at 'C:/Users/cgp22/AppData/Local/UnrealEngine/Common/Zen/Install/zenserver.exe' is up to date
+[2026.09.25-03.07.06:273][  0]LogZenServiceInstance: No current process using the data dir found, launching a new instance
+[2026.09.25-03.07.06:273][  0]LogZenServiceInstance: Display: Launching executable 'C:/Users/cgp22/AppData/Local/UnrealEngine/Common/Zen/Install/zenserver.exe', working dir 'C:/Users/cgp22/AppData/Local/UnrealEngine/Common/Zen/Install', data dir 'C:/Users/cgp22/AppData/Local/UnrealEngine/Common/Zen/Data', args '--port 8558 --data-dir C:\Users\cgp22\AppData\Local\UnrealEngine\Common\Zen\Data --http asio --gc-cache-duration-seconds 1209600 --gc-interval-seconds 21600 --gc-low-diskspace-threshold 2147483648 --cache-bucket-limit-overwrites --quiet --http-forceloopback --owner-pid 29776  --child-id Zen_29776_Startup'
+[2026.09.25-03.07.06:383][  0]LogZenServiceInstance: Display: Unreal Zen Storage Server HTTP service at http://[::1]:8558 status: OK!.
+[2026.09.25-03.07.06:385][  0]LogZenServiceInstance: Local ZenServer AutoLaunch initialization completed in 0.115 seconds
+[2026.09.25-03.07.06:388][  0]LogDerivedDataCache: Display: ZenLocal: Using ZenServer HTTP service at [::1] with namespace ue.ddc status: OK!.
+[2026.09.25-03.07.06:404][  0]LogDerivedDataCache: C:/Users/cgp22/AppData/Local/UnrealEngine/Common/DerivedDataCache: Speed tests took 0.02 seconds.
+[2026.09.25-03.07.06:405][  0]LogDerivedDataCache: Display: C:/Users/cgp22/AppData/Local/UnrealEngine/Common/DerivedDataCache: Performance: Latency=0.05ms. RandomReadSpeed=418.61MBs, RandomWriteSpeed=74.79MBs. Assigned SpeedClass 'Local'
+[2026.09.25-03.07.06:407][  0]LogDerivedDataCache: Local: Using data cache path C:/Users/cgp22/AppData/Local/UnrealEngine/Common/DerivedDataCache: DeleteOnly
+[2026.09.25-03.07.06:407][  0]LogDerivedDataCache: ZenShared: Disabled because Host is set to 'None'
+[2026.09.25-03.07.06:407][  0]LogDerivedDataCache: Unable to find inner node ZenShared for hierarchy Hierarchy.
+[2026.09.25-03.07.06:407][  0]LogDerivedDataCache: Shared: Disabled because no path is configured.
+[2026.09.25-03.07.06:407][  0]LogDerivedDataCache: Unable to find inner node Shared for hierarchy Hierarchy.
+[2026.09.25-03.07.06:407][  0]LogDerivedDataCache: Cloud: Disabled because Host is set to 'None'
+[2026.09.25-03.07.06:407][  0]LogDerivedDataCache: Unable to find inner node Cloud for hierarchy Hierarchy.
+[2026.09.25-03.07.06:408][  0]LogShaderCompilers: Guid format shader working directory is -30 characters bigger than the processId version (../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/Shaders/WorkingDirectory/29776/).
+[2026.09.25-03.07.06:408][  0]LogShaderCompilers: Cleaned the shader compiler working directory 'C:/Users/cgp22/AppData/Local/Temp/UnrealShaderWorkingDir/CE7E114E472806C9220F6091FF5BC1DB/'.
+[2026.09.25-03.07.06:408][  0]LogXGEController: Cannot use XGE Controller as Incredibuild is not installed on this machine.
+[2026.09.25-03.07.06:408][  0]LogShaderCompilers: Display: No distributed shader compiler controller found
+[2026.09.25-03.07.06:408][  0]LogShaderCompilers: Display: Using 10 local workers for shader compilation
+[2026.09.25-03.07.06:424][  0]LogShaderCompilers: Display: Compiling shader autogen file: ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/ShaderAutogen/PCD3D_SM6/AutogenShaderHeaders.ush
+[2026.09.25-03.07.06:424][  0]LogShaderCompilers: Display: Autogen file is unchanged, skipping write.
+[2026.09.25-03.07.08:105][  0]LogSlate: Using FreeType 2.10.0
+[2026.09.25-03.07.08:107][  0]LogSlate: SlateFontServices - WITH_FREETYPE: 1, WITH_HARFBUZZ: 1
+[2026.09.25-03.07.08:113][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_128x.png' error.
+[2026.09.25-03.07.08:115][  0]LogSlate: Could not load file for Slate resource: [../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_128x.png] file: [../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_128x.png]
+[2026.09.25-03.07.08:115][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_24x.png' error.
+[2026.09.25-03.07.08:116][  0]LogSlate: Could not load file for Slate resource: [../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_24x.png] file: [../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_24x.png]
+[2026.09.25-03.07.08:144][  0]LogTurnkeySupport: Turnkey Platform: Win64: (Status=Valid, MinAllowed_Sdk=10.0.19041.0, MaxAllowed_Sdk=10.9.99999.0, Current_Sdk=10.0.26100.0, Allowed_AutoSdk=10.0.22621.0, Current_AutoSdk=, Flags="InstalledSdk_ValidVersionExists")
+[2026.09.25-03.07.08:146][  0]LogTurnkeySupport: Running Turnkey device detection: ' -ScriptsForProject="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" Turnkey -utf8output -WaitForUATMutex -command=VerifySdk -ReportFilename="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyReport_1.log" -log="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyLog_1.log" -project="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject"  -Device=Win64@OMNI'
+[2026.09.25-03.07.08:147][  0]LogMonitoredProcess: Running Serialized UAT: [ cmd.exe /c ""C:/Program Files/Epic Games/UE_5.7/Engine/Build/BatchFiles/RunUAT.bat"  -ScriptsForProject="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject" Turnkey -utf8output -WaitForUATMutex -command=VerifySdk -ReportFilename="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyReport_1.log" -log="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/TurnkeyLog_1.log" -project="C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/raceGPSAkronBeta.uproject"  -Device=Win64@OMNI" -nocompile -nocompileuat ]
+[2026.09.25-03.07.08:236][  0]LogInit: Using OS detected language (en-US).
+[2026.09.25-03.07.08:237][  0]LogInit: Using OS detected locale (en-US).
+[2026.09.25-03.07.08:238][  0]LogTextLocalizationManager: No localization for 'en-US' exists, so 'en' will be used for the language.
+[2026.09.25-03.07.08:238][  0]LogTextLocalizationManager: No localization for 'en-US' exists, so 'en' will be used for the locale.
+[2026.09.25-03.07.08:238][  0]LogSlate: FontCache flush requested. Reason: Culture for localization was changed
+[2026.09.25-03.07.08:238][  0]LogSlate: FontCache flush requested. Reason: Culture for localization was changed
+[2026.09.25-03.07.08:239][  0]LogAssetRegistry: FAssetRegistry took 0.0007 seconds to start up
+[2026.09.25-03.07.08:742][  0]LogDeviceProfileManager: Display: Deviceprofile LinuxArm64Editor not found.
+[2026.09.25-03.07.08:743][  0]LogDeviceProfileManager: Display: Deviceprofile LinuxArm64 not found.
+[2026.09.25-03.07.08:808][  0]LogDeviceProfileManager: Active device profile: [000001EE15700500][000001EE15790000 82] WindowsEditor
+[2026.09.25-03.07.08:808][  0]LogCsvProfiler: Display: Metadata set : deviceprofile="WindowsEditor"
+[2026.09.25-03.07.08:813][  0]LogStreaming: Display: FlushAsyncLoading(1): 1 QueuedPackages, 0 AsyncPackages
+[2026.09.25-03.07.08:819][  0]LogPackageLocalizationCache: Processed 72 localized package path(s) for 1 prioritized culture(s) in 0.006334 seconds
+[2026.09.25-03.07.08:823][  0]LogTextureEncodingSettings: Display: Texture Encode Speed: Final (cook).
+[2026.09.25-03.07.08:823][  0]LogTextureEncodingSettings: Display: Oodle Texture Encode Speed settings: Fast: RDO Off Lambda=0, Effort=Normal Final: RDO Off Lambda=0, Effort=Normal
+[2026.09.25-03.07.08:823][  0]LogTextureEncodingSettings: Display: Shared linear texture encoding: Disabled
+[2026.09.25-03.07.08:854][  0]LogStreaming: Display: Flushing package /Engine/Functions/Engine_MaterialFunctions01/Shading/PowerToRoughness (state: WaitingForIo) recursively from another package /Engine/EngineMaterials/DefaultTextMaterialOpaque (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:855][  0]LogStreaming: Display: Package /Engine/EngineMaterials/DefaultTextMaterialOpaque is adding a dynamic import to package /Engine/Functions/Engine_MaterialFunctions01/Shading/PowerToRoughness because of a recursive sync load
+[2026.09.25-03.07.08:855][  0]LogStreaming: Display: Flushing package /Engine/Functions/Engine_MaterialFunctions01/Shading/PowerToRoughness (state: DeferredPostLoad) recursively from another package /Engine/EngineMaterials/DefaultTextMaterialOpaque (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:855][  0]LogStreaming: Display: Flushing package /Engine/Functions/Engine_MaterialFunctions01/Shading/ConvertFromDiffSpec (state: WaitingForIo) recursively from another package /Engine/EngineMaterials/DefaultTextMaterialOpaque (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:856][  0]LogStreaming: Display: Package /Engine/EngineMaterials/DefaultTextMaterialOpaque is adding a dynamic import to package /Engine/Functions/Engine_MaterialFunctions01/Shading/ConvertFromDiffSpec because of a recursive sync load
+[2026.09.25-03.07.08:857][  0]LogStreaming: Display: Flushing package /Engine/Functions/Engine_MaterialFunctions01/Shading/ConvertFromDiffSpec (state: DeferredPostLoad) recursively from another package /Engine/EngineMaterials/DefaultTextMaterialOpaque (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:857][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/WorldGridMaterial (state: WaitingForIo) recursively from another package /Engine/EngineMaterials/DefaultTextMaterialOpaque (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:866][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/DefaultDeferredDecalMaterial (state: WaitingForIo) recursively from another package /Engine/EngineMaterials/WorldGridMaterial (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:868][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/DefaultLightFunctionMaterial (state: WaitingForIo) recursively from another package /Engine/EngineMaterials/DefaultDeferredDecalMaterial (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:869][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/DefaultPostProcessMaterial (state: WaitingForIo) recursively from another package /Engine/EngineMaterials/DefaultLightFunctionMaterial (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:872][  0]LogStreaming: Display: Package /Engine/EngineMaterials/DefaultLightFunctionMaterial is adding a dynamic import to package /Engine/EngineMaterials/DefaultPostProcessMaterial because of a recursive sync load
+[2026.09.25-03.07.08:872][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/DefaultPostProcessMaterial (state: DeferredPostLoad) recursively from another package /Engine/EngineMaterials/DefaultLightFunctionMaterial (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:925][  0]LogStreaming: Display: Package /Engine/EngineMaterials/DefaultDeferredDecalMaterial is adding a dynamic import to package /Engine/EngineMaterials/DefaultLightFunctionMaterial because of a recursive sync load
+[2026.09.25-03.07.08:926][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/DefaultLightFunctionMaterial (state: DeferredPostLoad) recursively from another package /Engine/EngineMaterials/DefaultDeferredDecalMaterial (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:953][  0]LogStreaming: Display: Package /Engine/EngineMaterials/WorldGridMaterial is adding a dynamic import to package /Engine/EngineMaterials/DefaultDeferredDecalMaterial because of a recursive sync load
+[2026.09.25-03.07.08:953][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/DefaultDeferredDecalMaterial (state: DeferredPostLoad) recursively from another package /Engine/EngineMaterials/WorldGridMaterial (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.08:982][  0]LogStreaming: Display: Package /Engine/EngineMaterials/DefaultTextMaterialOpaque is adding a dynamic import to package /Engine/EngineMaterials/WorldGridMaterial because of a recursive sync load
+[2026.09.25-03.07.08:983][  0]LogStreaming: Display: Flushing package /Engine/EngineMaterials/WorldGridMaterial (state: DeferredPostLoad) recursively from another package /Engine/EngineMaterials/DefaultTextMaterialOpaque (state: CreateLinkerLoadExports) will result in a partially loaded package to avoid a deadlock.
+[2026.09.25-03.07.09:200][  0]LogTurnkeySupport: Completed device detection: Code = 0
+[2026.09.25-03.07.09:267][  0]LogMeshReduction: Display: Using QuadricMeshReduction for automatic static mesh reduction
+[2026.09.25-03.07.09:267][  0]LogMeshReduction: Display: Using SkeletalMeshReduction for automatic skeletal mesh reduction
+[2026.09.25-03.07.09:269][  0]LogMeshReduction: Display: Using ProxyLODMeshReduction for automatic mesh merging
+[2026.09.25-03.07.09:269][  0]LogMeshReduction: Display: No distributed automatic mesh merging module available
+[2026.09.25-03.07.09:269][  0]LogMeshMerging: No distributed automatic mesh merging module available
+[2026.09.25-03.07.09:771][  0]LogConfig: Applying CVar settings from Section [/Script/CQTest.CQTestSettings] File [Engine]
+[2026.09.25-03.07.09:835][  0]LogShaderCompilers: Display: Compiling shader autogen file: ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/ShaderAutogen/PCD3D_SM5/AutogenShaderHeaders.ush
+[2026.09.25-03.07.09:835][  0]LogShaderCompilers: Display: Autogen file is unchanged, skipping write.
+[2026.09.25-03.07.09:836][  0]LogShaderCompilers: Display: Compiling shader autogen file: ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/ShaderAutogen/VULKAN_SM5/AutogenShaderHeaders.ush
+[2026.09.25-03.07.09:836][  0]LogShaderCompilers: Display: Autogen file is unchanged, skipping write.
+[2026.09.25-03.07.09:836][  0]LogShaderCompilers: Display: Compiling shader autogen file: ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/ShaderAutogen/VULKAN_SM6/AutogenShaderHeaders.ush
+[2026.09.25-03.07.09:837][  0]LogShaderCompilers: Display: Autogen file is unchanged, skipping write.
+[2026.09.25-03.07.09:837][  0]LogVirtualization: Display: VirtualizationSystem name found in ini file: None
+[2026.09.25-03.07.09:837][  0]LogVirtualization: Display: FNullVirtualizationSystem mounted, virtualization will be disabled
+[2026.09.25-03.07.09:841][  0]LogLiveCoding: Display: Starting LiveCoding
+[2026.09.25-03.07.09:841][  0]LogLiveCoding: Display: LiveCodingConsole Arguments: UnrealEditor Win64 Development
+[2026.09.25-03.07.09:843][  0]LogLiveCoding: Display: First instance in process group "UE_raceGPSAkronBeta_0x7cd082e2", spawning console
+[2026.09.25-03.07.09:851][  0]LogLiveCoding: Display: Waiting for server
+[2026.09.25-03.07.09:925][  0]LogWorldPartition: Display: FWorldPartitionClassDescRegistry::Initialize started...
+[2026.09.25-03.07.09:929][  0]LogWorldPartition: Display: FWorldPartitionClassDescRegistry::Initialize took 3.492 ms
+[2026.09.25-03.07.09:952][  0]LogMoviePlayer: Initializing movie player
+[2026.09.25-03.07.09:995][  0]LogInit: XR: Instanced Stereo Rendering is Disabled
+[2026.09.25-03.07.09:995][  0]LogInit: XR: MultiViewport is Disabled
+[2026.09.25-03.07.09:997][  0]LogInit: XR: Mobile Multiview is Disabled
+[2026.09.25-03.07.09:997][  0]LogTurnkeySupport: Turnkey Device: Win64@omni: (Name=omni, Type=Computer, Status=Valid, MinAllowed=10.0.19041.0, MaxAllowed=, Current=10.0.26200.0, Flags="Device_InstallSoftwareValid")
+[2026.09.25-03.07.10:011][  0]LogStats: UGameplayTagsManager::InitializeManager -  0.000 s
+[2026.09.25-03.07.10:387][  0]LogLiveCoding: Display: Successfully initialized, removing startup thread
+[2026.09.25-03.07.10:467][  0]LogMetaSound: Display: MetaSound Page Target Initialized to 'Default'
+[2026.09.25-03.07.10:468][  0]LogAudio: Display: Registering Engine Module Parameter Interfaces...
+[2026.09.25-03.07.10:474][  0]LogMetaSound: MetaSound Engine Initialized
+[2026.09.25-03.07.10:552][  0]LogNiagaraDebuggerClient: Niagara Debugger Client Initialized | Session: 1747C70A54E841FE8000000000000100 | Instance: C34BDA704267EACD66D1AA9AD4E54FCA (OMNI-29776).
+[2026.09.25-03.07.10:593][  0]LogCollectionManager: Loaded 0 collections in 0.001979 seconds
+[2026.09.25-03.07.10:597][  0]LogFileCache: Scanning file cache for directory 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Saved/Collections/' took 0.00s
+[2026.09.25-03.07.10:599][  0]LogFileCache: Scanning file cache for directory 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Developers/cgp22/Collections/' took 0.00s
+[2026.09.25-03.07.10:602][  0]LogFileCache: Scanning file cache for directory 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Collections/' took 0.00s
+[2026.09.25-03.07.10:602][  0]LogCollectionManager: Fixed up redirectors for 0 collections in 0.000000 seconds (updated 0 objects)
+[2026.09.25-03.07.10:638][  0]LogNNERuntimeORT: No NPU adapter found with attributes (!GRAPHICS && (GENERIC_ML || CORE_COMPUTE)) (Windows 11 Version 24H2 or newer)!
+[2026.09.25-03.07.10:638][  0]LogNNERuntimeORT: Available graphics and compute adapters:
+[2026.09.25-03.07.10:639][  0]LogNNERuntimeORT: 0: AMD Radeon(TM) 880M Graphics (Compute, Graphics)
+[2026.09.25-03.07.10:639][  0]LogNNERuntimeORT: 1: Microsoft Basic Render Driver (Compute, Graphics)
+[2026.09.25-03.07.10:639][  0]LogNNERuntimeORT: No NPU adapter found!
+[2026.09.25-03.07.10:639][  0]LogNNERuntimeORT: MakeRuntimeORTDml:
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT:   DirectML:  yes
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT:   RHI D3D12: yes
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT:   D3D12:     yes
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT:   NPU:       no
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT: Interface availability:
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT:   GPU: yes
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT:   RDG: yes
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT:   NPU: no
+[2026.09.25-03.07.10:640][  0]LogNNERuntimeORT: No NPU adapter found with attributes (!GRAPHICS && (GENERIC_ML || CORE_COMPUTE)) (Windows 11 Version 24H2 or newer)!
+[2026.09.25-03.07.10:641][  0]LogNNERuntimeORT: Available graphics and compute adapters:
+[2026.09.25-03.07.10:641][  0]LogNNERuntimeORT: 0: AMD Radeon(TM) 880M Graphics (Compute, Graphics)
+[2026.09.25-03.07.10:641][  0]LogNNERuntimeORT: 1: Microsoft Basic Render Driver (Compute, Graphics)
+[2026.09.25-03.07.10:641][  0]LogNNERuntimeORT: No NPU adapter found!
+[2026.09.25-03.07.10:750][  0]LogTemp: [raceGPS] No valid unlock_definitions.json found; using defaults
+[2026.09.25-03.07.10:770][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\SK_DodgeCharger2024.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:771][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\MI_DodgeCharger2024_BodyWork.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:771][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\MI_DodgeCharger2024_Details1.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:772][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\MI_DodgeCharger2024_Details2.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:772][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Phys_DodgeCharger2024.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:772][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\SK_DodgeCharger2024_Skeleton.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:773][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\00_MastersOpt\M_CarPaint_Master_New.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:774][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\Vehicles\M_CarInteriorAlpha_Master.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:774][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\T_Interior__DodgeCharger_d.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:775][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\T_Interior__DodgeCharger_n.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:775][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\T_Interior__DodgeCharger_ormh.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:775][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\00_MastersOpt\M_CarDetails_Master.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:776][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\T_DodgeCharger2024_d.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:776][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\T_DodgeCharger2024_n.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:776][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Materials\T_DodgeCharger2024_orm.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:784][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\Asphalt\Textures\Asphalt02\T_Asphalt02_n.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.10:787][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\00_MastersOpt\Textures\T_Flat_orm.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.11:031][  0]LogTextureFormatOodle: Display: Oodle Texture loading DLL: oo2tex_win64_2.9.10.dll
+[2026.09.25-03.07.11:039][  0]LogMaterial: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\GenericMaterials\00_MastersOpt\M_CarPaint_Master_New.uasset: Failed to compile Material for platform PCD3D_SM6, Default Material will be used in game.
+	(Node TextureSample) Sampler type is Color, should be Normal for /Game/Carla/Static/GenericMaterials/00_MastersOpt/Textures/T_flakes_n.T_flakes_n
+
+[2026.09.25-03.07.11:075][  0]LogSkinnedAsset: Display: Waiting for skinned assets to be ready 0/1 (SK_DodgeCharger2024) ...
+[2026.09.25-03.07.11:263][  0]LogAndroidPermission: UAndroidPermissionCallbackProxy::GetInstance
+[2026.09.25-03.07.11:272][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+[2026.09.25-03.07.11:272][  0]LogAudioCaptureCore: Display: No Audio Capture implementations found. Audio input will be silent.
+[2026.09.25-03.07.11:323][  0]SourceControl: Revision control is disabled
+[2026.09.25-03.07.11:357][  0]LogConfig: Applying CVar settings from Section [/Script/NNEDenoiser.NNEDenoiserSettings] File [Engine]
+[2026.09.25-03.07.11:521][  0]LogUObjectArray: 41645 objects as part of root set at end of initial load.
+[2026.09.25-03.07.11:521][  0]LogUObjectArray: CloseDisregardForGC: 0/0 objects in disregard for GC pool
+[2026.09.25-03.07.11:742][  0]LogClass: Error: StructProperty FAkronSpawnPoint::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.09.25-03.07.11:744][  0]LogClass: Error: StructProperty FAkronSpawnPoint::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.09.25-03.07.11:744][  0]LogClass: Error: StructProperty FAkronPOI::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.09.25-03.07.11:744][  0]LogClass: Error: StructProperty FFurniturePlacement::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.09.25-03.07.11:745][  0]LogClass: Error: StructProperty FFurniturePlacement::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.09.25-03.07.11:745][  0]LogClass: Display: 5 Uninitialized script struct members found including 0 object properties
+[2026.09.25-03.07.11:749][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronSpawnPoint::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.09.25-03.07.11:750][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronSpawnPoint::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.09.25-03.07.11:750][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronPOI::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.09.25-03.07.11:750][  0]LogAutomationTest: Error: LogClass: StructProperty FFurniturePlacement::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.09.25-03.07.11:751][  0]LogAutomationTest: Error: LogClass: StructProperty FFurniturePlacement::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.09.25-03.07.11:751][  0]LogEngine: Initializing Engine...
+[2026.09.25-03.07.12:122][  0]LogTextureFormatOodle: Display: Oodle Texture loading DLL: oo2tex_win64_2.9.12.dll
+[2026.09.25-03.07.12:131][  0]LogNetVersion: Set ProjectVersion to 1.0.0.0. Version Checksum will be recalculated on next use.
+[2026.09.25-03.07.12:132][  0]LogInit: Texture streaming: Enabled
+[2026.09.25-03.07.12:244][  0]LogAudio: Display: Initializing Audio Device Manager...
+[2026.09.25-03.07.12:248][  0]LogAudio: Display: Loading Default Audio Settings Objects...
+[2026.09.25-03.07.12:248][  0]LogAudio: Display: No default SoundConcurrencyObject specified (or failed to load).
+[2026.09.25-03.07.12:250][  0]LogAudio: Display: Audio Device Manager Initialized
+[2026.09.25-03.07.12:250][  0]LogAudio: Display: Creating Audio Device:                 Id: 1, Scope: Shared, Realtime: True
+[2026.09.25-03.07.12:250][  0]LogAudioMixer: Display: Audio Mixer Platform Settings:
+[2026.09.25-03.07.12:250][  0]LogAudioMixer: Display: 	Sample Rate:						  48000
+[2026.09.25-03.07.12:251][  0]LogAudioMixer: Display: 	Callback Buffer Frame Size Requested: 1024
+[2026.09.25-03.07.12:251][  0]LogAudioMixer: Display: 	Callback Buffer Frame Size To Use:	  1024
+[2026.09.25-03.07.12:251][  0]LogAudioMixer: Display: 	Number of buffers to queue:			  1
+[2026.09.25-03.07.12:251][  0]LogAudioMixer: Display: 	Max Channels (voices):				  32
+[2026.09.25-03.07.12:251][  0]LogAudioMixer: Display: 	Number of Async Source Workers:		  4
+[2026.09.25-03.07.12:251][  0]LogAudio: Display: AudioDevice MaxSources: 32
+[2026.09.25-03.07.12:251][  0]LogAudio: Display: Audio Spatialization Plugin: None (built-in).
+[2026.09.25-03.07.12:251][  0]LogAudio: Display: Audio Reverb Plugin: None (built-in).
+[2026.09.25-03.07.12:251][  0]LogAudio: Display: Audio Occlusion Plugin: None (built-in).
+[2026.09.25-03.07.12:259][  0]LogAudioMixer: Display: Initializing audio mixer using platform API: 'XAudio2'
+[2026.09.25-03.07.12:278][  0]LogAudioEnumeration: Display: FWindowsMMDeviceCache: Default Render Role='Console', Device='Speaker (Realtek(R) Audio)'
+[2026.09.25-03.07.12:280][  0]LogAudioEnumeration: Display: FWindowsMMDeviceCache: Default Capture Role='Console', Device='Microphone Array (AMD Audio Device)'
+[2026.09.25-03.07.12:282][  0]LogAudioEnumeration: Display: FWindowsMMDeviceCache: Default Render Role='Multimedia', Device='Speaker (Realtek(R) Audio)'
+[2026.09.25-03.07.12:283][  0]LogAudioEnumeration: Display: FWindowsMMDeviceCache: Default Capture Role='Multimedia', Device='Microphone Array (AMD Audio Device)'
+[2026.09.25-03.07.12:285][  0]LogAudioEnumeration: Display: FWindowsMMDeviceCache: Default Render Role='Communications', Device='Speaker (Realtek(R) Audio)'
+[2026.09.25-03.07.12:286][  0]LogAudioEnumeration: Display: FWindowsMMDeviceCache: Default Capture Role='Communications', Device='Microphone Array (AMD Audio Device)'
+[2026.09.25-03.07.14:349][  0]LogAudioMixer: Display: Using Audio Hardware Device Speaker (Realtek(R) Audio)
+[2026.09.25-03.07.14:349][  0]LogAudioMixer: Display: Initializing Sound Submixes...
+[2026.09.25-03.07.14:352][  0]LogAudioMixer: Display: Creating Master Submix 'MasterSubmixDefault'
+[2026.09.25-03.07.14:352][  0]LogAudioMixer: Display: Creating Master Submix 'MasterReverbSubmixDefault'
+[2026.09.25-03.07.14:353][  0]LogAudioMixer: FMixerPlatformXAudio2::StartAudioStream() called. InstanceID=1
+[2026.09.25-03.07.14:353][  0]LogAudioMixer: Display: Output buffers initialized: Frames=1024, Channels=2, Samples=2048, InstanceID=1
+[2026.09.25-03.07.14:354][  0]LogAudioMixer: Display: Starting AudioMixerPlatformInterface::RunInternal(), InstanceID=1
+[2026.09.25-03.07.14:354][  0]LogAudioMixer: Display: FMixerPlatformXAudio2::SubmitBuffer() called for the first time. InstanceID=1
+[2026.09.25-03.07.14:357][  0]LogInit: FAudioDevice initialized with ID 1.
+[2026.09.25-03.07.14:357][  0]LogAudioMixer: Initializing Audio Bus Subsystem for audio device with ID 1
+[2026.09.25-03.07.14:362][  0]LogCsvProfiler: Display: Metadata set : largeworldcoordinates="1"
+[2026.09.25-03.07.14:364][  0]LogChaosDD: Creating Chaos Debug Draw Scene for world Untitled
+[2026.09.25-03.07.14:369][  0]LogTemp: Display: app=workshop
+[2026.09.25-03.07.14:369][  0]LogTemp: Display: app=race
+[2026.09.25-03.07.14:369][  0]LogAudio: Display: Audio Device (ID: 1) registered with world 'Untitled'.
+[2026.09.25-03.07.14:370][  0]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2026.09.25-03.07.14:370][  0]LogInit: Display: Game Engine Initialized.
+[2026.09.25-03.07.14:371][  0]LogNNEDenoiser: Ray Tracing is not enabled, therefore NNEDenoiser is not registered!
+[2026.09.25-03.07.14:387][  0]LogPython: Python enabled via CVar 'Engine.Python.IsEnabledByDefault'
+[2026.09.25-03.07.14:387][  0]LogPython: Using Python 3.11.8
+[2026.09.25-03.07.14:409][  0]LogPython: Display: No pip-enabled plugins with python dependencies found, skipping
+[2026.09.25-03.07.14:642][  0]LogNiagaraEditor: GEditor isn't valid! Particle reset commands will not work for Niagara components!
+[2026.09.25-03.07.14:666][  0]LogInit: Display: Starting Game.
+[2026.09.25-03.07.14:666][  0]LogGlobalStatus: UEngine::Browse Started Browse: "/Game/Maps/Cleveland5_0KmWorld?Name=Player?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode"
+[2026.09.25-03.07.14:666][  0]LogNet: Browse: /Game/Maps/Cleveland5_0KmWorld?Name=Player?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode
+[2026.09.25-03.07.14:666][  0]LogLoad: LoadMap: /Game/Maps/Cleveland5_0KmWorld?Name=Player?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode
+[2026.09.25-03.07.14:666][  0]LogWorld: BeginTearingDown for /Temp/Untitled_0
+[2026.09.25-03.07.14:666][  0]LogWorld: UWorld::CleanupWorld for Untitled, bSessionEnded=true, bCleanupResources=true
+[2026.09.25-03.07.14:666][  0]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2026.09.25-03.07.14:685][  0]LogAudio: Display: Audio Device unregistered from world 'None'.
+[2026.09.25-03.07.14:688][  0]LogUObjectHash: Compacting FUObjectHashTables data took   0.52ms
+[2026.09.25-03.07.14:732][  0]LogAudio: Display: Audio Device (ID: 1) registered with world 'Cleveland5_0KmWorld'.
+[2026.09.25-03.07.14:732][  0]LogChaosDD: Creating Chaos Debug Draw Scene for world Cleveland5_0KmWorld
+[2026.09.25-03.07.14:737][  0]LogLoad: Game class is 'ClevelandShowcaseGameMode'
+[2026.09.25-03.07.14:749][  0]LogWorld: Bringing World /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld up for play (max tick rate 0) at 2026.09.24-23.07.14
+[2026.09.25-03.07.14:750][  0]LogWorld: Bringing up level for play took: 0.002322
+[2026.09.25-03.07.14:753][  0]LogTemp: raceGPS Cleveland: flags playtest=0 autodive=1 skipIntro=1
+[2026.09.25-03.07.14:754][  0]LogTemp: raceGPS Cleveland: LoadCheckpointCourse count=12 firstS=0.0 lastS=327581.9
+[2026.09.25-03.07.14:756][  0]LogTemp: raceGPS Cleveland: loaded 410 samples, track=327582.8 cm from ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/citypacks/cleveland/burke_gp_1997/racing_line.json
+[2026.09.25-03.07.14:756][  0]LogTemp: raceGPS Cleveland: citypack loaded checkpoints=12 title=raceGPS / Cleveland Historic Circuit
+[2026.09.25-03.07.14:756][  0]LogTemp: raceGPS Cleveland: HUD bind ok title=raceGPS  -  Cleveland Historic Circuit  (0/3) place=0 cp=0/12
+[2026.09.25-03.07.14:757][  0]PIE: Warning: AttachTo: '/Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.Root' is not static , cannot attach '/Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.HangarPropISM' which is static to it. Aborting.
+[2026.09.25-03.07.14:783][  0]LogTemp: raceGPS Cleveland env: spawned ADayNightCycle at 14.0 h
+[2026.09.25-03.07.14:793][  0]LogTemp: raceGPS Cleveland env: lake verts=4 (expanded north for chase/cinematic read)
+[2026.09.25-03.07.14:798][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Carla/Static/Buildings/SM_Hangar_01 (0xF963D1A8021246DA) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.07.14:799][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:799][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Carla/Static/Buildings/SM_HangarLarge (0xA3209EFAE70C409E) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.07.14:799][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_HangarLarge'
+[2026.09.25-03.07.14:799][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Carla/Static/Props/SM_AirportHangar (0x6488D29DFCE924A4) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.07.14:799][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Props/SM_AirportHangar'
+[2026.09.25-03.07.14:799][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Carla/Static/StaticMesh/SM_Hangar (0x427B4E0D191E7003) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/StaticMesh/SM_Hangar'
+[2026.09.25-03.07.14:800][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Carla/Static/Architecture/SM_Hangar (0x69BA7521BC64EDEB) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Architecture/SM_Hangar'
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_HangarLarge'
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Props/SM_AirportHangar'
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/StaticMesh/SM_Hangar'
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Architecture/SM_Hangar'
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:800][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:801][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:801][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:802][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:802][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:802][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:802][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:802][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:802][  0]LogUObjectGlobals: Warning: Failed to find object 'StaticMesh None./Game/Carla/Static/Buildings/SM_Hangar_01'
+[2026.09.25-03.07.14:802][  0]LogTemp: [raceGPS] hangars instanced=0 boxed=10 carla_mesh=no
+[2026.09.25-03.07.14:802][  0]LogTemp: [raceGPS] taxiway markings 211 (cap 240)
+[2026.09.25-03.07.14:803][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Materials/M_SkylineBackdrop (0x3DA55E854411E87C) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.07.14:803][  0]LogUObjectGlobals: Warning: Failed to find object 'MaterialInterface /Game/Materials/M_SkylineBackdrop.M_SkylineBackdrop'
+[2026.09.25-03.07.14:803][  0]LogTemp: Warning: raceGPS Cleveland env: M_SkylineBackdrop missing; falling back to box skyline
+[2026.09.25-03.07.14:803][  0]LogTemp: raceGPS Cleveland env: built lake=1 skyline_buildings=0 named_towers=0 dressing=1 (Karla additive; T10 HISM city is in-map)
+[2026.09.25-03.07.14:804][  0]LogUObjectGlobals: Warning: Failed to find object 'Class /Script/CesiumRuntime.Cesium3DTileset'
+[2026.09.25-03.07.14:804][  0]LogTemp: raceGPS Cesium: skipped spawn (bEnableCesiumSkyline=0)
+[2026.09.25-03.07.14:804][  0]LogEngine: Onscreen warnings/messages are now DISABLED
+[2026.09.25-03.07.14:805][  0]r.SkyAtmosphere = "1"
+[2026.09.25-03.07.14:805][  0]r.ShadowQuality = "5"
+[2026.09.25-03.07.14:805][  0]r.BloomQuality = "5"
+[2026.09.25-03.07.14:805][  0]r.ReflectionMethod = "1"
+[2026.09.25-03.07.14:805][  0]r.DynamicGlobalIlluminationMethod = "1"
+[2026.09.25-03.07.14:805][  0]r.Tonemapper.Quality = "5"
+[2026.09.25-03.07.14:805][  0]r.DefaultFeature.Bloom = "1"
+[2026.09.25-03.07.14:805][  0]r.DefaultFeature.AutoExposure = "1"
+[2026.09.25-03.07.14:805][  0]r.EyeAdaptationQuality = "2"
+[2026.09.25-03.07.14:805][  0]LogTemp: [raceGPS Cleveland] look: suppressed extra directional lights=0 reflection captures=24
+[2026.09.25-03.07.14:805][  0]r.VolumetricCloud = "1"
+[2026.09.25-03.07.14:805][  0]LogTemp: [raceGPS Cleveland] Sunset applied V16 (18:45 warm western sun, sky fill + race chase)
+[2026.09.25-03.07.14:805][  0]LogTemp: [raceGPS Cleveland] look FINAL [Sunset]: hour=18.75 sunI=4.20 sunPitch=15.6 sunYaw=-78.7 skyI=2.40 (Frame A X=east Y=north)
+[2026.09.25-03.07.14:806][  0]LogEngine: Onscreen warnings/messages are now DISABLED
+[2026.09.25-03.07.14:806][  0]r.SkyAtmosphere = "1"
+[2026.09.25-03.07.14:806][  0]r.ShadowQuality = "5"
+[2026.09.25-03.07.14:806][  0]r.BloomQuality = "5"
+[2026.09.25-03.07.14:806][  0]r.ReflectionMethod = "1"
+[2026.09.25-03.07.14:806][  0]r.DynamicGlobalIlluminationMethod = "1"
+[2026.09.25-03.07.14:806][  0]r.Tonemapper.Quality = "5"
+[2026.09.25-03.07.14:806][  0]r.DefaultFeature.Bloom = "1"
+[2026.09.25-03.07.14:806][  0]r.DefaultFeature.AutoExposure = "1"
+[2026.09.25-03.07.14:806][  0]r.EyeAdaptationQuality = "2"
+[2026.09.25-03.07.14:807][  0]LogTemp: [raceGPS Cleveland] look: suppressed extra directional lights=0 reflection captures=24
+[2026.09.25-03.07.14:807][  0]r.VolumetricCloud = "1"
+[2026.09.25-03.07.14:807][  0]LogTemp: [raceGPS Cleveland] Sunset applied V16 (18:45 warm western sun, sky fill + race chase)
+[2026.09.25-03.07.14:807][  0]LogTemp: [raceGPS Cleveland] look FINAL [Sunset]: hour=18.75 sunI=4.20 sunPitch=15.6 sunYaw=-78.7 skyI=2.40 (Frame A X=east Y=north)
+[2026.09.25-03.07.14:807][  0]LogTemp: raceGPS Cleveland race: look preset=Sunset
+[2026.09.25-03.07.14:807][  0]LogTemp: Warning: raceGPS Cleveland: grid VehicleClass=BP_DodgeCharger2024_C native=ChaosVehiclePawn
+[2026.09.25-03.07.14:807][  0]LogTemp: Warning: raceGPS Cleveland: engine MaxTorque=700 MaxRPM=6500 gears=5 setups=4 wheels=4 curveEmpty=0 class=BP_DodgeCharger2024_C
+[2026.09.25-03.07.14:807][  0]LogTemp: Warning: raceGPS Cleveland: authored wheels torque-fix once pawn=BP_DodgeCharger2024_C_0 runtime=4 bones=Wheel_Front_Left,Wheel_Front_Right,Wheel_Rear_Left,Wheel_Rear_Right,
+[2026.09.25-03.07.14:808][  0]LogTemp: [raceGPS] Arcade handling applied: grip x2.00, drift retention 0.75, drift scale 0.92 past 12 deg, speed reduction 0.08 @ 220 km/h, ABS 1, steering curve 1
+[2026.09.25-03.07.14:808][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\SM_DodgeCharger2024_DoorFL.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:809][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\SM_DodgeCharger2024_DoorFR.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:811][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\SM_DodgeCharger2024_DoorRL.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:815][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\SM_DodgeCharger2024_DoorRR.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:816][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\SM_DodgeCharger2024_Lights.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:816][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Glass\SM_GlassExt_Dodge2024.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:818][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Glass\SM_GlassExt2_Dodge2024.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:819][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Glass\SM_GlassInt1_Dodge2024.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:820][  0]LogLinker: Warning: [AssetLog] C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Content\Carla\Static\Car\4Wheeled\DodgeCharger2024\Glass\SM_GlassInt2_Dodge2024.uasset: Asset has been saved with empty engine version. The asset will be loaded but may be incompatible.
+[2026.09.25-03.07.14:822][  0]LogTemp: Warning: raceGPS Cleveland: EnsureCarlaChargerDoors attached=9 missing=0 pawn=BP_DodgeCharger2024_C_0
+[2026.09.25-03.07.14:822][  0]LogTemp: Warning: raceGPS Cleveland: StraySpark+ChaosArcade preset MaxTorque=700 AWD ReverseAsBrake pawn=BP_DodgeCharger2024_C_0
+[2026.09.25-03.07.14:822][  0]LogStreaming: Warning: LoadPackage: SkipPackage: /Game/Materials/M_NightCarPaint (0xE11DB4916C844F3C) - The package to load does not exist on disk or in the loader
+[2026.09.25-03.07.14:822][  0]LogUObjectGlobals: Warning: Failed to find object 'MaterialInterface /Game/Materials/M_NightCarPaint.M_NightCarPaint'
+[2026.09.25-03.07.14:822][  0]LogTemp: [raceGPS] paint MID MI_DodgeCharger2024_BodyWork slot 0 tint (R=1.000000,G=0.420000,B=0.080000,A=1.000000) clearcoat 0.95 metallic 0.78
+[2026.09.25-03.07.14:823][  0]LogTemp: [raceGPS] showcase night lights on look=0
+[2026.09.25-03.07.14:823][  0]LogTemp: Warning: raceGPS Cleveland: sim recreate class=BP_DodgeCharger2024_C sim=1 mech=1 curveEmpty=0 rpm=0 gear=0 tq=700 wheels=4
+[2026.09.25-03.07.14:823][  0]LogTemp: Warning: raceGPS Cleveland: spawned slot=0 class=BP_DodgeCharger2024_C name=BP_DodgeCharger2024_C_0
+[2026.09.25-03.07.14:823][  0]LogTemp: raceGPS Cleveland: CloseVehicleDoors bones=4 doorMeshes=9 on BP_DodgeCharger2024_C_0
+[2026.09.25-03.07.14:823][  0]LogTemp: Warning: raceGPS Cleveland: StraySpark+ChaosArcade preset MaxTorque=700 AWD ReverseAsBrake pawn=BP_DodgeCharger2024_C_0
+[2026.09.25-03.07.14:823][  0]LogTemp: [raceGPS] paint MID MID_MI_DodgeCharger2024_BodyWork_0 slot 0 tint (R=1.000000,G=0.420000,B=0.080000,A=1.000000) clearcoat 0.95 metallic 0.78
+[2026.09.25-03.07.14:823][  0]LogTemp: [raceGPS] showcase night lights on look=0
+[2026.09.25-03.07.14:823][  0]LogTemp: raceGPS Cleveland: possessed player pawn=BP_DodgeCharger2024_C_0 pcPawn=BP_DodgeCharger2024_C_0 inputEnabled=1
+[2026.09.25-03.07.14:824][  0]LogTemp: raceGPS Cleveland: AI slot=0 soft recovery (human race, no aggressive teleport)
+[2026.09.25-03.07.14:824][  0]LogTemp: raceGPS Cleveland: player auto-drive armed (AI-as-player, PC still possesses)
+[2026.09.25-03.07.14:824][  0]LogTemp: Warning: raceGPS Cleveland: engine MaxTorque=700 MaxRPM=6500 gears=5 setups=4 wheels=4 curveEmpty=0 class=BP_DodgeCharger2024_C
+[2026.09.25-03.07.14:825][  0]LogTemp: Warning: raceGPS Cleveland: authored wheels torque-fix once pawn=BP_DodgeCharger2024_C_1 runtime=4 bones=Wheel_Front_Left,Wheel_Front_Right,Wheel_Rear_Left,Wheel_Rear_Right,
+[2026.09.25-03.07.14:825][  0]LogTemp: [raceGPS] Arcade handling applied: grip x2.00, drift retention 0.75, drift scale 0.92 past 12 deg, speed reduction 0.08 @ 220 km/h, ABS 1, steering curve 1
+[2026.09.25-03.07.14:825][  0]LogTemp: Warning: raceGPS Cleveland: EnsureCarlaChargerDoors attached=9 missing=0 pawn=BP_DodgeCharger2024_C_1
+[2026.09.25-03.07.14:825][  0]LogTemp: Warning: raceGPS Cleveland: StraySpark+ChaosArcade preset MaxTorque=700 AWD ReverseAsBrake pawn=BP_DodgeCharger2024_C_1
+[2026.09.25-03.07.14:825][  0]LogTemp: [raceGPS] paint MID MI_DodgeCharger2024_BodyWork slot 0 tint (R=1.000000,G=0.420000,B=0.080000,A=1.000000) clearcoat 0.95 metallic 0.78
+[2026.09.25-03.07.14:825][  0]LogTemp: [raceGPS] showcase night lights on look=0
+[2026.09.25-03.07.14:825][  0]LogTemp: Warning: raceGPS Cleveland: sim recreate class=BP_DodgeCharger2024_C sim=1 mech=1 curveEmpty=0 rpm=0 gear=0 tq=700 wheels=4
+[2026.09.25-03.07.14:830][  0]LogTemp: Warning: raceGPS Cleveland: spawned slot=1 class=BP_DodgeCharger2024_C name=BP_DodgeCharger2024_C_1
+[2026.09.25-03.07.14:830][  0]LogTemp: raceGPS Cleveland: CloseVehicleDoors bones=4 doorMeshes=9 on BP_DodgeCharger2024_C_1
+[2026.09.25-03.07.14:831][  0]LogTemp: Warning: raceGPS Cleveland: StraySpark+ChaosArcade preset MaxTorque=700 AWD ReverseAsBrake pawn=BP_DodgeCharger2024_C_1
+[2026.09.25-03.07.14:831][  0]LogTemp: [raceGPS] paint MID MID_MI_DodgeCharger2024_BodyWork_0 slot 0 tint (R=0.120000,G=0.130000,B=0.150000,A=1.000000) clearcoat 0.70 metallic 0.55
+[2026.09.25-03.07.14:831][  0]LogTemp: [raceGPS] showcase night lights on look=1
+[2026.09.25-03.07.14:831][  0]LogTemp: raceGPS Cleveland: AI slot=1 soft recovery (human race, no aggressive teleport)
+[2026.09.25-03.07.14:831][  0]LogTemp: Warning: raceGPS Cleveland: engine MaxTorque=700 MaxRPM=6500 gears=5 setups=4 wheels=4 curveEmpty=0 class=BP_DodgeCharger2024_C
+[2026.09.25-03.07.14:832][  0]LogTemp: Warning: raceGPS Cleveland: authored wheels torque-fix once pawn=BP_DodgeCharger2024_C_2 runtime=4 bones=Wheel_Front_Left,Wheel_Front_Right,Wheel_Rear_Left,Wheel_Rear_Right,
+[2026.09.25-03.07.14:832][  0]LogTemp: [raceGPS] Arcade handling applied: grip x2.00, drift retention 0.75, drift scale 0.92 past 12 deg, speed reduction 0.08 @ 220 km/h, ABS 1, steering curve 1
+[2026.09.25-03.07.14:832][  0]LogTemp: Warning: raceGPS Cleveland: EnsureCarlaChargerDoors attached=9 missing=0 pawn=BP_DodgeCharger2024_C_2
+[2026.09.25-03.07.14:832][  0]LogTemp: Warning: raceGPS Cleveland: StraySpark+ChaosArcade preset MaxTorque=700 AWD ReverseAsBrake pawn=BP_DodgeCharger2024_C_2
+[2026.09.25-03.07.14:832][  0]LogTemp: [raceGPS] paint MID MI_DodgeCharger2024_BodyWork slot 0 tint (R=1.000000,G=0.420000,B=0.080000,A=1.000000) clearcoat 0.95 metallic 0.78
+[2026.09.25-03.07.14:832][  0]LogTemp: [raceGPS] showcase night lights on look=0
+[2026.09.25-03.07.14:832][  0]LogTemp: Warning: raceGPS Cleveland: sim recreate class=BP_DodgeCharger2024_C sim=1 mech=1 curveEmpty=0 rpm=0 gear=0 tq=700 wheels=4
+[2026.09.25-03.07.14:832][  0]LogTemp: Warning: raceGPS Cleveland: spawned slot=2 class=BP_DodgeCharger2024_C name=BP_DodgeCharger2024_C_2
+[2026.09.25-03.07.14:832][  0]LogTemp: raceGPS Cleveland: CloseVehicleDoors bones=4 doorMeshes=9 on BP_DodgeCharger2024_C_2
+[2026.09.25-03.07.14:832][  0]LogTemp: Warning: raceGPS Cleveland: StraySpark+ChaosArcade preset MaxTorque=700 AWD ReverseAsBrake pawn=BP_DodgeCharger2024_C_2
+[2026.09.25-03.07.14:832][  0]LogTemp: [raceGPS] paint MID MID_MI_DodgeCharger2024_BodyWork_0 slot 0 tint (R=0.850000,G=0.870000,B=0.900000,A=1.000000) clearcoat 0.85 metallic 0.92
+[2026.09.25-03.07.14:832][  0]LogTemp: [raceGPS] showcase night lights on look=2
+[2026.09.25-03.07.14:832][  0]LogTemp: raceGPS Cleveland: AI slot=2 soft recovery (human race, no aggressive teleport)
+[2026.09.25-03.07.14:832][  0]LogTemp: raceGPS Cleveland: grid spawned (3 pawns) before countdown
+[2026.09.25-03.07.14:833][  0]LogTemp: raceGPS Cleveland: spawned 12 checkpoint gates (next=1)
+[2026.09.25-03.07.14:833][  0]LogTemp: raceGPS Cleveland: HUD bind ok title=raceGPS  -  Cleveland Historic Circuit  (3/3) place=3 cp=0/12
+[2026.09.25-03.07.14:833][  0]LogTemp: raceGPS Cleveland: applied chase framing V16 RACE-FOLLOW arm=680 FOV=75 pawnYaw=-157.7 armYaw=-157.7 armPitch=-12.0 (behind car, no void lock)
+[2026.09.25-03.07.14:833][  0]LogTemp: raceGPS Cleveland: skip intro (playtest)
+[2026.09.25-03.07.14:833][  0]LogWindows: WindowsPlatformFeatures enabled
+[2026.09.25-03.07.14:833][  0]LogTemp: [raceGPS] PlayerProfile loaded from slot PlayerProfile
+[2026.09.25-03.07.14:833][  0]LogTemp: [raceGPS] Drift score reset
+[2026.09.25-03.07.14:833][  0]LogTemp: [raceGPS] Race started
+[2026.09.25-03.07.14:833][  0]LogTemp: [raceGPS] Drift score reset
+[2026.09.25-03.07.14:833][  0]LogTemp: [raceGPS] Ghost recording started
+[2026.09.25-03.07.14:834][  0]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Countdown
+[2026.09.25-03.07.14:834][  0]LogTemp: raceGPS Cleveland: race armed state=ERaceSessionState::Countdown countdown=3.0 checkpoints=12 autodive=1
+[2026.09.25-03.07.14:834][  0]LogLoad: Took 0.167008 seconds to LoadMap(/Game/Maps/Cleveland5_0KmWorld)
+[2026.09.25-03.07.14:834][  0]LogGlobalStatus: UEngine::LoadMap Load map complete /Game/Maps/Cleveland5_0KmWorld
+[2026.09.25-03.07.14:863][  0]LogSlate: Took 0.000390 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Regular.ttf' (155K)
+[2026.09.25-03.07.14:887][  0]LogAssetRegistry: Display: No AssetDiscovery cache present at ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/CachedAssetRegistryDiscovery.bin. AssetRegistry discovery of files will be uncached.
+[2026.09.25-03.07.14:968][  0]LogAssetRegistry: Display: Asset registry cache read as 67.2 MiB from ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/CachedAssetRegistry_0.bin.
+[2026.09.25-03.07.14:968][  0]LogAssetRegistry: Display: AssetDataGatherer spent 0.046s loading caches ../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Intermediate/CachedAssetRegistry_*.bin.
+[2026.09.25-03.07.15:053][  0]LogAssetRegistry: AssetRegistryGather time 0.1232s: AssetDataDiscovery 0.0000s, AssetDataGather 0.0729s, StoreResults 0.0503s. Wall time 6.8140s.
+	NumCachedDirectories 0. NumUncachedDirectories 1707. NumCachedFiles 7755. NumUncachedFiles 69.
+	BackgroundTickInterruptions 0.
+[2026.09.25-03.07.15:054][  0]LogAssetRegistry: Display: Starting OnFilesLoaded.Broadcast
+[2026.09.25-03.07.15:060][  0]LogAssetRegistry: Display: Completed OnFilesLoaded.Broadcast: -0.054s
+[2026.09.25-03.07.15:202][  0]LogInit: Display: Engine is initialized. Leaving FEngineLoop::Init()
+[2026.09.25-03.07.15:218][  0]LogLoad: (Engine Initialization) Total time: 12.02 seconds
+[2026.09.25-03.07.15:220][  0]LogContentStreaming: Texture pool size now 2048 MB
+[2026.09.25-03.07.15:220][  0]LogCsvProfiler: Display: Metadata set : streamingpoolsizemb="2048"
+[2026.09.25-03.07.15:406][  0]LogRenderer: Forcing update for all mesh draw commands: SkyLight real-time capture change
+[2026.09.25-03.07.15:729][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorFL.SM_DodgeCharger2024_DoorFL being ready before playing
+[2026.09.25-03.07.15:729][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorFR.SM_DodgeCharger2024_DoorFR being ready before playing
+[2026.09.25-03.07.15:731][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorRL.SM_DodgeCharger2024_DoorRL being ready before playing
+[2026.09.25-03.07.15:731][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_DoorRR.SM_DodgeCharger2024_DoorRR being ready before playing
+[2026.09.25-03.07.15:731][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_Lights.SM_DodgeCharger2024_Lights being ready before playing
+[2026.09.25-03.07.15:731][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt_Dodge2024.SM_GlassExt_Dodge2024 being ready before playing
+[2026.09.25-03.07.15:731][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt2_Dodge2024.SM_GlassExt2_Dodge2024 being ready before playing
+[2026.09.25-03.07.15:732][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt1_Dodge2024.SM_GlassInt1_Dodge2024 being ready before playing
+[2026.09.25-03.07.15:732][  0]LogStaticMesh: Display: Waiting on static mesh StaticMesh /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt2_Dodge2024.SM_GlassInt2_Dodge2024 being ready before playing
+[2026.09.25-03.07.15:735][  0]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2026.09.25-03.07.15:739][  0]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2026.09.25-03.07.15:741][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/GenericMaterials/00_MastersOpt/M_CarPaint_Master_New, a dependent package /Game/Carla/Static/GenericMaterials/00_MastersOpt/Functions/Triplanar was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/GenericMaterials/00_MastersOpt/Functions/Triplanar has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/GenericMaterials/00_MastersOpt/Functions/Triplanar'. Perhaps it has been deleted or was not synced?
+
+[2026.09.25-03.07.15:741][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/GenericMaterials/00_MastersOpt/M_CarDetails_Master, a dependent package /Game/Carla/Static/Truck/Firetruck2024/Materials/test was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/Truck/Firetruck2024/Materials/test has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/Truck/Firetruck2024/Materials/test'. Perhaps it has been deleted or was not synced?
+
+[2026.09.25-03.07.15:742][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.7/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... started...
+[2026.09.25-03.07.15:777][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.7/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... took 35.111 ms
+[2026.09.25-03.07.15:777][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.7/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... started...
+[2026.09.25-03.07.15:792][  0]LogPython: registering <class 'ControlRigWorkflows.workflow_deformation_rig_preset.provider'>
+
+[2026.09.25-03.07.15:797][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.7/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 20.587 ms (total: 55.698 ms)
+[2026.09.25-03.07.15:797][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/SM_DodgeCharger2024_Lights, a dependent package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_Lights_Mini2024 was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_Lights_Mini2024 has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_Lights_Mini2024'. Perhaps it has been deleted or was not synced?
+
+[2026.09.25-03.07.15:798][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt_Dodge2024, a dependent package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassExt_Mini2024 was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassExt_Mini2024 has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassExt_Mini2024'. Perhaps it has been deleted or was not synced?
+
+[2026.09.25-03.07.15:798][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassExt2_Dodge2024, a dependent package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassExt_Lights_Mini2024 was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassExt_Lights_Mini2024 has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassExt_Lights_Mini2024'. Perhaps it has been deleted or was not synced?
+
+[2026.09.25-03.07.15:798][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt1_Dodge2024, a dependent package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassInt_Lights_Mini2024 was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassInt_Lights_Mini2024 has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassInt_Lights_Mini2024'. Perhaps it has been deleted or was not synced?
+
+[2026.09.25-03.07.15:799][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/Car/4Wheeled/DodgeCharger2024/Glass/SM_GlassInt2_Dodge2024, a dependent package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassInt_Mini2024 was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassInt_Mini2024 has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/Car/4Wheeled/Mini2024/Materials/MI_GlassInt_Mini2024'. Perhaps it has been deleted or was not synced?
+
+[2026.09.25-03.07.15:799][  0]LogLiveCoding: Display: LiveCodingConsole Arguments: raceGPSAkronBetaEditor Win64 Development
+[2026.09.25-03.07.15:820][  1]LogSlate: Took 0.000281 seconds to synchronously load lazily loaded font '../../../Engine/Content/Slate/Fonts/Roboto-Regular.ttf' (155K)
+[2026.09.25-03.07.18:428][ 89]LogTemp: [raceGPS] Race state changed to: ERaceSessionState::Racing
+[2026.09.25-03.07.18:428][ 89]LogTemp: [raceGPS] Race started
+[2026.09.25-03.07.18:432][ 89]LogTemp: raceGPS Cleveland: CloseVehicleDoors bones=4 doorMeshes=9 on BP_DodgeCharger2024_C_0
+[2026.09.25-03.07.18:433][ 89]LogTemp: raceGPS Cleveland: CloseVehicleDoors bones=4 doorMeshes=9 on BP_DodgeCharger2024_C_1
+[2026.09.25-03.07.18:433][ 89]LogTemp: raceGPS Cleveland: CloseVehicleDoors bones=4 doorMeshes=9 on BP_DodgeCharger2024_C_2
+[2026.09.25-03.07.18:433][ 89]LogTemp: Warning: raceGPS Cleveland: race live - released handbrake/wake on 3 pawns autodive=1
+[2026.09.25-03.07.18:433][ 89]LogTemp: Warning: raceGPS Cleveland drive-dump release slot=0 class=BP_DodgeCharger2024_C pawn=BP_DodgeCharger2024_C_0 speed=0.01 pawnThr=0.00 moveRawThr=0.00 moveProcThr=0.00 brakeP=0.00/raw=0.00/proc=1.00 hbP=0/raw=0/proc=1.00 override=1 awake=1 sim=1 parked=0 mech=1 reqCtrl=0 tickPrereq=0/1 wheels=4/4 contact=4 engOn=4 tq=700 maxrpm=7000 rpm=900 gear=1 fwd=-0.0 z=6.7 bones=Wheel_Front_Left(eng=1 off=0,0,0),Wheel_Front_Right(eng=1 off=0,0,0),Wheel_Rear_Left(eng=1 off=0,0,0),Wheel_Rear_Right(eng=1 off=0,0,0), wheelsDetail=w0:c=1 sus=-1.7 nLen=0.58 spr=207560 drvTq=0;w1:c=1 sus=-6.3 nLen=0.81 spr=93606 drvTq=0;w2:c=1 sus=-4.2 nLen=0.71 spr=144592 drvTq=0;w3:c=1 sus=0.2 nLen=0.49 spr=255617 drvTq=0; move=VehicleMovementComp ctrl=PlayerController_0
+[2026.09.25-03.07.18:434][ 89]LogTemp: Warning: raceGPS Cleveland drive-dump release slot=1 class=BP_DodgeCharger2024_C pawn=BP_DodgeCharger2024_C_1 speed=0.01 pawnThr=0.00 moveRawThr=0.00 moveProcThr=0.00 brakeP=0.00/raw=0.00/proc=1.00 hbP=0/raw=0/proc=1.00 override=1 awake=1 sim=1 parked=0 mech=1 reqCtrl=0 tickPrereq=0/1 wheels=4/4 contact=4 engOn=4 tq=700 maxrpm=7000 rpm=900 gear=1 fwd=-0.0 z=4.5 bones=Wheel_Front_Left(eng=1 off=0,0,0),Wheel_Front_Right(eng=1 off=0,0,0),Wheel_Rear_Left(eng=1 off=0,0,0),Wheel_Rear_Right(eng=1 off=0,0,0), wheelsDetail=w0:c=1 sus=-4.0 nLen=0.70 spr=150409 drvTq=0;w1:c=1 sus=-4.0 nLen=0.70 spr=150548 drvTq=0;w2:c=1 sus=-2.0 nLen=0.60 spr=199853 drvTq=0;w3:c=1 sus=-2.0 nLen=0.60 spr=199995 drvTq=0; move=VehicleMovementComp ctrl=RaceAIDriverController_1
+[2026.09.25-03.07.18:434][ 89]LogTemp: Warning: raceGPS Cleveland drive-dump release slot=2 class=BP_DodgeCharger2024_C pawn=BP_DodgeCharger2024_C_2 speed=0.00 pawnThr=0.00 moveRawThr=0.00 moveProcThr=0.00 brakeP=0.00/raw=0.00/proc=1.00 hbP=0/raw=0/proc=1.00 override=1 awake=1 sim=1 parked=0 mech=1 reqCtrl=0 tickPrereq=0/1 wheels=4/4 contact=4 engOn=4 tq=700 maxrpm=7000 rpm=900 gear=1 fwd=-0.0 z=5.7 bones=Wheel_Front_Left(eng=1 off=0,0,0),Wheel_Front_Right(eng=1 off=0,0,0),Wheel_Rear_Left(eng=1 off=0,0,0),Wheel_Rear_Right(eng=1 off=0,0,0), wheelsDetail=w0:c=1 sus=-2.8 nLen=0.64 spr=180458 drvTq=0;w1:c=1 sus=-5.1 nLen=0.76 spr=121761 drvTq=0;w2:c=1 sus=-3.1 nLen=0.65 spr=173516 drvTq=0;w3:c=1 sus=-1.0 nLen=0.55 spr=226250 drvTq=0; move=VehicleMovementComp ctrl=RaceAIDriverController_2
+[2026.09.25-03.07.18:434][ 89]LogTemp: Warning: raceGPS Cleveland drive-dump release autoDriver thr=0.00 brake=0.00 steer=0.00 rec=ERaceRecoveryState::None live=1
+[2026.09.25-03.07.18:459][ 90]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:488][ 91]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:517][ 92]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:546][ 93]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:575][ 94]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:606][ 95]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:635][ 96]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:666][ 97]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:695][ 98]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:724][ 99]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:755][100]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:785][101]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:814][102]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:845][103]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:876][104]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:909][105]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:938][106]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.18:970][107]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:002][108]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:030][109]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:059][110]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:090][111]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:120][112]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:150][113]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:183][114]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:211][115]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:242][116]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:274][117]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:303][118]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:339][119]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:374][120]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:407][121]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:439][122]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:469][123]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:501][124]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:531][125]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:563][126]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:593][127]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:623][128]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:656][129]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:685][130]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:716][131]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:747][132]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:777][133]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:808][134]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:843][135]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:877][136]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:909][137]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:940][138]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.19:970][139]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:002][140]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:032][141]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:062][142]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:093][143]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:124][144]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:156][145]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:187][146]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:219][147]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:245][148]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:275][149]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:306][150]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:338][151]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:370][152]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:402][153]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:430][154]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:459][155]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:488][156]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:519][157]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:547][158]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:577][159]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:606][160]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:635][161]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:663][162]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:692][163]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:721][164]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:750][165]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:778][166]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:810][167]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:844][168]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:875][169]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:905][170]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:933][171]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:959][172]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.20:990][173]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:018][174]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:048][175]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:076][176]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:105][177]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:133][178]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:160][179]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:190][180]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:219][181]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:244][182]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:278][183]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:310][184]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:344][185]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:374][186]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:402][187]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:430][188]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:458][189]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:488][190]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:516][191]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:546][192]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:573][193]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:603][194]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:632][195]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:663][196]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:692][197]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:719][198]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:752][199]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:756][199]LogTemp: [raceGPS] Vehicle collision at 15.4 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.21:782][200]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:813][201]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:843][202]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:873][203]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:900][204]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:905][204]LogTemp: [raceGPS] Vehicle collision at 19.3 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.21:936][205]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:942][205]LogTemp: [raceGPS] Vehicle collision at 25.8 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.21:942][205]LogTemp: [raceGPS] Vehicle collision at 25.8 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.21:943][205]LogTemp: [raceGPS] Vehicle collision at 25.8 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.21:966][206]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:970][206]LogTemp: [raceGPS] Vehicle collision at 26.5 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.21:973][206]LogTemp: [raceGPS] Vehicle collision at 26.5 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.21:995][207]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.21:998][207]LogTemp: [raceGPS] Vehicle collision at 26.4 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:000][207]LogTemp: [raceGPS] Vehicle collision at 26.4 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:027][208]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:030][208]LogTemp: [raceGPS] Vehicle collision at 27.0 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:031][208]LogTemp: [raceGPS] Vehicle collision at 27.0 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:059][209]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:061][209]LogTemp: [raceGPS] Vehicle collision at 24.4 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:062][209]LogTemp: [raceGPS] Vehicle collision at 24.4 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:065][209]LogTemp: [raceGPS] Vehicle collision at 27.7 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:065][209]LogTemp: [raceGPS] Vehicle collision at 27.7 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:087][210]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:090][210]LogTemp: [raceGPS] Vehicle collision at 25.0 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:090][210]LogTemp: [raceGPS] Vehicle collision at 25.0 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:090][210]LogTemp: [raceGPS] Vehicle collision at 28.3 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:118][211]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:120][211]LogTemp: [raceGPS] Vehicle collision at 25.6 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:121][211]LogTemp: [raceGPS] Vehicle collision at 25.6 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:144][212]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:149][212]LogTemp: [raceGPS] Vehicle collision at 26.2 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:173][213]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:203][214]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:235][215]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:237][215]LogTemp: [raceGPS] Vehicle collision at 28.4 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.22:265][216]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:295][217]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:326][218]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:356][219]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:383][220]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:410][221]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:441][222]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:470][223]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:499][224]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:527][225]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:555][226]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:582][227]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:609][228]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:639][229]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:669][230]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:701][231]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:732][232]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:762][233]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:790][234]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:820][235]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:849][236]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:876][237]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:905][238]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:935][239]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:963][240]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.22:992][241]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:021][242]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:049][243]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:074][244]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:104][245]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:134][246]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:164][247]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:194][248]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:225][249]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:255][250]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:283][251]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:312][252]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:342][253]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:370][254]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:399][255]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:426][256]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:456][257]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:484][258]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:512][259]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:539][260]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:570][261]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:598][262]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:627][263]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:660][264]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:690][265]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:719][266]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:750][267]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:779][268]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:809][269]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:838][270]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:868][271]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:895][272]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:926][273]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:955][274]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.23:984][275]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:012][276]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:042][277]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:069][278]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:100][279]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:135][280]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:164][281]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:192][282]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:221][283]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:250][284]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:277][285]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:308][286]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:337][287]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:366][288]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:395][289]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:423][290]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:454][291]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:482][292]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:509][293]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:539][294]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:572][295]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:602][296]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:634][297]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:660][298]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:689][299]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:717][300]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:747][301]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:776][302]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:805][303]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:835][304]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:860][305]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:889][306]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:919][307]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:950][308]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.24:976][309]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:005][310]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:037][311]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:069][312]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:099][313]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:126][314]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:155][315]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:185][316]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:210][317]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:240][318]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:270][319]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:294][320]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:322][321]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:351][322]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:379][323]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:408][324]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:437][325]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:465][326]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:494][327]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:526][328]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:556][329]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:559][329]LogTemp: [raceGPS] Vehicle collision at 8.9 km/h with ClevelandEnvironmentActor_0
+[2026.09.25-03.07.25:584][330]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:614][331]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:642][332]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:672][333]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:699][334]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:727][335]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:756][336]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:783][337]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:810][338]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:838][339]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:866][340]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:892][341]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:918][342]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:950][343]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.25:980][344]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:010][345]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:037][346]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:064][347]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:091][348]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:119][349]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:144][350]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:171][351]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:200][352]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:226][353]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:253][354]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:280][355]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:307][356]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:337][357]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:363][358]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:392][359]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:424][360]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:451][361]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:478][362]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:505][363]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:529][364]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:556][365]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:582][366]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:608][367]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:635][368]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:662][369]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:688][370]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:716][371]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:742][372]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:769][373]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:796][374]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:824][375]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:854][376]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:884][377]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:909][378]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:936][379]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:960][380]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.26:987][381]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:018][382]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:042][383]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:070][384]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:095][385]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:123][386]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:150][387]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:176][388]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:203][389]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:228][390]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:259][391]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:290][392]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:319][393]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:347][394]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:372][395]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:399][396]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:426][397]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:452][398]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:478][399]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:505][400]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:533][401]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:557][402]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:586][403]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:612][404]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:640][405]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:667][406]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:697][407]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:726][408]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:755][409]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:784][410]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:809][411]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:837][412]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:865][413]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:892][414]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:919][415]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.27:946][416]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:002][417]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:008][418]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:037][419]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:061][420]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:090][421]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:118][422]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:149][423]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:178][424]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:208][425]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:235][426]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:261][427]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:290][428]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:319][429]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:347][430]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:373][431]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:400][432]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:427][433]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:454][434]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:483][435]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:508][436]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:535][437]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:563][438]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:592][439]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:623][440]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:655][441]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:655][441]LogTemp: raceGPS Cleveland: soft recovery snap slot=0 s=10339.9 (human)
+[2026.09.25-03.07.28:659][441]LogTemp: raceGPS Cleveland: soft recovery snap slot=1 s=3971.4 (human)
+[2026.09.25-03.07.28:680][442]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:719][443]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:736][444]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:768][445]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:793][446]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:821][447]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:849][448]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:877][449]LogTemp: [raceGPS] Lap started
+[2026.09.25-03.07.28:949][450]LogSlate: Window 'raceGPSAkronBeta (64-bit Development PCD3D_SM6) ' being destroyed
+[2026.09.25-03.07.28:976][450]LogWindowsTextInputMethodSystem: Activated input method: English (United States) - (Keyboard).
+[2026.09.25-03.07.28:994][450]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2026.09.25-03.07.28:994][450]LogEngine: All Windows Closed
+[2026.09.25-03.07.28:996][451]LogWindows: FPlatformMisc::RequestExit(0, UGameEngine::Tick.ViewportClosed)
+[2026.09.25-03.07.28:996][451]LogWindows: FPlatformMisc::RequestExitWithStatus(0, 0, UGameEngine::Tick.ViewportClosed)
+[2026.09.25-03.07.28:996][451]LogCore: Engine exit requested (reason: Win RequestExit)
+[2026.09.25-03.07.28:997][451]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+[2026.09.25-03.07.28:997][451]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+[2026.09.25-03.07.28:997][451]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+[2026.09.25-03.07.28:997][451]LogInit: Display: PreExit Game.
+[2026.09.25-03.07.28:997][451]LogWorld: BeginTearingDown for /Game/Maps/Cleveland5_0KmWorld
+[2026.09.25-03.07.28:997][451]LogWorld: UWorld::CleanupWorld for Cleveland5_0KmWorld, bSessionEnded=true, bCleanupResources=true
+[2026.09.25-03.07.29:000][451]LogSlate: InvalidateAllWidgets triggered.  All widgets were invalidated
+[2026.09.25-03.07.29:000][451]LogRuntimeTelemetry: Recording EnginePreExit events
+[2026.09.25-03.07.29:902][451]LogAudio: Display: Beginning Audio Device Manager Shutdown (Module: AudioMixerXAudio2)...
+[2026.09.25-03.07.29:902][451]LogAudio: Display: Destroying 1 Remaining Audio Device(s)...
+[2026.09.25-03.07.29:903][451]LogAudio: Display: Audio Device unregistered from world 'Cleveland5_0KmWorld'.
+[2026.09.25-03.07.29:903][451]LogAudio: Display: Shutting down audio device while 1 references to it are still alive. For more information, compile with INSTRUMENT_AUDIODEVICE_HANDLES.
+[2026.09.25-03.07.29:903][451]LogAudioMixer: Display: FMixerPlatformXAudio2::StopAudioStream() called. InstanceID=1, StreamState=4
+[2026.09.25-03.07.29:904][451]LogAudioMixer: Display: FMixerPlatformXAudio2::StopAudioStream() called. InstanceID=1, StreamState=2
+[2026.09.25-03.07.29:909][451]LogAudioMixer: Deinitializing Audio Bus Subsystem for audio device with ID -1
+[2026.09.25-03.07.29:909][451]LogAudio: Display: Audio Device Manager Shutdown
+[2026.09.25-03.07.29:914][451]LogSlate: Slate User Destroyed.  User Index 0, Is Virtual User: 0
+[2026.09.25-03.07.29:914][451]LogExit: Preparing to exit.
+[2026.09.25-03.07.29:952][451]LogSlate: Updating window title bar state: overlay mode, drag disabled, window buttons hidden, title bar hidden
+[2026.09.25-03.07.29:955][451]LogUObjectHash: Compacting FUObjectHashTables data took   0.63ms
+[2026.09.25-03.07.30:016][451]LogMoviePlayer: Shutting down movie player
+[2026.09.25-03.07.30:039][451]LogDemo: Cleaned up 0 splitscreen connections, owner deletion: enabled
+[2026.09.25-03.07.30:049][451]LogExit: Game engine shut down
+[2026.09.25-03.07.30:052][451]LogRenderer: Forcing update for all mesh draw commands: SkyLight real-time capture change
+[2026.09.25-03.07.30:121][451]LogExit: Object subsystem successfully closed.
+[2026.09.25-03.07.30:226][451]LogShaderCompilers: Display: Shaders left to compile 0
+[2026.09.25-03.07.30:274][451]LogChaosDD: Chaos Debug Draw Shutdown
+[2026.09.25-03.07.30:275][451]LogNFORDenoise: NFORDenoise function shutting down
+[2026.09.25-03.07.30:281][451]RenderDocPlugin: plugin has been unloaded.
+[2026.09.25-03.07.30:302][451]LogEOSShared: FEOSSDKManager::Shutdown EOS_Shutdown Result=[EOS_Success]
+[2026.09.25-03.07.30:302][451]LogXGEController: Cleaning working directory: C:/Users/cgp22/AppData/Local/Temp/UnrealXGEWorkingDir/
+[2026.09.25-03.07.30:304][451]LogPakFile: Destroying PakPlatformFile
+[2026.09.25-03.07.30:760][451]LogD3D12RHI: ~FD3D12DynamicRHI
+[2026.09.25-03.07.30:783][451]LogExit: Exiting.
+[2026.09.25-03.07.30:796][451]Log file closed, 09/24/26 23:07:30

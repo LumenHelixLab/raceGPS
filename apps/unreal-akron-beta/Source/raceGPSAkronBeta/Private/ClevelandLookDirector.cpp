@@ -8,6 +8,8 @@
 #include "Engine/ReflectionCapture.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/SkyLightComponent.h"
+#include "Components/SkyAtmosphereComponent.h"
+#include "Engine/PostProcessVolume.h"
 
 AClevelandLookDirector::AClevelandLookDirector()
 {
@@ -163,6 +165,7 @@ void AClevelandLookDirector::ApplyVisualMode(EClevelandVisualMode InMode)
 		ApplyMidnight();
 		break;
 	}
+	ApplyNightExposureFloor(Mode == EClevelandVisualMode::Midnight);
 	LogFinalLook(*PresetDisplayName(Mode));
 }
 
@@ -266,6 +269,11 @@ void AClevelandLookDirector::ApplyMidnight()
 		Cycle->bUseSkyAtmosphere = true;
 		Cycle->bUseVolumetricClouds = false;
 		Cycle->SetTimeOfDay(22.0f);
+		// WE recapture floor: deep-navy sky above the backdrop card instead of void.
+		if (Cycle->SkyAtmosphere)
+		{
+			Cycle->SkyAtmosphere->SetSkyLuminanceFactor(MidnightSkyLuminanceFactor);
+		}
 		if (Cycle->SunLight)
 		{
 			Cycle->SunLight->SetIntensity(2.40f);
@@ -290,7 +298,9 @@ void AClevelandLookDirector::ApplyMidnight()
 		Post->EpicPreset.SceneColorTintR = 1.02f;
 		Post->EpicPreset.SceneColorTintG = 0.98f;
 		Post->EpicPreset.SceneColorTintB = 0.96f;
-		Post->EpicPreset.AutoExposureBias = 1.15f;
+		// WE recapture: was 1.15 (+1.15 EV brighten) which blew the unlit card lavender;
+		// exposure is now clamped by NightExposureVolume (MidnightExposureMin/MaxEV100).
+		Post->EpicPreset.AutoExposureBias = 0.0f;
 		Post->ApplyPresetForTier(EVisualQualityTier::Epic);
 	}
 	if (GEngine)
@@ -298,6 +308,39 @@ void AClevelandLookDirector::ApplyMidnight()
 		GEngine->Exec(GetWorld(), TEXT("r.VolumetricCloud 0"));
 	}
 	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] Midnight applied (22:00 moon directional, dry surface unchanged)"));
+}
+
+void AClevelandLookDirector::ApplyNightExposureFloor(bool bEnable)
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+	if (!NightExposureVolume && bEnable)
+	{
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		NightExposureVolume = World->SpawnActor<APostProcessVolume>(APostProcessVolume::StaticClass(), FTransform::Identity, Params);
+	}
+	if (!NightExposureVolume)
+	{
+		return;
+	}
+	NightExposureVolume->bUnbound = true;
+	NightExposureVolume->Priority = 50.f; // above APostProcessController's unbound component
+	NightExposureVolume->BlendWeight = 1.f;
+	NightExposureVolume->bEnabled = bEnable;
+	FPostProcessSettings& S = NightExposureVolume->Settings;
+	S.bOverride_AutoExposureMinBrightness = true;
+	S.AutoExposureMinBrightness = MidnightExposureMinEV100;
+	S.bOverride_AutoExposureMaxBrightness = true;
+	S.AutoExposureMaxBrightness = MidnightExposureMaxEV100;
+	S.bOverride_AutoExposureBias = true;
+	S.AutoExposureBias = 0.f;
+	UE_LOG(LogTemp, Log, TEXT("[raceGPS Cleveland] night exposure floor enabled=%d EV100=[%.2f,%.2f] skyLum=(%.2f,%.2f,%.2f)"),
+		bEnable ? 1 : 0, MidnightExposureMinEV100, MidnightExposureMaxEV100,
+		MidnightSkyLuminanceFactor.R, MidnightSkyLuminanceFactor.G, MidnightSkyLuminanceFactor.B);
 }
 
 void AClevelandLookDirector::LogFinalLook(const TCHAR* Tag) const

@@ -1525,18 +1525,27 @@ void AChaosVehiclePawn::ApplyChargerVisualMaterialFloor()
 {
     // V17 visual floor: CARLA M_CarPaint_Master_New fails SM6 compile (missing Triplanar MF).
     // MI_DodgeCharger2024_BodyWork* instances that master -> DefaultMaterial hollow look.
-    // Prefer M_NightCarPaint if present; else Engine BasicShapeMaterial (always compiles).
+    // Prefer skeletal-safe body MI/master (UsedWithSkeletalMesh); then M_NightCarPaint.
+    // Never assign Engine BasicShapeMaterial - it lacks UsedWithSkeletalMesh (outline-only / illegal on skel).
     UMaterialInterface* BodyMI = LoadObject<UMaterialInterface>(nullptr,
-        TEXT("/Game/Materials/M_NightCarPaint.M_NightCarPaint"));
+        TEXT("/Game/Materials/MI_ChargerBody_SkeletalSafe.MI_ChargerBody_SkeletalSafe"));
     if (!BodyMI)
     {
         BodyMI = LoadObject<UMaterialInterface>(nullptr,
-            TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
-        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor using BasicShapeMaterial (M_NightCarPaint missing; CARLA master broken)"));
+            TEXT("/Game/Materials/M_BodyPaint_SkeletalSafe.M_BodyPaint_SkeletalSafe"));
+    }
+    if (!BodyMI)
+    {
+        BodyMI = LoadObject<UMaterialInterface>(nullptr,
+            TEXT("/Game/Materials/M_NightCarPaint.M_NightCarPaint"));
+    }
+    if (!BodyMI)
+    {
+        UE_LOG(LogTemp, Error, TEXT("raceGPS Cleveland: V17 paint floor FAILED - no skeletal-safe body mat (MI_ChargerBody_SkeletalSafe / M_BodyPaint_SkeletalSafe / M_NightCarPaint); leaving existing mats (not assigning BasicShapeMaterial)"));
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor using M_NightCarPaint"));
+        UE_LOG(LogTemp, Warning, TEXT("raceGPS Cleveland: V17 paint floor using %s"), *BodyMI->GetName());
     }
 
     UMaterialInterface* GlassMI = LoadObject<UMaterialInterface>(nullptr,
@@ -1663,8 +1672,21 @@ void AChaosVehiclePawn::ApplyVehicleLook(EVehicleLook Look)
         }
         // V10: CARLA master still missing Triplanar MF — swap body onto local night paint
         // so Base_color / flakes / emissive actually compile and read at night.
-        if (UMaterialInterface* NightPaint = LoadObject<UMaterialInterface>(nullptr,
-            TEXT("/Game/Materials/M_NightCarPaint.M_NightCarPaint")))
+        // V10/VA: prefer skeletal-safe body MI/master; fall back to M_NightCarPaint.
+        // Do not use BasicShapeMaterial (illegal on skeletal mesh).
+        UMaterialInterface* NightPaint = LoadObject<UMaterialInterface>(nullptr,
+            TEXT("/Game/Materials/MI_ChargerBody_SkeletalSafe.MI_ChargerBody_SkeletalSafe"));
+        if (!NightPaint)
+        {
+            NightPaint = LoadObject<UMaterialInterface>(nullptr,
+                TEXT("/Game/Materials/M_BodyPaint_SkeletalSafe.M_BodyPaint_SkeletalSafe"));
+        }
+        if (!NightPaint)
+        {
+            NightPaint = LoadObject<UMaterialInterface>(nullptr,
+                TEXT("/Game/Materials/M_NightCarPaint.M_NightCarPaint"));
+        }
+        if (NightPaint)
         {
             Skel->SetMaterial(i, NightPaint);
         }

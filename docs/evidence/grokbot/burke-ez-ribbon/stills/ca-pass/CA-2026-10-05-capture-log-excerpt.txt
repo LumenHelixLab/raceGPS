@@ -1,0 +1,88 @@
+# Trimmed excerpt of apps/unreal-akron-beta/Saved/Logs/raceGPSAkronBeta.log (CA pass, editor PID 4292, 2026-10-05 22:41:55-22:43:51 ET; log timestamps are UTC)
+LogWindows: Failed to load 'aqProf.dll' (GetLastError=126)
+LogWindows: Failed to load 'VtuneApi.dll' (GetLastError=126)
+LogWindows: Failed to load 'VtuneApi32e.dll' (GetLastError=126)
+LogCsvProfiler: Display: Metadata set : commandline="" C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject /Game/Maps/Cleveland5_0KmWorld -d3d12 -log -NoSplash -ExecCmds="py C:/Users/cgp22/ca-stills-staging/_ca_ribbon_stills.py"""
+LogWindows: Failed to load 'WinPixGpuCapturer.dll' (GetLastError=126)
+LogInit: ExecutableName: UnrealEditor.exe
+LogInit: Branch Name: ++UE5+Release-5.7
+LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld -d3d12 -log -NoSplash -ExecCmds="py C:/Users/cgp22/ca-stills-staging/_ca_ribbon_stills.py"
+[2026.10.06-02.41.57:732][  0]LogRHI: Using Forced RHI: D3D12
+[2026.10.06-02.41.57:968][  0]LogD3D12RHI: Chosen D3D12 Adapter Id = 0
+[2026.10.06-02.41.59:135][  0]LogRHI: Using Forced RHI: D3D12
+[2026.10.06-02.41.59:144][  0]LogRHI:             Name: AMD Radeon(TM) 880M Graphics
+[2026.10.06-02.42.04:509][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_128x.png' error.
+[2026.10.06-02.42.04:512][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_24x.png' error.
+[2026.10.06-02.42.08:970][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Plugins/Animation/EaseCurveTool/Resources/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.42.09:319][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/./Editor/Slate/Icons/doc_16x.png' error.
+[2026.10.06-02.42.09:321][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.42.09:912][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_24x.png' error.
+[2026.10.06-02.42.09:914][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Platforms/VisionOS/Content/Editor/Slate/Launcher/Platform_VisionOS_128x.png' error.
+[2026.10.06-02.42.09:942][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Plugins/Animation/EaseCurveTool/Resources/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.42.09:947][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/./Editor/Slate/Icons/doc_16x.png' error.
+[2026.10.06-02.42.09:947][  0]LogStreaming: Warning: Failed to read file '../../../Engine/Content/Slate/Common/ButtonHoverHint.png' error.
+[2026.10.06-02.42.09:977][  0]LogFab: Plugin initialized. VersionName: 0.0.10 (Version: 10) - Engine Version 5.7.4-51494982+++UE5+Release-5.7
+[2026.10.06-02.42.10:003][  0]LogWindows: Failed to load 'Wintab32.dll' (GetLastError=126)
+[2026.10.06-02.42.10:370][  0]LogClass: Error: StructProperty FAkronSpawnPoint::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.42.10:373][  0]LogClass: Error: StructProperty FAkronSpawnPoint::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.42.10:374][  0]LogClass: Error: StructProperty FAkronPOI::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.42.10:374][  0]LogClass: Error: StructProperty FFurniturePlacement::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.42.10:375][  0]LogClass: Error: StructProperty FFurniturePlacement::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.42.10:387][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronSpawnPoint::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.42.10:390][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronSpawnPoint::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.42.10:391][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronPOI::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.42.10:391][  0]LogAutomationTest: Error: LogClass: StructProperty FFurniturePlacement::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.42.10:392][  0]LogAutomationTest: Error: LogClass: StructProperty FFurniturePlacement::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.42.12:749][  0]Cmd: MAP LOAD FILE="../../../../../../projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Maps/Cleveland5_0KmWorld.umap" TEMPLATE=0 SHOWPROGRESS=0 FEATURELEVEL=4
+[2026.10.06-02.42.12:870][  0]LogAudio: Display: Audio Device (ID: 1) registered with world 'Cleveland5_0KmWorld'.
+[2026.10.06-02.42.12:871][  0]LogChaosDD: Creating Chaos Debug Draw Scene for world Cleveland5_0KmWorld
+[2026.10.06-02.42.12:940][  0]MapCheck: Map check complete: 0 Error(s), 0 Warning(s), took 0.171ms to complete.
+[2026.10.06-02.42.19:694][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/GenericMaterials/00_MastersOpt/M_CarPaint_Master_New, a dependent package /Game/Carla/Static/GenericMaterials/00_MastersOpt/Functions/Triplanar was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/GenericMaterials/00_MastersOpt/Functions/Triplanar has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/GenericMaterials/00_MastersOpt/Functions/Triplanar'. Perhaps it has been deleted or was not synced?
+[2026.10.06-02.42.19:697][  0]LoadErrors: Warning: While trying to load package /Game/Carla/Static/GenericMaterials/00_MastersOpt/M_CarDetails_Master, a dependent package /Game/Carla/Static/Truck/Firetruck2024/Materials/test was not available. Additional explanatory information follows:
+FPackageName: Skipped package /Game/Carla/Static/Truck/Firetruck2024/Materials/test has a valid, mounted, mount point but does not exist either on disk or in iostore. The uncooked file would be expected on disk at 'C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Carla/Static/Truck/Firetruck2024/Materials/test'. Perhaps it has been deleted or was not synced?
+[2026.10.06-02.42.20:055][  0]LogPython: Warning: [CA stills] armed out=C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass
+[2026.10.06-02.42.25:371][ 64]PIE: Warning: AttachTo: '/Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.Root' is not static , cannot attach '/Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.HangarPropISM' which is static to it. Aborting.
+[2026.10.06-02.42.25:432][ 64]LogTemp: raceGPS Cleveland env: lake verts=4 (expanded north for chase/cinematic read)
+[2026.10.06-02.42.25:572][ 64]LogTemp: raceGPS Cleveland env: photo skyline backdrop built (radius 2600 m, span 110 deg)
+[2026.10.06-02.42.25:573][ 64]LogTemp: raceGPS Cleveland env: built lake=1 skyline_buildings=0 named_towers=0 dressing=1 (Karla additive; T10 HISM city is in-map)
+[2026.10.06-02.42.25:575][ 64]LogPython: Warning: [CA stills] EnvActor LoadAndBuild -> True
+[2026.10.06-02.42.25:613][ 64]LogActorFactory: Actor Factory spawned Class /Script/Engine.CameraActor as actor: CameraActor /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.CameraActor_0
+[2026.10.06-02.42.25:615][ 64]LogActorFactory: Actor Factory spawned Class /Script/Engine.CameraActor as actor: CameraActor /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.CameraActor_0
+[2026.10.06-02.42.25:632][ 64]LogPython: Warning: [CA stills] track bbox x[-70132,65287] y[-38428,45463] centre=(-2422,3517) S/F=(6995,-8471) driver sample 3 ground_z=1.5 yaw=-157.8
+[2026.10.06-02.42.25:723][ 64]LogTemp: [raceGPS Cleveland] look FINAL [Sunset]: hour=18.75 sunI=4.20 sunPitch=15.6 sunYaw=-78.7 skyI=2.40 (Frame A X=east Y=north)
+[2026.10.06-02.42.25:724][ 64]LogTemp: raceGPS Cleveland env: ApplyLookMode midnight=0 skyline_buildings=0 named_towers=0 mids=3
+[2026.10.06-02.42.25:724][ 64]LogPython: Warning: [CA stills] LookDirector.ApplyVisualMode(SUNSET) + env.ApplyLookMode(midnight=False)
+[2026.10.06-02.42.25:735][ 65]LogPython: Warning: [CA stills] built; warmup 45.0s
+[2026.10.06-02.42.25:737][ 65]LogNavigation: Warning: FNavigationOctree::AddNode: Empty bounds, ignoring ProceduralMeshComponent /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.GrassMesh.
+[2026.10.06-02.42.25:738][ 65]LogNavigation: Warning: FNavigationOctree::AddNode: Empty bounds, ignoring ProceduralMeshComponent /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.BarrierMesh.
+[2026.10.06-02.42.25:738][ 65]LogNavigation: Warning: FNavigationOctree::AddNode: Empty bounds, ignoring ProceduralMeshComponent /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.ConeMesh.
+[2026.10.06-02.42.25:739][ 65]LogNavigation: Warning: FNavigationOctree::AddNode: Empty bounds, ignoring ProceduralMeshComponent /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.MarkingMesh.
+[2026.10.06-02.42.25:739][ 65]LogNavigation: Warning: FNavigationOctree::AddNode: Empty bounds, ignoring ProceduralMeshComponent /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.SkylineMesh.
+[2026.10.06-02.42.25:739][ 65]LogNavigation: Warning: FNavigationOctree::AddNode: Empty bounds, ignoring ProceduralMeshComponent /Game/Maps/Cleveland5_0KmWorld.Cleveland5_0KmWorld:PersistentLevel.ClevelandEnvironmentActor_0.HangarMesh.
+[2026.10.06-02.43.10:938][966]LogPython: Warning: [CA stills] overhead preset=SUNSET cam=(-2422,3517,150000) pitch=-90.0 yaw=90.0 fov=60.0
+[2026.10.06-02.43.15:950][110]LogPython: Warning: [CA stills] overhead HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-overhead.png
+[2026.10.06-02.43.17:267][116]LogPython: Warning: [CA stills] overhead saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-overhead.png (324534 bytes)
+[2026.10.06-02.43.17:307][117]LogPython: Warning: [CA stills] driver preset=SUNSET cam=(4771,-9380,116) pitch=-1.5 yaw=-157.8 fov=80.0
+[2026.10.06-02.43.22:365][210]LogPython: Warning: [CA stills] driver HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-driver.png
+[2026.10.06-02.43.23:372][220]LogPython: Warning: [CA stills] driver saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-driver.png (1030348 bytes)
+[2026.10.06-02.43.23:407][222]LogTemp: [raceGPS Cleveland] look FINAL [Midnight]: hour=22.00 sunI=2.40 sunPitch=-46.0 sunYaw=35.0 skyI=2.20 (Frame A X=east Y=north)
+[2026.10.06-02.43.23:422][223]LogTemp: raceGPS Cleveland env: V15 night ground materials applied=5
+[2026.10.06-02.43.23:422][223]LogTemp: raceGPS Cleveland env: ApplyLookMode midnight=1 skyline_buildings=0 named_towers=0 mids=10
+[2026.10.06-02.43.23:423][223]LogPython: Warning: [CA stills] LookDirector.ApplyVisualMode(MIDNIGHT) + env.ApplyLookMode(midnight=True)
+[2026.10.06-02.43.23:425][223]LogPython: Warning: [CA stills] overhead-midnight preset=MIDNIGHT cam=(-2422,3517,150000) pitch=-90.0 yaw=90.0 fov=60.0
+[2026.10.06-02.43.38:419][625]LogPython: Warning: [CA stills] overhead-midnight HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-overhead-midnight.png
+[2026.10.06-02.43.39:431][644]LogPython: Warning: [CA stills] overhead-midnight saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-overhead-midnight.png (745858 bytes)
+[2026.10.06-02.43.39:450][645]LogPython: Warning: [CA stills] driver-midnight preset=MIDNIGHT cam=(4771,-9380,116) pitch=-1.5 yaw=-157.8 fov=80.0
+[2026.10.06-02.43.44:482][786]LogPython: Warning: [CA stills] driver-midnight HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-driver-midnight.png
+[2026.10.06-02.43.45:497][812]LogPython: Warning: [CA stills] driver-midnight saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\ca-pass\CA-2026-10-05-driver-midnight.png (949903 bytes)
+[2026.10.06-02.43.46:105][814]LogPython: Warning: [CA stills] DONE shots=4/4; quitting editor (no save)
+[2026.10.06-02.43.46:108][814]Cmd: QUIT_EDITOR
+[2026.10.06-02.43.46:145][815]LogWorld: UWorld::CleanupWorld for Cleveland5_0KmWorld, bSessionEnded=true, bCleanupResources=true
+[2026.10.06-02.43.46:273][815]LogAudio: Display: Audio Device unregistered from world 'Cleveland5_0KmWorld'.
+[2026.10.06-02.43.46:523][815]LogExit: Preparing to exit.
+[2026.10.06-02.43.47:818][815]LogExit: Editor shut down
+[2026.10.06-02.43.47:825][815]LogExit: Transaction tracking system shut down
+[2026.10.06-02.43.48:435][815]LogExit: Object subsystem successfully closed.
+[2026.10.06-02.43.48:472][815]LogShaderCompilers: Display: Shaders left to compile 0
+[2026.10.06-02.43.51:439][815]LogExit: Exiting.

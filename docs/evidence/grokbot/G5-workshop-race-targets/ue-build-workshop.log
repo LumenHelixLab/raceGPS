@@ -1,0 +1,118 @@
+Using bundled DotNet SDK version: 8.0.412 win-x64
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" raceGPSWorkshop Win64 Development -Project=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject -WaitMutex
+Log file: C:\Users\cgp22\AppData\Local\UnrealBuildTool\Log.txt
+Creating makefile for raceGPSWorkshop (no existing makefile)
+UHT compiled-in object format Default
+Parsing headers for raceGPSWorkshop
+  Running Internal UnrealHeaderTool C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Intermediate\Build\Win64\raceGPSWorkshop\Development\raceGPSWorkshop.uhtmanifest -WarningsAsErrors -installed
+UHT processed raceGPSWorkshop in 1.6277565 seconds (31 files written)
+Building raceGPSWorkshop...
+Using Visual Studio 2022 14.44.35226 toolchain (C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207) and Windows 10.0.26100.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from raceGPSAkronBeta unity file: AchievementSystem.cpp, AkronHUD.cpp, AkronXodrImporter.cpp, BuildingMeshGenerator.cpp, ChampionshipManager.cpp, ChaosVehiclePawn.cpp, CheckpointGate.cpp, ClevelandEnvironmentActor.cpp, ClevelandLookDirector.cpp, ClevelandShowcaseGameMode.cpp, ClevelandSoloGameMode.cpp, CompassWidget.cpp, ConsoleCommands.cpp, ContributionCaptureComponent.cpp, CourseCreatorWidget.cpp, CruiseSprintGameMode.cpp, DayNightCycle.cpp, DeveloperConsole.cpp, DriftScoreSystem.cpp, FrameDiagnosticActor.cpp, GhostVehicle.cpp, GhostVehicleSystem.cpp, LANBrowserWidget.cpp, LANSessionManager.cpp, LeaderboardSystem.cpp, LeaderboardWidget.cpp, LoadingScreenWidget.cpp, MainMenuGameMode.cpp, MainMenuWidget.cpp, MinimapRenderer.cpp, MinimapWidget.cpp, NeonHUD.cpp, NotificationManager.cpp, OnboardingManager.cpp, PauseMenuWidget.cpp, PhotoModeController.cpp, PlayerProfileSaveGame.cpp, PostProcessController.cpp, PostRaceStatsWidget.cpp, PreflightSystem.cpp, RaceAIDriverController.cpp, raceGPSAkronBeta.cpp, RaceGPSBackendClient.cpp, raceGPSGameInstance.cpp, RaceGPSMaterialProvider.cpp, RaceGPSVehicleWheels.cpp, RaceGridManager.cpp, RaceReplayManager.cpp, RaceReplayPlayer.cpp, RaceReplayRecorder.cpp, RaceScoringSystem.cpp, RaceSessionManager.cpp, RaceTimerSystem.cpp, RacingLineComponent.cpp, RoadMeshGenerator.cpp, RouteSplineActor.cpp, RuntimeCityLoader.cpp, SettingsAutoConfigurator.cpp, SettingsSystem.cpp, SettingsWidget.cpp, StreetFurnitureSpawner.cpp, TrafficAISpawner.cpp, TrafficSpawner.cpp, TrafficVehicle.cpp, TutorialSystem.cpp, TutorialWidget.cpp, UnlockSystem.cpp, VehicleAudioComponent.cpp, VehicleSelectionWidget.cpp, VisualQualitySettings.cpp, WeatherSystem.cpp, WorldContentInstaller.cpp, FrameContractTests.cpp, raceGPSGameplayTests.cpp
+Determining max actions to execute in parallel (10 physical cores, 20 logical cores)
+  Executing up to 10 processes, one per physical core
+Using Unreal Build Accelerator local executor to run 95 action(s)
+  Storage capacity 40Gb
+---- Starting trace: 260924_210617 ----
+UbaServer - Listening on 0.0.0.0:1345
+[1/95] Resource Default.rc2
+[2/95] Compile [x64] SharedPCH.Engine.Project.ValApi.ValExpApi.Cpp20.cpp
+[3/95] Compile [x64] AkronHUD.cpp
+[4/95] Compile [x64] BuildingMeshGenerator.cpp
+[5/95] Compile [x64] AkronXodrImporter.cpp
+[6/95] Compile [x64] AchievementSystem.cpp
+[7/95] Compile [x64] ChampionshipManager.cpp
+[8/95] Compile [x64] CheckpointGate.cpp
+[9/95] Compile [x64] ClevelandLookDirector.cpp
+[10/95] Compile [x64] ClevelandEnvironmentActor.cpp
+[11/95] Compile [x64] ClevelandShowcaseGameMode.cpp
+[12/95] Compile [x64] ClevelandSoloGameMode.cpp
+[13/95] Compile [x64] ConsoleCommands.cpp
+[14/95] Compile [x64] ContributionCaptureComponent.cpp
+[15/95] Compile [x64] ChaosVehiclePawn.cpp
+[16/95] Compile [x64] CompassWidget.cpp
+[17/95] Compile [x64] DayNightCycle.cpp
+[18/95] Compile [x64] DriftScoreSystem.cpp
+[19/95] Compile [x64] CourseCreatorWidget.cpp
+[20/95] Compile [x64] FrameContractTests.cpp
+[21/95] Compile [x64] DeveloperConsole.cpp
+[22/95] Compile [x64] FrameDiagnosticActor.cpp
+[23/95] Compile [x64] GhostVehicle.cpp
+[24/95] Compile [x64] GhostVehicleSystem.cpp
+[25/95] Compile [x64] LANSessionManager.cpp
+[26/95] Compile [x64] CruiseSprintGameMode.cpp
+[27/95] Compile [x64] LeaderboardSystem.cpp
+[28/95] Compile [x64] MainMenuGameMode.cpp
+[29/95] Compile [x64] LeaderboardWidget.cpp
+[30/95] Compile [x64] LoadingScreenWidget.cpp
+[31/95] Compile [x64] MinimapRenderer.cpp
+[32/95] Compile [x64] LANBrowserWidget.cpp
+[33/95] Compile [x64] Module.raceGPSAkronBeta.1.cpp
+[34/95] Compile [x64] MainMenuWidget.cpp
+[35/95] Compile [x64] MinimapWidget.cpp
+[36/95] Compile [x64] Module.raceGPSAkronBeta.2.cpp
+[37/95] Compile [x64] Module.raceGPSAkronBeta.4.cpp
+[38/95] Compile [x64] Module.raceGPSAkronBeta.6.cpp
+[39/95] Compile [x64] Module.raceGPSAkronBeta.5.cpp
+[40/95] Compile [x64] Module.raceGPSAkronBeta.3.cpp
+[41/95] Compile [x64] NeonHUD.cpp
+[42/95] Compile [x64] NotificationManager.cpp
+[43/95] Compile [x64] OnboardingManager.cpp
+[44/95] Compile [x64] Module.raceGPSAkronBeta.7.cpp
+[45/95] Compile [x64] Module.raceGPSAkronBeta.8.cpp
+[46/95] Compile [x64] PhotoModeController.cpp
+[47/95] Compile [x64] PlayerProfileSaveGame.cpp
+[48/95] Compile [x64] PauseMenuWidget.cpp
+[49/95] Compile [x64] PostProcessController.cpp
+[50/95] Compile [x64] RaceAIDriverController.cpp
+[51/95] Compile [x64] PreflightSystem.cpp
+[52/95] Compile [x64] PostRaceStatsWidget.cpp
+[53/95] Compile [x64] RaceGPSVehicleWheels.cpp
+[54/95] Compile [x64] RaceGPSMaterialProvider.cpp
+[55/95] Compile [x64] RaceGPSBackendClient.cpp
+[56/95] Compile [x64] RaceReplayPlayer.cpp
+[57/95] Compile [x64] RaceReplayManager.cpp
+[58/95] Compile [x64] RaceScoringSystem.cpp
+[59/95] Compile [x64] RaceReplayRecorder.cpp
+[60/95] Compile [x64] RaceSessionManager.cpp
+[61/95] Compile [x64] RaceTimerSystem.cpp
+[62/95] Compile [x64] RoadMeshGenerator.cpp
+[63/95] Compile [x64] RacingLineComponent.cpp
+[64/95] Compile [x64] SettingsAutoConfigurator.cpp
+[65/95] Compile [x64] RouteSplineActor.cpp
+[66/95] Compile [x64] RaceGridManager.cpp
+[67/95] Compile [x64] SettingsSystem.cpp
+[68/95] Compile [x64] RuntimeCityLoader.cpp
+[69/95] Compile [x64] StreetFurnitureSpawner.cpp
+[70/95] Compile [x64] TrafficSpawner.cpp
+[71/95] Compile [x64] TrafficVehicle.cpp
+[72/95] Compile [x64] SettingsWidget.cpp
+[73/95] Compile [x64] TrafficAISpawner.cpp
+[74/95] Compile [x64] TutorialSystem.cpp
+[75/95] Compile [x64] VehicleAudioComponent.cpp
+[76/95] Compile [x64] UnlockSystem.cpp
+[77/95] Compile [x64] VisualQualitySettings.cpp
+[78/95] Compile [x64] TutorialWidget.cpp
+[79/95] Compile [x64] raceGPSAkronBeta.cpp
+[80/95] Compile [x64] VehicleSelectionWidget.cpp
+[81/95] Compile [x64] WorldContentInstaller.cpp
+[82/95] Compile [x64] Module.raceGPSPack.gen.cpp
+[83/95] Compile [x64] raceGPSGameplayTests.cpp
+[84/95] Compile [x64] raceGPSPack.cpp
+[85/95] Compile [x64] raceGPSGameInstance.cpp
+[86/95] Compile [x64] Module.raceGPSRace.gen.cpp
+[87/95] Compile [x64] RaceAppSubsystem.cpp
+[88/95] Compile [x64] RgpackManifest.cpp
+[89/95] Compile [x64] raceGPSRace.cpp
+[90/95] Compile [x64] Module.raceGPSWorkshop.gen.cpp
+[91/95] Compile [x64] raceGPSWorkshop.cpp
+[92/95] Compile [x64] WorkshopAppSubsystem.cpp
+[93/95] Compile [x64] WeatherSystem.cpp
+[94/95] Link [x64] raceGPSWorkshop.exe
+[95/95] WriteMetadata raceGPSWorkshop.target [NoUba]
+
+Trace written to file C:/Users/cgp22/AppData/Local/UnrealBuildTool/Log.uba with size 30.6kb
+Total time in Unreal Build Accelerator local executor: 82.44 seconds
+
+Result: Succeeded
+Total execution time: 94.34 seconds
