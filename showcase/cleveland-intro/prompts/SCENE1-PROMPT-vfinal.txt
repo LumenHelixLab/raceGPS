@@ -1,0 +1,16 @@
+# raceGPS Cleveland intro, Scene 1 (sequence 0:00-0:10). DRAFT text-to-video prompt; not yet generated.
+# Target: 16:9, 10 s clip. Callout added in the edit (DaVinci Resolve): INNERBELT.
+# All on-screen words and the logo are added in post; the prompt asks only for empty glowing panels because video models garble lettering.
+----- PROMPT -----
+Realistic night drive, Cleveland, Ohio, 2 a.m., 10 seconds. Real route, in order: I-77 north into downtown, onto I-90 east, the Innerbelt, running north along downtown's east edge. This scene: I-77 north into the Innerbelt. No police yet.
+Cars: the same two in every scene: a low candy-blue widebody Japanese-style import coupe and a black American muscle car with a hood scoop.
+[00:00-00:02] Low camera beside the concrete barrier on I-77 north, the lit downtown Cleveland skyline ahead with the Terminal Tower and Key Tower; both cars blast past nose-first. Red streaks sweep across the screen, leaving a clean, empty, glowing horizontal panel low in frame, then it snaps away.
+[00:02-00:05] Camera car tracking alongside the blue import as both cars sweep onto the Innerbelt: four lanes, concrete center barrier on the left, tall light poles, green overhead sign gantries with unreadable faces.
+[00:05-00:06] One white flash frame with purple and blue speed lines.
+[00:06-00:09] Low chase cam behind both cars as they dive under a run of concrete downtown street overpasses, Euclid Avenue then Superior Avenue: dark underside, streetlights on the bridge rails above, the road dipping into a sunken trench between retaining walls.
+[00:09-00:10] Green-and-red glitch wipe out.
+Look: realistic night drive footage, natural color, true blacks, practical light only, glossy wet-sheen asphalt mirroring the lights but no puddles, spray or rain. Real camera rigs: camera car, low bumper mount, chase car, drone. Believable speed, weight, body roll.
+Game-art layer (graphics only, scene stays real): Midnight Club-style light streaks, speed lines, glitch lines and graphic wipes in raceGPS red with purple, green and blue cyber neon sweep across the screen and leave clean, empty, glowing bars and panels with no lettering.
+Audio: two engines at high RPM, turbo blow-off, tire hiss, echo under the overpasses, pulsing drum-and-bass.
+Physics: every vehicle drives forward, nose-first in its direction of travel, all the same direction, police too; wheels roll forward and steer into turns; white headlights at the front only, red taillights and brake lights at the rear only; police light bars on roofs only, flashing red and blue; cars upright, real scale, four wheels on the road; lanes and traffic flow correct.
+Avoid: readable text, letters, numbers, logos, badges, plate text, POLICE lettering, HUD, video-game or cartoon look, people on foot, daylight, cars driving backwards or in reverse, cars facing the wrong way, headlights on the rear, taillights on the front, glowing wheels, floating or extra lights, car bodies morphing, merging or splitting, sliding sideways without steering, extra or missing wheels, duplicated cars, close-up police.
