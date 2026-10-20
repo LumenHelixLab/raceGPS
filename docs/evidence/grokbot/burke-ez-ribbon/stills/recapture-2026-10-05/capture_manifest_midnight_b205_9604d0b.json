@@ -1,0 +1,107 @@
+{
+  "tool": "apps/unreal-akron-beta/Content/Python/_we_modeb_stills_capture.py (local helper)",
+  "commit": "9604d0b",
+  "map": "/Game/Maps/Cleveland5_0KmWorld",
+  "mode": "UnrealEditor GUI, editor world (no -game, no PIE, no cook, no NullRHI)",
+  "rhi": "see log (LogRHI)",
+  "preset": "Midnight",
+  "resolution": "1920x1080",
+  "frame": "Frame A X=east Y=north Z-up cm",
+  "checks": {
+    "M_SkylineBackdrop_loads": true,
+    "T_Cleveland_SkylineNight_loads": true,
+    "env_actor_already_in_level": 0,
+    "load_and_build": true,
+    "backdrop_is_sky": false,
+    "backdrop_blend_mode": "<BlendMode.BLEND_TRANSLUCENT: 2>",
+    "backdrop_sections": 1,
+    "backdrop_material": "/Game/Materials/M_SkylineBackdrop.M_SkylineBackdrop",
+    "photo_skyline_backdrop_built": true,
+    "lake_sections": 1,
+    "ground_z_at_sf_cm": 6.0,
+    "car_spawned": true
+  },
+  "shots": [
+    {
+      "id": "S1_skyline_hero",
+      "file": "docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S1_skyline_hero_b205_midnight_9604d0b.png",
+      "bytes": 1881825,
+      "cam_loc_cm": [
+        8179.3,
+        -5854.5,
+        406.0
+      ],
+      "cam_rot": [
+        1.89,
+        -115.0,
+        0.0
+      ],
+      "cam_compass_deg": 205.0,
+      "fov": 55.0,
+      "car_visible": false
+    },
+    {
+      "id": "S2_lake_skyline_split",
+      "file": "docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S2_lake_skyline_split_b205_midnight_9604d0b.png",
+      "bytes": 1354332,
+      "cam_loc_cm": [
+        -68830.0,
+        -30750.0,
+        3001.0
+      ],
+      "cam_rot": [
+        -2.0,
+        -9.0,
+        0.0
+      ],
+      "cam_compass_deg": 99.0,
+      "fov": 100.0,
+      "car_visible": false
+    },
+    {
+      "id": "S3_car_midground",
+      "file": "docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S3_car_midground_b205_midnight_9604d0b.png",
+      "bytes": 1629543,
+      "cam_loc_cm": [
+        10770.6,
+        -5846.5,
+        124.0
+      ],
+      "cam_rot": [
+        -0.12,
+        -121.03,
+        -0.0
+      ],
+      "cam_compass_deg": 211.0,
+      "fov": 66.0,
+      "car_visible": true
+    },
+    {
+      "id": "S3b_car_close",
+      "file": "docs/evidence/grokbot/burke-ez-ribbon/stills/recapture-2026-10-05/S3b_car_close_b205_midnight_9604d0b.png",
+      "bytes": 1705442,
+      "cam_loc_cm": [
+        7870.6,
+        -7046.5,
+        206.0
+      ],
+      "cam_rot": [
+        -0.22,
+        -116.96,
+        -0.0
+      ],
+      "cam_compass_deg": 207.0,
+      "fov": 60.0,
+      "car_visible": true
+    }
+  ],
+  "verdict": "PENDING (human/PM grades stills; script never self-claims visual PASS)",
+  "started_local": "2026-10-05 22:54:23 -0400",
+  "skyline_arc": {
+    "center_bearing_deg": 205.0,
+    "span_deg": 110.0,
+    "emissive_scale": 0.44999998807907104,
+    "mirror_u": true
+  },
+  "finished_local": "2026-10-05 22:55:33 -0400"
+}

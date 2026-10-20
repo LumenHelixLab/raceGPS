@@ -1,0 +1,37 @@
+{
+  "certification": {
+    "notes": "Workshop Overpass\u2192rgpack export proof; provisional. Not a citypack XODR adapter. Race must not call Overpass. source=offline-fixture",
+    "status": "provisional"
+  },
+  "checkpoints": "checkpoints.json",
+  "contentHash": "sha256:51dd80392dcb1a5d1fd9661b66738abaeffdc93c1a1bf5ee849ef93f7f61a87b",
+  "defaults": {
+    "environmentPreset": "Sunset"
+  },
+  "displayName": "Burke Lakefront Overpass Proof",
+  "environment": "environment.json",
+  "frame": {
+    "originAltM": 0.0,
+    "originLat": 41.5168,
+    "originLon": -81.6842,
+    "unitsPerMeter": 100,
+    "xEast": true,
+    "yNorth": true,
+    "zUp": true
+  },
+  "packId": "burke_plan_proof",
+  "schemaVersion": 1,
+  "source": {
+    "attribution": "\u00a9 OpenStreetMap contributors (offline fixture overpass_burke_tiny)",
+    "bbox": [
+      -81.6847,
+      41.5163,
+      -81.6814,
+      41.51835
+    ],
+    "retrievedAt": "2026-09-28T21:44:38Z",
+    "type": "osm"
+  },
+  "spawn": "spawn.json",
+  "streets": "streets.json"
+}

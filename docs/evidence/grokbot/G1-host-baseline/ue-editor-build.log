@@ -1,0 +1,12 @@
+Using bundled DotNet SDK version: 8.0.412 win-x64
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" raceGPSAkronBetaEditor Win64 Development -Project=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject -WaitMutex -FromMsBuild
+Log file: C:\Users\cgp22\AppData\Local\UnrealBuildTool\Log.txt
+Creating makefile for raceGPSAkronBetaEditor (no existing makefile)
+UHT compiled-in object format Default
+Parsing headers for raceGPSAkronBetaEditor
+  Running Internal UnrealHeaderTool C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\Intermediate\Build\Win64\raceGPSAkronBetaEditor\Development\raceGPSAkronBetaEditor.uhtmanifest -WarningsAsErrors -installed
+UHT processed raceGPSAkronBetaEditor in 1.5681916 seconds (128 files written)
+Unable to build while Live Coding is active. Exit the editor and game, or press Ctrl+Alt+F11 if iterating on code in the editor or game
+
+Result: Failed (OtherCompilationError)
+Total execution time: 28.91 seconds

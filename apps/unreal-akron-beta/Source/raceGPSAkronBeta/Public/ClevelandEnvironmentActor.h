@@ -83,6 +83,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env")
 	bool bUsePhotoSkylineBackdrop = true;
 
+	/** Backdrop arc centre, compass bearing (deg). Frame A: x = R*sin(b), y = R*cos(b).
+	 *  205 = real downtown SSW of Burke. Note the left-handed render mirrors Frame A
+	 *  (facing east puts north on screen-right), see WE stills recapture README. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env|Skyline", meta = (ClampMin = "0", ClampMax = "360"))
+	float SkylineBackdropCenterBearingDeg = 205.f;
+
+	/** Total arc coverage (deg). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env|Skyline", meta = (ClampMin = "10", ClampMax = "180"))
+	float SkylineBackdropSpanDeg = 110.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env|Skyline")
+	float SkylineBackdropRadiusCm = 260000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env|Skyline")
+	float SkylineBackdropHeightCm = 60000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env|Skyline")
+	float SkylineBackdropBaseZCm = -8000.f;
+
+	/** Drives M_SkylineBackdrop scalar 'BackdropEmissiveScale' (via MID) so the unlit card
+	 *  does not blow out lavender under night auto-exposure. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env|Skyline", meta = (ClampMin = "0"))
+	float SkylineBackdropEmissiveScale = 0.45f;
+
+	/** U = 1 - Frac: the left-handed render mirrors Frame A, so the photo must be
+	 *  mapped right-to-left in bearing to read left-to-right on screen. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "raceGPS|Cleveland|Env|Skyline")
+	bool bSkylineBackdropMirrorU = true;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "raceGPS|Cleveland|Env")
 	TObjectPtr<UProceduralMeshComponent> HangarMesh;
 

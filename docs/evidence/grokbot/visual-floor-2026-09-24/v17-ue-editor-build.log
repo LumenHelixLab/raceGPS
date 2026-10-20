@@ -1,0 +1,7 @@
+Using bundled DotNet SDK version: 8.0.412 win-x64
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" raceGPSAkronBetaEditor Win64 Development -Project=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject -WaitMutex
+Log file: C:\Users\cgp22\AppData\Local\UnrealBuildTool\Log.txt
+Target is up to date
+
+Result: Succeeded
+Total execution time: 1.01 seconds

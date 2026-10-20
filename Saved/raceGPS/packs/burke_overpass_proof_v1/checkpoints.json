@@ -1,0 +1,30 @@
+{
+  "gates": [
+    {
+      "index": 0,
+      "lat": 41.5168,
+      "lon": -81.6842,
+      "name": "Start/Finish",
+      "s": 0.0,
+      "width_m": 10.0
+    },
+    {
+      "index": 1,
+      "lat": 41.5173636,
+      "lon": -81.6830808,
+      "name": "CP1",
+      "s": 112.375,
+      "width_m": 10.0
+    },
+    {
+      "index": 2,
+      "lat": 41.517825,
+      "lon": -81.6819499,
+      "name": "CP2",
+      "s": 219.75,
+      "width_m": 10.0
+    }
+  ],
+  "lap_count": 1,
+  "track_id": "burke_overpass_proof_v1"
+}

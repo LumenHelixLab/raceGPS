@@ -1,0 +1,12 @@
+COOK_START=2026-09-27T20:43:43-04:00
+TARGET=M_SkylineBackdrop+T_Cleveland_SkylineNight
+PLATFORM=Windows
+FLAGS=-CookPackages -Unversioned -legacyiterative -unattended -nosplash -NullRHI -nosound
+NOTE=NullRHI is Cmd cook only — not Gate 1 evidence; no LaunchClevelandRace
+COOK_PID=26284
+
+COOK_EXIT=KILLED_BY_BE
+COOK_KILL_REASON=Unreal PM recommend kill — escalated FULL Windows cook / FTSRRejectShadingCS Vulkan SM5 same family as G4; load-only PASS stands; hung full cook is not skyline cook PASS
+COOK_KILL_AT=2026-09-27T20:48:23-04:00
+COOK_LOG_LAST_WRITE=2026-09-27T20:48:08-04:00
+COOK_LOG_BYTES=110656

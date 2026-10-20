@@ -11,6 +11,7 @@
 
 | File | Role |
 |------|------|
+| [2026-09-27-SKYLINE-ASSET-LOAD-CHECK.md](./2026-09-27-SKYLINE-ASSET-LOAD-CHECK.md) | Photo-skyline mat/tex **load PASS** (Cmd); cook/runtime HOLD for PM + Mode B |
 | [2026-09-26-PACK-01-WIN64-DEV-REBUILD-AND-LOG-FORENSICS.md](./2026-09-26-PACK-01-WIN64-DEV-REBUILD-AND-LOG-FORENSICS.md) | **Primary Pack 01** — Win64 Dev recipe (`-MaxParallelActions=1 -NoUBA`), one-editor omni, LaunchClevelandRace human-default, ViewportClosed / RequestExit greps; Track B Phase A landed / Phase B HOLD |
 | [2026-09-26-PACK-01-WIN64-DEV-REBUILD-AND-LOG-FORENSICS-ANNOTATIONS.md](./2026-09-26-PACK-01-WIN64-DEV-REBUILD-AND-LOG-FORENSICS-ANNOTATIONS.md) | **Annotations** — BE read-along steal/do-not/FUTURE observables + G6 FAIL/Succeeded notes |
 | [2026-09-26-PACK-01-REBUILD-AND-LOG-FORENSICS.md](./2026-09-26-PACK-01-REBUILD-AND-LOG-FORENSICS.md) | Read-along only (Prototyper stub) — do not treat as a second Pack 01 |

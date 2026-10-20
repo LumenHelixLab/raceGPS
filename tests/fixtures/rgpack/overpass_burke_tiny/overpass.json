@@ -1,0 +1,48 @@
+{
+  "version": 0.6,
+  "generator": "raceGPS offline fixture overpass_burke_tiny",
+  "osm3s": {
+    "timestamp_osm_base": "2026-09-27T00:00:00Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {"type": "node", "id": 900001, "lat": 41.51680, "lon": -81.68420},
+    {"type": "node", "id": 900002, "lat": 41.51700, "lon": -81.68380},
+    {"type": "node", "id": 900003, "lat": 41.51722, "lon": -81.68340},
+    {"type": "node", "id": 900004, "lat": 41.51740, "lon": -81.68300},
+    {"type": "node", "id": 900005, "lat": 41.51755, "lon": -81.68260},
+    {"type": "node", "id": 900006, "lat": 41.51770, "lon": -81.68220},
+    {"type": "node", "id": 900007, "lat": 41.51785, "lon": -81.68190},
+    {"type": "node", "id": 900011, "lat": 41.51770, "lon": -81.68220},
+    {"type": "node", "id": 900012, "lat": 41.51790, "lon": -81.68250},
+    {"type": "node", "id": 900013, "lat": 41.51805, "lon": -81.68290},
+    {"type": "node", "id": 900014, "lat": 41.51810, "lon": -81.68330},
+    {
+      "type": "way",
+      "id": 800001,
+      "nodes": [900001, 900002, 900003, 900004, 900005, 900006, 900007],
+      "tags": {
+        "highway": "secondary",
+        "name": "North Marginal Road",
+        "ref": "fixture"
+      }
+    },
+    {
+      "type": "way",
+      "id": 800002,
+      "nodes": [900011, 900012, 900013, 900014],
+      "tags": {
+        "highway": "residential",
+        "name": "E 9th Street connector",
+        "ref": "fixture"
+      }
+    },
+    {
+      "type": "node",
+      "id": 900099,
+      "lat": 41.51722,
+      "lon": -81.68306,
+      "tags": {"amenity": "parking", "name": "Burke Lakefront (fixture POI — ignored)"}
+    }
+  ]
+}

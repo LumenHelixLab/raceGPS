@@ -1,0 +1,30 @@
+{
+  "gates": [
+    {
+      "index": 0,
+      "lat": 41.5083139,
+      "lon": -81.6939936,
+      "name": "Start/Finish",
+      "s": 0.0,
+      "width_m": 10.0
+    },
+    {
+      "index": 1,
+      "lat": 41.5191884,
+      "lon": -81.673704,
+      "name": "CP1",
+      "s": 2146.36,
+      "width_m": 10.0
+    },
+    {
+      "index": 2,
+      "lat": 41.5303182,
+      "lon": -81.6527245,
+      "name": "CP2",
+      "s": 4287.721,
+      "width_m": 10.0
+    }
+  ],
+  "lap_count": 1,
+  "track_id": "burke_overpass_live_try"
+}

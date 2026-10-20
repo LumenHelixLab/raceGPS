@@ -1,0 +1,72 @@
+{
+  "tool": "_ca_ribbon_stills.py (local helper, C:/Users/cgp22/ca-stills-staging)",
+  "map": "/Game/Maps/Cleveland5_0KmWorld",
+  "mode": "UnrealEditor GUI editor world, D3D12 (no -game, no PIE, no NullRHI)",
+  "res": "1920x1080",
+  "frame": "Frame A X=east Y=north Z-up cm (left-handed => mirrored vs compass)",
+  "line_bbox_cm": [
+    -70131.61746311186,
+    65286.77948274179,
+    -38428.105480846345,
+    45462.89218928406
+  ],
+  "shots": [
+    {
+      "id": "overhead",
+      "preset": "SUNSET",
+      "file": "C:\\projects\\raceGPS-grokbot-cleveland\\docs\\evidence\\grokbot\\burke-ez-ribbon\\stills\\ca-pass\\CA-2026-10-05-overhead.png",
+      "bytes": 324534,
+      "cam_loc_cm": [
+        -2422,
+        3517,
+        150000
+      ],
+      "cam_pitch": -90.0,
+      "cam_yaw": 90.0,
+      "fov": 60.0
+    },
+    {
+      "id": "driver",
+      "preset": "SUNSET",
+      "file": "C:\\projects\\raceGPS-grokbot-cleveland\\docs\\evidence\\grokbot\\burke-ez-ribbon\\stills\\ca-pass\\CA-2026-10-05-driver.png",
+      "bytes": 1030348,
+      "cam_loc_cm": [
+        4771,
+        -9380,
+        116
+      ],
+      "cam_pitch": -1.5,
+      "cam_yaw": -157.75,
+      "fov": 80.0
+    },
+    {
+      "id": "overhead-midnight",
+      "preset": "MIDNIGHT",
+      "file": "C:\\projects\\raceGPS-grokbot-cleveland\\docs\\evidence\\grokbot\\burke-ez-ribbon\\stills\\ca-pass\\CA-2026-10-05-overhead-midnight.png",
+      "bytes": 745858,
+      "cam_loc_cm": [
+        -2422,
+        3517,
+        150000
+      ],
+      "cam_pitch": -90.0,
+      "cam_yaw": 90.0,
+      "fov": 60.0
+    },
+    {
+      "id": "driver-midnight",
+      "preset": "MIDNIGHT",
+      "file": "C:\\projects\\raceGPS-grokbot-cleveland\\docs\\evidence\\grokbot\\burke-ez-ribbon\\stills\\ca-pass\\CA-2026-10-05-driver-midnight.png",
+      "bytes": 949903,
+      "cam_loc_cm": [
+        4771,
+        -9380,
+        116
+      ],
+      "cam_pitch": -1.5,
+      "cam_yaw": -157.75,
+      "fov": 80.0
+    }
+  ],
+  "finished_local": "2026-10-05 22:43:46 -0400"
+}

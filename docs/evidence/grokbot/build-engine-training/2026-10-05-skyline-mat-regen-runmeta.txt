@@ -1,0 +1,9 @@
+ATTEMPT3
+PID=7012
+START_ET=2026-10-05 23:32:26
+START_UTC=2026-10-06T03:32:26.7677113Z
+ARGS=C:\projects\raceGPS-grokbot-cleveland\apps\unreal-akron-beta\raceGPSAkronBeta.uproject -unattended -nosplash -NullRHI -nosound -stdout -FullStdOutLogOutput -abslog=C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\build-engine-training\2026-10-05-skyline-mat-regen-load.log "-ExecCmds=py C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\build-engine-training\2026-10-05-check-skyline-mat-regen.py,QUIT_EDITOR"
+END_ET=2026-10-05 23:33:16
+EXIT=0
+TIMED_OUT=False
+ELAPSED_SEC=50

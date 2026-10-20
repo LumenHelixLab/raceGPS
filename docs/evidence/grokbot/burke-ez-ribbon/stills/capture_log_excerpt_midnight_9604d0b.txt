@@ -1,0 +1,58 @@
+﻿# Trimmed excerpt of apps/unreal-akron-beta/Saved/Logs/raceGPSAkronBeta.log (run 2, editor PID 51808, 2026-10-05 22:28-22:29 ET; log timestamps are UTC)
+# commit 9604d0b; grep: Command Line | RHI | photo skyline | M_SkylineBackdrop missing | falling back | [WE stills] | env: | look | Error | FTSRReject | Shaders left | QUIT_EDITOR | Exiting
+
+LogInit: Command Line: /Game/Maps/Cleveland5_0KmWorld -d3d12 -log -NoSplash -ExecCmds="py C:/projects/raceGPS-grokbot-cleveland/apps/unreal-akron-beta/Content/Python/_we_modeb_stills_capture.py"
+[2026.10.06-02.28.12:643][  0]LogRHI: Using Forced RHI: D3D12
+[2026.10.06-02.28.12:643][  0]LogRHI: Using Highest Feature Level of D3D12: SM6
+[2026.10.06-02.28.12:644][  0]LogRHI: Checking if RHI D3D12 with Feature Level SM6 is supported by your system.
+[2026.10.06-02.28.13:011][  0]LogRHI: RHI D3D12 with Feature Level SM6 is supported and will be used.
+[2026.10.06-02.28.14:387][  0]LogRHI: Using Forced RHI: D3D12
+[2026.10.06-02.28.14:387][  0]LogRHI: Using Highest Feature Level of D3D12: SM6
+[2026.10.06-02.28.14:391][  0]LogRHI: Checking if RHI D3D12 with Feature Level SM6 is supported by your system.
+[2026.10.06-02.28.14:392][  0]LogRHI: RHI D3D12 with Feature Level SM6 is supported and will be used.
+[2026.10.06-02.28.14:395][  0]LogRHI: RHI Adapter Info:
+[2026.10.06-02.28.14:395][  0]LogRHI:             Name: AMD Radeon(TM) 880M Graphics
+[2026.10.06-02.28.26:961][  0]LogClass: Error: StructProperty FAkronSpawnPoint::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.28.26:964][  0]LogClass: Error: StructProperty FAkronSpawnPoint::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.28.26:964][  0]LogClass: Error: StructProperty FAkronPOI::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.28.26:965][  0]LogClass: Error: StructProperty FFurniturePlacement::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.28.26:965][  0]LogClass: Error: StructProperty FFurniturePlacement::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.28.26:983][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronSpawnPoint::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.28.26:983][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronSpawnPoint::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.28.26:984][  0]LogAutomationTest: Error: LogClass: StructProperty FAkronPOI::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/AkronXodrImporter.h
+[2026.10.06-02.28.26:984][  0]LogAutomationTest: Error: LogClass: StructProperty FFurniturePlacement::Location is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.28.26:985][  0]LogAutomationTest: Error: LogClass: StructProperty FFurniturePlacement::Rotation is not initialized properly. Module:raceGPSAkronBeta File:Public/StreetFurnitureSpawner.h
+[2026.10.06-02.28.36:323][  0]LogPython: Warning: [WE stills] armed; out=C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills res=1920x1080 warmup=45.0s preset=Midnight
+[2026.10.06-02.28.41:164][ 66]LogPython: Warning: [WE stills] could not disable background throttle: module 'unreal' has no attribute 'EditorPerformanceSettings'
+[2026.10.06-02.28.41:194][ 66]LogPython: Warning: [WE stills] asset check mat=True tex=True
+[2026.10.06-02.28.41:301][ 66]LogPython: Warning: [WE stills] spawned transient ClevelandEnvironmentActor at origin (as ClevelandShowcaseGameMode::BeginPlay does)
+[2026.10.06-02.28.41:346][ 66]LogTemp: raceGPS Cleveland env: lake verts=4 (expanded north for chase/cinematic read)
+[2026.10.06-02.28.41:467][ 66]LogTemp: raceGPS Cleveland env: photo skyline backdrop built (radius 2600 m, span 110 deg)
+[2026.10.06-02.28.41:467][ 66]LogTemp: raceGPS Cleveland env: built lake=1 skyline_buildings=0 named_towers=0 dressing=1 (Karla additive; T10 HISM city is in-map)
+[2026.10.06-02.28.41:467][ 66]LogPython: Warning: [WE stills] LoadAndBuild -> True
+[2026.10.06-02.28.41:569][ 66]LogTemp: [raceGPS Cleveland] look: suppressed extra directional lights=0 reflection captures=24
+[2026.10.06-02.28.41:569][ 66]LogTemp: [raceGPS Cleveland] Midnight applied (22:00 moon directional, dry surface unchanged)
+[2026.10.06-02.28.41:569][ 66]LogTemp: [raceGPS Cleveland] look FINAL [Midnight]: hour=22.00 sunI=2.40 sunPitch=-46.0 sunYaw=35.0 skyI=2.20 (Frame A X=east Y=north)
+[2026.10.06-02.28.41:570][ 66]LogPython: Warning: [WE stills] LookDirector.ApplyVisualMode(Midnight)
+[2026.10.06-02.28.41:572][ 66]LogTemp: raceGPS Cleveland env: V15 night ground materials applied=5
+[2026.10.06-02.28.41:573][ 66]LogTemp: raceGPS Cleveland env: ApplyLookMode midnight=1 skyline_buildings=0 named_towers=0 mids=10
+[2026.10.06-02.28.41:607][ 66]LogPython: Warning: [WE stills] car BP_DodgeCharger2024_C_0 at S/F yaw=-155.1 (compass 245.1)
+[2026.10.06-02.28.41:626][ 66]LogPython: Warning: [WE stills] built; warming up 45.0s for shader/texture/exposure settle (watch 'Compiling Shaders' toast)
+[2026.10.06-02.29.26:790][289]LogPython: Warning: [WE stills] S1_skyline_hero cam loc=(8171,-5846,406) pitch=1.9 yaw=-115.0 compass=205.0 fov=55.0
+[2026.10.06-02.29.30:814][406]LogPython: Warning: [WE stills] S1_skyline_hero HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S1_skyline_hero_midnight_9604d0b.png
+[2026.10.06-02.29.32:166][412]LogPython: Warning: [WE stills] S1_skyline_hero saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S1_skyline_hero_midnight_9604d0b.png (1690516 bytes)
+[2026.10.06-02.29.32:202][413]LogPython: Warning: [WE stills] S2_lake_skyline_split cam loc=(53110,45490,3006) pitch=-1.0 yaw=-165.0 compass=255.0 fov=100.0
+[2026.10.06-02.29.36:215][523]LogPython: Warning: [WE stills] S2_lake_skyline_split HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S2_lake_skyline_split_midnight_9604d0b.png
+[2026.10.06-02.29.36:780][529]LogPython: Warning: [WE stills] S2_lake_skyline_split saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S2_lake_skyline_split_midnight_9604d0b.png (645692 bytes)
+[2026.10.06-02.29.36:862][530]LogPython: Warning: [WE stills] S3_car_midground cam loc=(10771,-5846,124) pitch=-0.1 yaw=-121.0 compass=211.0 fov=66.0
+[2026.10.06-02.29.40:896][645]LogPython: Warning: [WE stills] S3_car_midground HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S3_car_midground_midnight_9604d0b.png
+[2026.10.06-02.29.41:595][651]LogPython: Warning: [WE stills] S3_car_midground saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S3_car_midground_midnight_9604d0b.png (1461866 bytes)
+[2026.10.06-02.29.41:635][652]LogPython: Warning: [WE stills] S3b_car_close cam loc=(7871,-7046,206) pitch=-0.2 yaw=-117.0 compass=207.0 fov=60.0
+[2026.10.06-02.29.45:639][760]LogPython: Warning: [WE stills] S3b_car_close HighResShot 1920x1080 -> C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S3b_car_close_midnight_9604d0b.png
+[2026.10.06-02.29.46:296][766]LogPython: Warning: [WE stills] S3b_car_close saved C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\S3b_car_close_midnight_9604d0b.png (1562977 bytes)
+[2026.10.06-02.29.46:904][768]LogPython: Warning: [WE stills] cleanup done. Level may still be marked dirty (LookDirector hides level lights): DO NOT SAVE the map; answer 'Don't Save' on exit.
+[2026.10.06-02.29.46:908][768]LogPython: Warning: [WE stills] DONE shots=4/4 manifest=C:\projects\raceGPS-grokbot-cleveland\docs\evidence\grokbot\burke-ez-ribbon\stills\capture_manifest_midnight_9604d0b.json
+[2026.10.06-02.29.46:909][768]LogPython: Warning: [WE stills] Grep the editor log for 'photo skyline backdrop built' vs 'M_SkylineBackdrop missing'.
+[2026.10.06-02.29.46:910][768]Cmd: QUIT_EDITOR
+[2026.10.06-02.29.49:415][769]LogShaderCompilers: Display: Shaders left to compile 0
+[2026.10.06-02.29.51:742][769]LogExit: Exiting.
