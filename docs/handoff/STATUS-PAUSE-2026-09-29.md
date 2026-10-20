@@ -1,3 +1,22 @@
+# CURRENT STATUS — UNLOCKED 2026-10-05
+
+**Authority:** Chris **"go"** — 2026-10-05 (America/New_York)  
+**State:** Development **UNLOCKED**. Unreal PM resumes Wave 1 day-to-day; Prototyper goal-risk only.  
+**Canonical unlock note:** [2026-10-05-GO-UNLOCK.md](2026-10-05-GO-UNLOCK.md)  
+**Primary worktree:** C:\projects\raceGPS-grokbot-cleveland · branch grokbot/cleveland-integration  
+**Reload:** WAVE1-UNLOCK 2026-09-27 + GATE1-BOTH-TRACKS + this GO unlock.
+
+**Hard locks still hold:** CruiseSprint GlobalDefault; NullRHI ≠ Gate1 PASS; no unattended LaunchClevelandRace; Mode B / Track A still need Chris unless he expands; cook ABORT not PASS; load-only PASS stands; no CARLA/City Sample greenfield; Akron semantic KEEP; Phase C skill held / unreal-game-dev only.
+
+**Wave 1 prior PASS board still valid** (stills plan, load-only, WW export+semantic).
+
+---
+
+# HISTORICAL PAUSE BOARD (2026-09-29) — retained below
+
+The following board was the freeze state through 2026-09-29. It is **history + locks context**, not the current stop order. Current authority is the GO unlock above.
+
+---
 # STATUS — DEVELOPMENT PAUSE — 2026-09-29
 
 **Authority:** Chris order 2026-09-29 — pause **ALL** development; leave handoff in `C:\projects\racegps`.  

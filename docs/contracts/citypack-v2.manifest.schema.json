@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "raceGPS CityPack v2 manifest",
+  "type": "object",
+  "required": [
+    "city_id",
+    "display_name",
+    "format",
+    "version",
+    "game_version_min",
+    "game_version_max",
+    "origin",
+    "bounds",
+    "seed",
+    "generated_by",
+    "generated_at",
+    "files",
+    "statistics"
+  ],
+  "properties": {
+    "city_id": { "type": "string", "minLength": 1 },
+    "display_name": { "type": "string", "minLength": 1 },
+    "format": { "type": "string", "const": "racegps-citypack-v2" },
+    "version": { "type": "string", "minLength": 1 },
+    "game_version_min": { "type": "string" },
+    "game_version_max": { "type": "string" },
+    "origin": {
+      "type": "object",
+      "required": ["lat", "lon"],
+      "properties": {
+        "lat": { "type": "number" },
+        "lon": { "type": "number" }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "required": ["west", "south", "east", "north"],
+      "properties": {
+        "west": { "type": "number" },
+        "south": { "type": "number" },
+        "east": { "type": "number" },
+        "north": { "type": "number" }
+      }
+    },
+    "seed": { "type": "integer" },
+    "generated_by": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "files": {
+      "type": "object",
+      "required": [
+        "opendrive",
+        "roads",
+        "buildings",
+        "routes",
+        "spawn_points",
+        "attribution",
+        "checksums"
+      ],
+      "properties": {
+        "opendrive": { "type": "string" },
+        "roads": { "type": "string" },
+        "buildings": { "type": "string" },
+        "routes": { "type": "string" },
+        "spawn_points": { "type": "string" },
+        "attribution": { "type": "string" },
+        "checksums": { "type": "string" }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "required": ["roads", "junctions", "buildings"],
+      "properties": {
+        "roads": { "type": "integer", "minimum": 0 },
+        "junctions": { "type": "integer", "minimum": 0 },
+        "buildings": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

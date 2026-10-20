@@ -1,3 +1,10 @@
+> **CONSOLIDATED 2026-10-19** — all raceGPS branches/worktrees merged into `master`; single working folder is now `C:\projects\racegps` (master). See [docs/handoff/2026-10-19-CONSOLIDATION.md](docs/handoff/2026-10-19-CONSOLIDATION.md). References below to `raceGPS-grokbot-cleveland` as primary worktree are historical.
+>
+> **UNLOCKED 2026-10-05 by Chris ("go")** — see [docs/handoff/2026-10-05-GO-UNLOCK.md](docs/handoff/2026-10-05-GO-UNLOCK.md).
+>
+> Pause history below is retained for reload context. Primary worktree: C:\projects\raceGPS-grokbot-cleveland (grokbot/cleveland-integration). Hard locks still hold.
+
+---
 # DEVELOPMENT PAUSED — raceGPS
 
 **Order:** Chris — 2026-09-29 (America/New_York)  
