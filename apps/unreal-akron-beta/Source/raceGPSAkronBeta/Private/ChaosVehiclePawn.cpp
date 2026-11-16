@@ -1,5 +1,6 @@
 #include "ChaosVehiclePawn.h"
 #include "RaceContactPolicy.h"
+#include "RaceAIBehaviorPolicy.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 #include "CollisionShape.h"
@@ -558,43 +559,7 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
                 Skel->WakeAllRigidBodies();
             }
         }
-        if (auto* MoveCompEarly = GetVehicleMovementComponent())
-        {
-            MoveCompEarly->SetRequiresControllerForInputs(false);
-            MoveCompEarly->SetThrottleInput(CurrentThrottle * ThrottleSensitivity);
-            MoveCompEarly->SetSteeringInput(CurrentSteering * SteeringSensitivity);
-            MoveCompEarly->SetBrakeInput(CurrentBrake);
-            MoveCompEarly->SetHandbrakeInput(bHandbrake);
-            if (auto* WheeledEarly = Cast<UChaosWheeledVehicleMovementComponent>(MoveCompEarly))
-            {
-                if (WheeledEarly->GetCurrentGear() <= 0 && CurrentThrottle > 0.1f)
-                {
-                    WheeledEarly->SetTargetGear(1, true);
-                }
-                // Arcade Cleveland: Chaos TorqueRatio can latch at 0 after shared-CDO recreate.
-                // Additive drive torque every crawl/race frame: engine power still flows when the
-                // drivetrain works (Override capped the car at MaxTorque/4 per wheel ~23 km/h),
-                // and the push remains as a floor if TorqueRatio latches again.
-                const float Thr = FMath::Clamp(CurrentThrottle * ThrottleSensitivity, 0.f, 1.f);
-                const int32 NumW = WheeledEarly->Wheels.Num();
-                if (NumW > 0 && Thr > 0.05f && CurrentBrake < 0.15f && !bHandbrake)
-                {
-                    const float PerWheelNm = (WheeledEarly->EngineSetup.MaxTorque * Thr) / float(NumW);
-                    for (int32 wi = 0; wi < NumW; ++wi)
-                    {
-                        WheeledEarly->SetTorqueCombineMethod(ETorqueCombineMethod::Additive, wi);
-                        WheeledEarly->SetDriveTorque(PerWheelNm, wi);
-                    }
-                }
-                else if (NumW > 0)
-                {
-                    for (int32 wi = 0; wi < NumW; ++wi)
-                    {
-                        WheeledEarly->SetDriveTorque(0.f, wi);
-                    }
-                }
-            }
-        }
+        ApplyDriveOverrideInputs(CurrentThrottle * ThrottleSensitivity, CurrentSteering * SteeringSensitivity);
     }
     Super::Tick(DeltaTime);
     if (bClevelandShowcaseChaseFraming)
@@ -632,10 +597,17 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
             }
         }
 
-        MoveComp->SetThrottleInput(FinalThrottle);
-        MoveComp->SetSteeringInput(FinalSteering);
-        MoveComp->SetBrakeInput(CurrentBrake);
-        MoveComp->SetHandbrakeInput(bHandbrake);
+        if (bDriveOverride)
+        {
+            ApplyDriveOverrideInputs(FinalThrottle, FinalSteering);
+        }
+        else
+        {
+            MoveComp->SetThrottleInput(FinalThrottle);
+            MoveComp->SetSteeringInput(FinalSteering);
+            MoveComp->SetBrakeInput(CurrentBrake);
+            MoveComp->SetHandbrakeInput(bHandbrake);
+        }
 
         // Dynamic arcade grip: speed-sensitive reduction + drift friction scale
         if (bEnableArcadeHandling)
@@ -644,17 +616,20 @@ void AChaosVehiclePawn::Tick(float DeltaTime)
             {
                 UpdateArcadeGrip(WheeledComp, DeltaTime);
                 // Non-override path: same arcade drive push (player possessed).
+                if (!bDriveOverride)
                 {
-                    const float Thr = FMath::Clamp(CurrentThrottle * ThrottleSensitivity, 0.f, 1.f);
+                    const auto Drive = RaceAIBehaviorPolicy::ResolveDriveInput(
+                        FMath::Clamp(FinalThrottle, 0.f, 1.f), CurrentBrake, bHandbrake,
+                        MoveComp->GetForwardSpeed() * 0.036, MoveComp->GetCurrentGear());
                     const int32 NumW = WheeledComp->Wheels.Num();
-                    if (NumW > 0 && Thr > 0.05f && CurrentBrake < 0.15f && !bHandbrake)
+                    const float PerWheelNm = NumW > 0
+                        ? WheeledComp->EngineSetup.MaxTorque * float(Drive.signedTorque) / float(NumW) : 0.f;
+                    // Write zero on coast/brake too: Chaos retains external torque
+                    // until overwritten, so the last acceleration must not latch.
+                    for (int32 wi = 0; wi < NumW; ++wi)
                     {
-                        const float PerWheelNm = (WheeledComp->EngineSetup.MaxTorque * Thr) / float(NumW);
-                        for (int32 wi = 0; wi < NumW; ++wi)
-                        {
-                            WheeledComp->SetTorqueCombineMethod(ETorqueCombineMethod::Additive, wi);
-                            WheeledComp->SetDriveTorque(PerWheelNm, wi);
-                        }
+                        WheeledComp->SetTorqueCombineMethod(ETorqueCombineMethod::Additive, wi);
+                        WheeledComp->SetDriveTorque(PerWheelNm, wi);
                     }
                 }
             }
@@ -738,12 +713,36 @@ void AChaosVehiclePawn::SetDriveOverride(float Steer, float Throttle, float Brak
     CurrentThrottle = OverrideThrottle;
     CurrentBrake = OverrideBrake;
     bHandbrake = bOverrideHandbrake;
-    if (auto* MoveComp = GetVehicleMovementComponent())
+    ApplyDriveOverrideInputs(CurrentThrottle * ThrottleSensitivity, CurrentSteering * SteeringSensitivity);
+}
+
+void AChaosVehiclePawn::ApplyDriveOverrideInputs(float ScaledThrottle, float ScaledSteering)
+{
+    auto* Move = GetVehicleMovementComponent();
+    if (!Move) return;
+    const auto Input = RaceAIBehaviorPolicy::ResolveDriveInput(ScaledThrottle, CurrentBrake,
+        bHandbrake, Move->GetForwardSpeed() * 0.036, Move->GetCurrentGear());
+    Move->SetRequiresControllerForInputs(false);
+    // Override inputs explicitly select direction. Braking must not auto-select
+    // reverse, and a reverse request must survive both input writes in Tick.
+    SavedOverrideSettings.Apply(*Move);
+    if (Input.targetGear != 0) Move->SetTargetGear(Input.targetGear, true);
+    Move->SetThrottleInput(float(Input.throttle));
+    Move->SetSteeringInput(ScaledSteering);
+    Move->SetBrakeInput(float(Input.brake));
+    Move->SetHandbrakeInput(bHandbrake);
+    if (auto* Wheeled = Cast<UChaosWheeledVehicleMovementComponent>(Move))
     {
-        MoveComp->SetSteeringInput(CurrentSteering * SteeringSensitivity);
-        MoveComp->SetThrottleInput(CurrentThrottle * ThrottleSensitivity);
-        MoveComp->SetBrakeInput(CurrentBrake);
-        MoveComp->SetHandbrakeInput(bHandbrake);
+        // Preserve the existing arcade torque floor with the selected direction,
+        // and clear it while braking instead of leaving the last drive force latched.
+        const int32 NumWheels = Wheeled->Wheels.Num();
+        const float PerWheelNm = NumWheels > 0
+            ? Wheeled->EngineSetup.MaxTorque * float(Input.signedTorque) / float(NumWheels) : 0.f;
+        for (int32 Wheel = 0; Wheel < NumWheels; ++Wheel)
+        {
+            Wheeled->SetTorqueCombineMethod(ETorqueCombineMethod::Additive, Wheel);
+            Wheeled->SetDriveTorque(PerWheelNm, Wheel);
+        }
     }
 }
 
@@ -790,6 +789,10 @@ void AChaosVehiclePawn::ReleaseForRace()
 void AChaosVehiclePawn::ClearDriveOverride()
 {
     bDriveOverride = false;
+    if (auto* Move = GetVehicleMovementComponent())
+    {
+        SavedOverrideSettings.Restore(*Move);
+    }
 }
 
 void AChaosVehiclePawn::EnsureDefaultWheels()
@@ -1304,12 +1307,22 @@ bool AChaosVehiclePawn::TryRecoverAtPose(const FTransform& Pose)
     Objects.AddObjectTypesToQuery(ECC_Vehicle);
     Objects.AddObjectTypesToQuery(ECC_Pawn);
     FCollisionQueryParams Query(SCENE_QUERY_STAT(RaceRecovery), false, this);
-    const FVector Extent = GetMesh()->Bounds.BoxExtent.ComponentMax(FVector(100.f, 100.f, 50.f));
-    if (World->OverlapAnyTestByObjectType(Destination, FQuat::Identity, Objects,
-        FCollisionShape::MakeBox(Extent + FVector(25.f)), Query)) return false;
+    const auto LocalBounds = GetMesh()->CalcBounds(FTransform::Identity);
+    const FTransform MeshRelative = GetMesh()->GetComponentTransform().GetRelativeTransform(GetActorTransform());
+    const auto IsOccupied = [&](const FVector& Location)
+    {
+        const FTransform DestinationMesh = MeshRelative * FTransform(Pose.GetRotation(), Location, GetActorScale3D());
+        const FVector Center = DestinationMesh.TransformPosition(LocalBounds.Origin);
+        const FVector Extent = (LocalBounds.BoxExtent * DestinationMesh.GetScale3D().GetAbs())
+            .ComponentMax(FVector(100.f, 100.f, 50.f));
+        return World->OverlapAnyTestByObjectType(Center, DestinationMesh.GetRotation(), Objects,
+            FCollisionShape::MakeBox(Extent + FVector(25.f)), Query);
+    };
+    if (IsOccupied(Destination)) return false;
     if (!World->FindTeleportSpot(this, Destination, Rotation)) return false;
     // Allow vertical ground clearance, never an engine-adjusted horizontal shortcut.
     if (FVector::DistSquaredXY(Destination, Pose.GetLocation()) > 1.f) return false;
+    if (IsOccupied(Destination)) return false;
     if (!TeleportTo(Destination, Rotation, false, false)) return false;
     if (auto* Move = GetVehicleMovementComponent()) Move->StopMovementImmediately();
     GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);

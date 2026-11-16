@@ -109,7 +109,10 @@ protected:
 	TObjectPtr<ARaceGridManager> GridManager;
 
 	float StuckTimer = 0.f;
+	float OverturnedTimer = 0.f;
 	float RecoveryTimer = 0.f;
+	float RecoveryAnchorS = 0.f;
+	FVector RecoveryStartLocation = FVector::ZeroVector;
 	float PrevS = 0.f;
 	bool bHavePrevS = false;
 	float LapStartWorldTime = 0.f;

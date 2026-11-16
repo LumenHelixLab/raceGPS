@@ -369,6 +369,11 @@ void AClevelandShowcaseGameMode::BeginPlay()
 
 void AClevelandShowcaseGameMode::BeginCountdownAndRace()
 {
+	if (bShowcaseEnded)
+	{
+		RestartShowcase();
+		return;
+	}
 	if (SessionManager && SessionManager->GetCurrentState() == ERaceSessionState::Menu)
 	{
 		SessionManager->StartSession(TEXT("cleveland_burke_gp_1997"), TEXT("hellcat"));
@@ -418,6 +423,11 @@ void AClevelandShowcaseGameMode::Tick(float DeltaSeconds)
 	if (SessionManager)
 	{
 		SessionManager->TickSession(DeltaSeconds);
+		if (GridManager)
+		{
+			// Sample the full grid before any checkpoint can end this session.
+			GridManager->TickStandings(SessionManager->ElapsedTime);
+		}
 	}
 	TickPlayerCheckpoints(DeltaSeconds);
 	if (bPlaytestLap)
@@ -628,6 +638,14 @@ void AClevelandShowcaseGameMode::EndRace()
 		return;
 	}
 	bShowcaseEnded = true;
+	if (GridManager)
+	{
+		GridManager->FinalizeResults();
+		if (SessionManager && GridManager->HasPlayerFinished())
+		{
+			SessionManager->ElapsedTime = GridManager->GetPlayerFinishTime();
+		}
+	}
 	if (SessionManager
 		&& SessionManager->GetCurrentState() != ERaceSessionState::Finished
 		&& (SessionManager->GetCurrentState() == ERaceSessionState::Racing
@@ -670,12 +688,26 @@ void AClevelandShowcaseGameMode::RestartShowcase()
 {
 	bShowcaseEnded = false;
 	NextCheckpointIndex = 1;
+	PlayerCheckpointPrevS = 0.f;
 	bHaveCheckpointPrevS = false;
 	PlaytestCheckpointLines.Reset();
+	PlaytestLogElapsed = 0.f;
 	RacingZeroSpeedSeconds = 0.f;
 	bDumpedDriveDiag = false;
 	bSawPositiveSpeed = false;
 	bStuckQuitIssued = false;
+	bPlaytestStillCaptured = false;
+	bIntroActive = false;
+	bChaseCapturePending = false;
+	bIntroCaptureDone = false;
+	bChaseCaptureDone = false;
+	IntroElapsed = 0.f;
+	HeroCaptureElapsed = 0.f;
+	if (IntroCamera)
+	{
+		IntroCamera->Destroy();
+		IntroCamera = nullptr;
+	}
 	if (ANeonHUD* Hud = ResolveNeonHud())
 	{
 		Hud->ClearFinished();
@@ -690,6 +722,11 @@ void AClevelandShowcaseGameMode::RestartShowcase()
 	{
 		GridManager->bAutoDrivePlayer = bAutoDrivePlayer;
 		GridManager->RespawnGridAndRestart(PC);
+		if (!GridManager->IsGridReady())
+		{
+			bShowcaseEnded = true; // Keep R available if a spawn failed.
+			return;
+		}
 		if (AChaosVehiclePawn* PlayerPawn = GridManager->GetPlayerPawn())
 		{
 			PlayerPawn->ApplyClevelandShowcaseChaseFraming();
@@ -932,18 +969,18 @@ void AClevelandShowcaseGameMode::TickPlayerCheckpoints(float DeltaSeconds)
 	if (NextCheckpointIndex < CheckpointSCm.Num())
 	{
 		const float GateS = CheckpointSCm[NextCheckpointIndex];
+		const bool bLast = (NextCheckpointIndex == CheckpointSCm.Num() - 1);
 		bool bCrossed = false;
-		if (bLegitimateWrap)
+		if (bLast)
 		{
-			bCrossed = true;
+			// Finish uses the same validated line crossing as the physical rival.
+			bCrossed = GridManager->HasPlayerFinished();
 		}
 		else
 		{
-			const bool bLast = (NextCheckpointIndex == CheckpointSCm.Num() - 1);
-			const float Slack = bLast ? 400.f : 0.f;
 			// One CP per tick. S past gate counts even if Prev was advanced during reject-S noise
 			// (otherwise nextCP stays 1 after mid-track with GateS already behind).
-			bCrossed = (S + Slack >= GateS);
+			bCrossed = (S >= GateS);
 		}
 		if (bCrossed)
 		{
@@ -997,16 +1034,27 @@ void AClevelandShowcaseGameMode::WritePlaytestReport(const TCHAR* Outcome)
 
 void AClevelandShowcaseGameMode::OnShowcaseCheckpointReached(int32 CheckpointIndex)
 {
-	if (CheckpointIndex != NextCheckpointIndex)
+	if (bShowcaseEnded || !SessionManager || !RaceGPS_IsSessionRacing(SessionManager)
+		|| CheckpointIndex != NextCheckpointIndex)
 	{
 		return;
+	}
+	const bool bFinalCheckpoint = CheckpointIndex >= TotalCheckpoints - 1;
+	if (bFinalCheckpoint && (!GridManager || !GridManager->HasPlayerFinished()))
+	{
+		return; // Gate volume overlaps must not award a finish before crossing the line.
 	}
 	const float Elapsed = SessionManager ? SessionManager->ElapsedTime : 0.f;
 	const FString Name = CheckpointNames.IsValidIndex(CheckpointIndex) ? CheckpointNames[CheckpointIndex] : TEXT("?");
 	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: CHECKPOINT %d/%d %s t=%.2f"),
 		CheckpointIndex, TotalCheckpoints, *Name, Elapsed);
 	PlaytestCheckpointLines.Add(FString::Printf(TEXT("%d	%s	%.2f"), CheckpointIndex, *Name, Elapsed));
-	if (SessionManager && SessionManager->GetCurrentState() == ERaceSessionState::Racing)
+	if (bFinalCheckpoint)
+	{
+		// EndRace freezes the grid and applies the interpolated finish time first.
+		SessionManager->CurrentCheckpoint = CheckpointIndex + 1;
+	}
+	else
 	{
 		SessionManager->OnCheckpointReached(CheckpointIndex);
 	}
@@ -1016,10 +1064,6 @@ void AClevelandShowcaseGameMode::OnShowcaseCheckpointReached(int32 CheckpointInd
 		if (!Gate) { continue; }
 		if (Gate->CheckpointIndex == NextCheckpointIndex) { Gate->ActivateGate(); }
 		else { Gate->DeactivateGate(); }
-	}
-	if (CheckpointIndex >= TotalCheckpoints - 1 && GridManager)
-	{
-		GridManager->NotifyVehicleLapComplete(0, Elapsed);
 	}
 }
 
@@ -1037,6 +1081,10 @@ void AClevelandShowcaseGameMode::ClevelandSkipCountdown()
 {
 	if (SessionManager)
 	{
+		if (bShowcaseEnded)
+		{
+			RestartShowcase();
+		}
 		if (SessionManager->GetCurrentState() == ERaceSessionState::Menu
 			|| SessionManager->GetCurrentState() == ERaceSessionState::Finished)
 		{

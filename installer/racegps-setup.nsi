@@ -13,6 +13,9 @@
 !ifndef GAME_EXE_REL
     !define GAME_EXE_REL "Windows\raceGPSAkronBeta.exe"
 !endif
+!ifndef GAME_ARGS
+    !define GAME_ARGS ""
+!endif
 !ifndef PAYLOAD_REL
     ; Path to the UE5 archive root, relative to this script. build-windows-installer.ps1
     ; overrides this when packaging a timestamped build.py archive.
@@ -40,6 +43,7 @@
 ; Finish page: offer to launch the game (must be defined BEFORE page macros).
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${GAME_EXE_REL}"
+!define MUI_FINISHPAGE_RUN_PARAMETERS "${GAME_ARGS}"
 !define MUI_FINISHPAGE_RUN_TEXT "Launch raceGPS"
 
 ; Pages - standard MUI only, no custom pages (crash-safe).
@@ -99,12 +103,8 @@ Section "Game Files" SEC_GAME
     ; a missing payload must fail the compile, not ship an empty install.
     File /r "${PAYLOAD_REL}\*.*"
 
-    ; Runtime data the importer resolves via ../../citypacks and ../../generated
-    ; from $INSTDIR\Windows\raceGPSAkronBeta\ (packaged ProjectDir).
-    SetOutPath "$INSTDIR\citypacks"
-    File /r "..\citypacks\*.*"
-    SetOutPath "$INSTDIR\generated"
-    File /nonfatal "..\generated\*_LevelSpec.json"
+    ; build.py stages the selected runtime data inside this exact payload.
+    ; Do not add unverified data from a separate source checkout during installation.
 SectionEnd
 
 Section "Visual C++ Redistributables" SEC_VCREDIST
@@ -123,12 +123,12 @@ Section "Visual C++ Redistributables" SEC_VCREDIST
 SectionEnd
 
 Section "Desktop Shortcut" SEC_SHORTCUT
-    CreateShortcut "$DESKTOP\raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}" "" "$INSTDIR\${GAME_EXE_REL}" 0
+    CreateShortcut "$DESKTOP\raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}" "${GAME_ARGS}" "$INSTDIR\${GAME_EXE_REL}" 0
 SectionEnd
 
 Section "Start Menu Shortcuts" SEC_STARTMENU
     CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
-    CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Play raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}"
+    CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Play raceGPS.lnk" "$INSTDIR\${GAME_EXE_REL}" "${GAME_ARGS}"
     CreateShortcut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
