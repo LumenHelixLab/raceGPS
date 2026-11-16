@@ -14,6 +14,8 @@
 param(
     [string]$PayloadDir,
     [string]$Version = "0.2.0",
+    [ValidateSet('cleveland-beta','default')]
+    [string]$LaunchProfile = 'cleveland-beta',
     [switch]$AllowPlaceholder
 )
 
@@ -82,11 +84,11 @@ Write-Host "`n--- Payload inspection ---" -ForegroundColor Cyan
 Write-Host "  exe:  $GameExeRel ($([math]::Round($exeSize/1MB,1)) MB)"
 Write-Host "  paks: $pakCount"
 
-$isPlaceholder = ($pakCount -eq 0 -and $exeSize -lt 5MB)
+$isPlaceholder = ($pakCount -eq 0)
 if ($isPlaceholder) {
     if (-not $AllowPlaceholder) {
         Write-Host "`n*** PLACEHOLDER / INCOMPLETE PAYLOAD - REFUSING TO BUILD ***" -ForegroundColor Red
-        Write-Host "No cooked .pak content found and the exe is only $([math]::Round($exeSize/1KB)) KB." -ForegroundColor Red
+        Write-Host "No cooked .pak content found. Executable size alone does not establish a complete game." -ForegroundColor Red
         Write-Host "Produce a real package first:" -ForegroundColor Yellow
         Write-Host "   cd apps\unreal-akron-beta ; .\Build.bat" -ForegroundColor Yellow
         Write-Host "   (or: python scripts\build.py --engine `"C:\Program Files\Epic Games\UE_5.7`" --config Development)" -ForegroundColor Yellow
@@ -99,12 +101,18 @@ if ($isPlaceholder) {
 }
 
 # ---------------------------------------------------------------
-# 3. Runtime data
+# 3. Runtime data and launch target
 # ---------------------------------------------------------------
-$CitypacksDir = Join-Path $Root "citypacks"
-if (-not (Test-Path $CitypacksDir)) {
-    Write-Error "citypacks directory missing at $CitypacksDir"
-    exit 1
+$GameArgs = ''
+if ($LaunchProfile -eq 'cleveland-beta' -and -not $isPlaceholder) {
+    $pack = Join-Path $PayloadDir "Windows\raceGPSAkronBeta\citypacks\cleveland\burke_gp_1997"
+    foreach ($name in @('manifest.json','racing_line.json','checkpoints.json','metadata.json','cleveland_burke_gp.xodr','environment.json','water.json','skyline.json','track_dressing.json')) {
+        if (-not (Test-Path (Join-Path $pack $name))) {
+            Write-Error "Cleveland release payload is missing $name. Build with BuildClevelandBeta.bat first."
+            exit 1
+        }
+    }
+    $GameArgs = '/Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode -ClevelandPreset=Sunset'
 }
 
 # ---------------------------------------------------------------
@@ -126,13 +134,13 @@ if (-not $makensis) {
 Write-Host "`nUsing makensis: $makensis" -ForegroundColor Green
 
 # ---------------------------------------------------------------
-# 5. Compile (paths passed to NSIS are relative to installer\)
+# 5. Compile (absolute filesystem path supports spaces and other drives)
 # ---------------------------------------------------------------
-$payloadRel = ([System.Uri]($InstallerDir + '\')).MakeRelativeUri([System.Uri]($PayloadDir + '\')).ToString().TrimEnd('/') -replace '/', '\'
+$payloadPath = $PayloadDir.TrimEnd('\')
 
 Write-Host "Compiling installer (version $Version, exe $GameExeRel)..." -ForegroundColor Yellow
 Push-Location $InstallerDir
-& $makensis /V2 /DPRODUCT_VERSION=$Version /DGAME_EXE_REL="$GameExeRel" /DPAYLOAD_REL="$payloadRel" $NSISScript
+& $makensis /V2 /DPRODUCT_VERSION=$Version /DGAME_EXE_REL="$GameExeRel" /DGAME_ARGS="$GameArgs" /DPAYLOAD_REL="$payloadPath" $NSISScript
 $compileExit = $LASTEXITCODE
 Pop-Location
 

@@ -2,9 +2,8 @@ name: Lint — Python
 
 on:
   push:
-    branches: [main, master]
   pull_request:
-    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   ruff:

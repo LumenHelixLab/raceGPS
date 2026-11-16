@@ -1,4 +1,5 @@
 #include "RaceGridManager.h"
+#include "RaceResultPolicy.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "ClevelandModuleCompat.h"
 #include "RacingLineComponent.h"
@@ -209,11 +210,12 @@ void ARaceGridManager::DestroyGrid()
 	Pawns.Reset();
 	PlayerPawn = nullptr;
 	bReleasedPlayerHandbrake = false;
-	FinishTimes.Reset();
-	SlotLaps.Reset();
+	SlotProgress.Reset();
+	FinalStandings.Reset();
 	bPlayerFinished = false;
 	bRaceEnded = false;
 	FinishedCount = 0;
+	RaceLiveElapsed = 0.f;
 }
 
 bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
@@ -249,11 +251,7 @@ bool ARaceGridManager::SpawnGrid(APlayerController* PlayerPC)
 		SlotRoles = { ERaceGridSlotRole::Player, ERaceGridSlotRole::AI };
 	}
 
-	FinishTimes.SetNumZeroed(NumSlots);
-	SlotLaps.SetNumZeroed(NumSlots);
-	PlayerPrevS = 0.f;
-	bHavePlayerPrevS = false;
-	bPlayerLeftStartZone = false;
+	SlotProgress.SetNum(NumSlots);
 
 	FActorSpawnParameters Params;
 	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
@@ -326,42 +324,59 @@ void ARaceGridManager::RespawnGridAndRestart(APlayerController* PlayerPC)
 	}
 }
 
-void ARaceGridManager::NotifyVehicleLapComplete(int32 InSlotIndex, float LapTimeSec)
+void ARaceGridManager::NotifyVehicleLapComplete(int32 InSlotIndex, float /*LapTimeSec*/)
 {
-	if (!SlotLaps.IsValidIndex(InSlotIndex))
+	// Retain the Blueprint entry point, but a notification cannot invent a finish.
+	// TickStandings validates both physical cars against the same racing clock.
+	if (SlotProgress.IsValidIndex(InSlotIndex) && SessionManager)
 	{
-		return;
+		TickStandings(SessionManager->ElapsedTime);
 	}
-	if (SlotLaps[InSlotIndex] >= TargetLaps)
+}
+
+int32 ARaceGridManager::GetCompletedLaps(int32 SlotIndex) const
+{
+	return SlotProgress.IsValidIndex(SlotIndex) ? SlotProgress[SlotIndex].CompletedLaps : 0;
+}
+
+bool ARaceGridManager::HasVehicleFinished(int32 SlotIndex) const
+{
+	return SlotProgress.IsValidIndex(SlotIndex) && SlotProgress[SlotIndex].bFinished;
+}
+
+float ARaceGridManager::GetPlayerFinishTime() const
+{
+	for (int32 i = 0; i < SlotRoles.Num(); ++i)
 	{
-		return;
-	}
-	SlotLaps[InSlotIndex] += 1;
-	UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: lap complete slot=%d role=%s time=%.2f laps=%d"),
-		InSlotIndex,
-		(SlotRoles.IsValidIndex(InSlotIndex) && SlotRoles[InSlotIndex] == ERaceGridSlotRole::Player) ? TEXT("PLAYER") : TEXT("AI"),
-		LapTimeSec, SlotLaps[InSlotIndex]);
-	if (FinishTimes.IsValidIndex(InSlotIndex) && FinishTimes[InSlotIndex] <= 0.f)
-	{
-		FinishTimes[InSlotIndex] = LapTimeSec;
-	}
-	if (SlotRoles.IsValidIndex(InSlotIndex) && SlotRoles[InSlotIndex] == ERaceGridSlotRole::Player)
-	{
-		bPlayerFinished = true;
-	}
-	FinishedCount = 0;
-	for (int32 Lap : SlotLaps)
-	{
-		if (Lap >= TargetLaps)
+		if (SlotRoles[i] == ERaceGridSlotRole::Player && SlotProgress.IsValidIndex(i))
 		{
-			++FinishedCount;
+			return static_cast<float>(SlotProgress[i].FinishTimeSec);
 		}
+	}
+	return 0.f;
+}
+
+void ARaceGridManager::NotifyVehicleRecovered(int32 SlotIndex, float SplineDistanceCm)
+{
+	if (!bRaceEnded && SlotProgress.IsValidIndex(SlotIndex) && RacingLine && SessionManager)
+	{
+		RaceResultPolicy::Recover(SlotProgress[SlotIndex], SplineDistanceCm,
+			RacingLine->TrackLength, SessionManager->ElapsedTime);
+	}
+}
+
+void ARaceGridManager::FinalizeResults()
+{
+	if (!bRaceEnded)
+	{
+		FinalStandings = GetStandings();
+		bRaceEnded = true;
 	}
 }
 
 bool ARaceGridManager::HaveAllFinished() const
 {
-	return FinishedCount >= NumSlots;
+	return IsGridReady() && FinishedCount >= NumSlots;
 }
 
 int32 ARaceGridManager::GetPlayerPlace() const
@@ -379,49 +394,32 @@ int32 ARaceGridManager::GetPlayerPlace() const
 
 TArray<FRaceStandingEntry> ARaceGridManager::GetStandings() const
 {
-	TArray<FRaceStandingEntry> Entries;
-	const float Length = (RacingLine && RacingLine->IsValidLine()) ? RacingLine->TrackLength : 0.f;
-
-	auto ProgressForPawn = [&](int32 Index) -> TPair<int32, float>
+	if (bRaceEnded)
 	{
-		int32 Lap = SlotLaps.IsValidIndex(Index) ? SlotLaps[Index] : 0;
-		float S = 0.f;
-		if (SlotRoles.IsValidIndex(Index) && SlotRoles[Index] == ERaceGridSlotRole::AI)
-		{
-			for (ARaceAIDriverController* AI : AIControllers)
-			{
-				if (AI && AI->SlotIndex == Index)
-				{
-					Lap = AI->LapIndex;
-					S = AI->CurrentSplineDistance;
-					break;
-				}
-			}
-		}
-		else if (Pawns.IsValidIndex(Index) && Pawns[Index] && RacingLine)
-		{
-			S = RacingLine->GetNearestS(Pawns[Index]->GetActorLocation());
-		}
-		return TPair<int32, float>(Lap, S);
-	};
+		return FinalStandings;
+	}
+	TArray<FRaceStandingEntry> Entries;
 
 	for (int32 i = 0; i < Pawns.Num(); ++i)
 	{
 		FRaceStandingEntry E;
 		E.SlotIndex = i;
 		E.Role = SlotRoles.IsValidIndex(i) ? SlotRoles[i] : ERaceGridSlotRole::AI;
-		const TPair<int32, float> PS = ProgressForPawn(i);
-		E.LapIndex = PS.Key;
-		E.CurrentSplineDistance = PS.Value;
-		E.RaceProgress = RaceAIControlMath::RaceProgress(E.LapIndex, Length, E.CurrentSplineDistance);
-		E.LastLapTimeSec = FinishTimes.IsValidIndex(i) ? FinishTimes[i] : 0.f;
-		E.bFinished = E.LapIndex >= TargetLaps;
+		if (SlotProgress.IsValidIndex(i))
+		{
+			const RaceResultPolicy::ProgressState& Progress = SlotProgress[i];
+			E.LapIndex = Progress.CompletedLaps;
+			E.CurrentSplineDistance = static_cast<float>(Progress.SplineDistance);
+			E.RaceProgress = static_cast<float>(Progress.RaceProgress);
+			E.LastLapTimeSec = static_cast<float>(Progress.FinishTimeSec);
+			E.bFinished = Progress.bFinished;
+		}
 		Entries.Add(E);
 	}
 
 	Entries.Sort([](const FRaceStandingEntry& A, const FRaceStandingEntry& B)
 	{
-		return A.RaceProgress > B.RaceProgress;
+		return RaceResultPolicy::IsAhead(A, B);
 	});
 
 	for (int32 i = 0; i < Entries.Num(); ++i)
@@ -447,49 +445,38 @@ void ARaceGridManager::Tick(float DeltaSeconds)
 	{
 		PlayerAutoDriver->TickDriveForPawn(PlayerPawn, DeltaSeconds);
 	}
-	TickStandings(GetWorld() ? GetWorld()->GetTimeSeconds() : 0.f);
 }
 
-void ARaceGridManager::TickStandings(float WorldTimeSec)
+void ARaceGridManager::TickStandings(float RaceTimeSec)
 {
-	if (!PlayerPawn || !RacingLine || !RacingLine->IsValidLine())
+	if (bRaceEnded || !RaceGPS_IsSessionRacing(SessionManager) || !RacingLine || !RacingLine->IsValidLine())
 	{
 		return;
 	}
 
-	const float S = RacingLine->GetNearestS(PlayerPawn->GetActorLocation());
 	const float Length = RacingLine->TrackLength;
-	if (!bHavePlayerPrevS)
+	FinishedCount = 0;
+	for (int32 i = 0; i < Pawns.Num(); ++i)
 	{
-		PlayerPrevS = S;
-		bHavePlayerPrevS = true;
-		return;
-	}
-	// Closed-loop start==finish: ignore wrap until the car has actually been racing long enough.
-	if (S > 0.15f * Length && S < 0.90f * Length)
-	{
-		bPlayerLeftStartZone = true;
-	}
-	const bool bLegitimateWrap =
-		bPlayerLeftStartZone &&
-		(PlayerPrevS > 0.80f * Length) &&
-		(S < 0.20f * Length);
-	if (bLegitimateWrap)
-	{
-		int32 PlayerSlot = INDEX_NONE;
-		for (int32 i = 0; i < SlotRoles.Num(); ++i)
+		if (!Pawns[i] || !SlotProgress.IsValidIndex(i))
 		{
-			if (SlotRoles[i] == ERaceGridSlotRole::Player)
+			continue;
+		}
+		RaceResultPolicy::ProgressState& Progress = SlotProgress[i];
+		const float S = RacingLine->GetNearestS(Pawns[i]->GetActorLocation());
+		if (RaceResultPolicy::Sample(Progress, S, Length, RaceTimeSec, true, TargetLaps))
+		{
+			UE_LOG(LogTemp, Log, TEXT("raceGPS Cleveland: lap complete slot=%d laps=%d raceTime=%.3f finished=%d"),
+				i, Progress.CompletedLaps, Progress.bFinished ? Progress.FinishTimeSec : RaceTimeSec,
+				Progress.bFinished ? 1 : 0);
+		}
+		if (Progress.bFinished)
+		{
+			++FinishedCount;
+			if (SlotRoles.IsValidIndex(i) && SlotRoles[i] == ERaceGridSlotRole::Player)
 			{
-				PlayerSlot = i;
-				break;
+				bPlayerFinished = true;
 			}
 		}
-		if (PlayerSlot != INDEX_NONE && SlotLaps.IsValidIndex(PlayerSlot) && SlotLaps[PlayerSlot] < TargetLaps)
-		{
-			const float LapTime = FinishTimes.IsValidIndex(PlayerSlot) ? FMath::Max(0.f, WorldTimeSec) : WorldTimeSec;
-			NotifyVehicleLapComplete(PlayerSlot, LapTime);
-		}
 	}
-	PlayerPrevS = S;
 }

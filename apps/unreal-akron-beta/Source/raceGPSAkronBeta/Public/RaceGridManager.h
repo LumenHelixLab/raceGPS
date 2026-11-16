@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ClevelandShowcaseTypes.h"
+#include "RaceResultPolicy.h"
 #include "RaceGridManager.generated.h"
 
 class AChaosVehiclePawn;
@@ -13,7 +14,7 @@ class APlayerController;
 
 /**
  * 2-slot PLAYER/AI grid. Spawns Chaos vehicle pawns (physics) before countdown.
- * Standings sort by LapIndex * TrackLength + CurrentSplineDistance (not Euclidean).
+ * Both cars share one progress/finish clock. Finished order is immutable.
  */
 UCLASS()
 class RACEGPSAKRONBETA_API ARaceGridManager : public AActor
@@ -73,6 +74,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|Grid")
 	void NotifyVehicleLapComplete(int32 SlotIndex, float LapTimeSec);
 
+	int32 GetCompletedLaps(int32 SlotIndex) const;
+	bool HasVehicleFinished(int32 SlotIndex) const;
+	float GetPlayerFinishTime() const;
+	void NotifyVehicleRecovered(int32 SlotIndex, float SplineDistanceCm);
+	void FinalizeResults();
+
 	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|Grid")
 	bool HasPlayerFinished() const { return bPlayerFinished; }
 
@@ -80,7 +87,7 @@ public:
 	bool HaveAllFinished() const;
 
 	UFUNCTION(BlueprintCallable, Category = "raceGPS|Cleveland|Grid")
-	void TickStandings(float WorldTimeSec);
+	void TickStandings(float RaceTimeSec);
 
 	void DumpGridDriveState(const TCHAR* Tag);
 
@@ -90,9 +97,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-
-	float PlayerPrevS = 0.f;
-	bool bHavePlayerPrevS = false;
 
 	UPROPERTY()
 	TObjectPtr<URaceSessionManager> SessionManager;
@@ -109,11 +113,10 @@ protected:
 	UPROPERTY()
 	TArray<ERaceGridSlotRole> SlotRoles;
 
-	UPROPERTY()
-	TArray<float> FinishTimes;
+	TArray<RaceResultPolicy::ProgressState> SlotProgress;
 
 	UPROPERTY()
-	TArray<int32> SlotLaps;
+	TArray<FRaceStandingEntry> FinalStandings;
 
 	bool bPlayerFinished = false;
 	bool bRaceEnded = false;
@@ -130,5 +133,4 @@ protected:
 
 	bool bReleasedPlayerHandbrake = false;
 	float RaceLiveElapsed = 0.f;
-	bool bPlayerLeftStartZone = false;
 };

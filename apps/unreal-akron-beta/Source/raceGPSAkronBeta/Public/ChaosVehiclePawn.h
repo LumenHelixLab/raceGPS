@@ -4,6 +4,7 @@
 #include "WheeledVehiclePawn.h"
 #include "Curves/CurveFloat.h"
 #include "ClevelandShowcaseTypes.h"
+#include "RaceAIBehaviorPolicy.h"
 #include "ChaosVehiclePawn.generated.h"
 
 class UVehicleTuningData;
@@ -258,6 +259,8 @@ private:
     float OverrideSteering = 0.0f;
     float OverrideBrake = 0.0f;
     bool bOverrideHandbrake = false;
+    RaceAIBehaviorPolicy::OverrideSettings SavedOverrideSettings;
+    void ApplyDriveOverrideInputs(float ScaledThrottle, float ScaledSteering);
 
     // Arcade handling runtime state (S9)
     /** Authored per-wheel FrictionForceMultiplier captured before any arcade scaling (avoids compounding on re-apply). */

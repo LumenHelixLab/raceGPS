@@ -1,8 +1,9 @@
 """Executable fake-tool tests: validate orchestration, never Unreal behavior."""
 import importlib.util
 import json
-from pathlib import Path
+import shutil
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -157,3 +158,119 @@ def test_invalid_city_data_stops_before_editor_execution(fixture, monkeypatch, t
     data = json.loads(report.read_text())
     assert data['steps'] == []
     assert data['citypack_audits'][0]['status'] == 'failed'
+
+
+@pytest.fixture
+def cleveland_source(fixture):
+    root, project, engine, batch = fixture
+    source = Path(__file__).resolve().parents[1] / 'citypacks/cleveland/burke_gp_1997'
+    shutil.copytree(source, root / 'citypacks/cleveland/burke_gp_1997')
+    return root, project, engine, batch
+
+
+def test_cleveland_release_selects_its_own_payload(cleveland_source, tmp_path):
+    root, _, _, _ = cleveland_source
+    # An unrelated, unfinished city must not block the explicitly selected course.
+    (root / 'citypacks/test-city/buildings.json').unlink()
+    reports = build.validate_runtime_data(root, profile='cleveland-beta')
+    assert len(reports) == 1
+    assert reports[0]['status'] == 'passed', reports
+    assert reports[0]['citypack'] == 'cleveland/burke_gp_1997'
+    assert 'racing_line.json' in reports[0]['files']
+
+    archive = tmp_path / 'release'
+    app = archive / 'Windows/Game'
+    (app / 'Content/Paks').mkdir(parents=True)
+    (app / 'Content/Paks/Game.pak').write_bytes(b'fixture only')
+    (archive / 'Windows/Game.exe').write_bytes(b'fixture only')
+    build.stage_runtime_data(root, archive, 'Game', 'Game', 'Windows', profile='cleveland-beta')
+    shipped = app / 'citypacks/cleveland/burke_gp_1997'
+    assert (shipped / 'racing_line.json').read_bytes() == (root / 'citypacks/cleveland/burke_gp_1997/racing_line.json').read_bytes()
+    assert (shipped / 'track_dressing.json').is_file()
+    assert not (app / 'citypacks/test-city').exists()
+    launcher = (archive / 'Windows/Play-raceGPS.bat').read_text()
+    assert 'Game.exe' in launcher
+    assert '/Game/Maps/Cleveland5_0KmWorld?game=/Script/raceGPSAkronBeta.ClevelandShowcaseGameMode' in launcher
+    assert '-ClevelandPreset=Sunset' in launcher
+    assert '-ClevelandAutoLap' not in launcher
+
+
+@pytest.mark.parametrize('filename', ['racing_line.json', 'checkpoints.json', 'skyline.json', 'track_dressing.json'])
+def test_cleveland_release_rejects_missing_course_inputs(cleveland_source, filename):
+    root, _, _, _ = cleveland_source
+    (root / 'citypacks/cleveland/burke_gp_1997' / filename).unlink()
+    report = build.validate_runtime_data(root, profile='cleveland-beta')[0]
+    assert report['status'] == 'failed'
+    assert any(filename in error for error in report['errors'])
+
+
+def test_cleveland_release_rejects_manifest_path_escape(cleveland_source):
+    root, _, _, _ = cleveland_source
+    manifest_path = root / 'citypacks/cleveland/burke_gp_1997/manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['racing_line'] = '../../../outside.json'
+    manifest_path.write_text(json.dumps(manifest))
+    report = build.validate_runtime_data(root, profile='cleveland-beta')[0]
+    assert report['status'] == 'failed'
+    assert any('racing_line' in error for error in report['errors'])
+
+
+def test_cleveland_commands_cook_selected_map_and_limit_memory(fixture, tmp_path):
+    _, project, _, batch = fixture
+    commands = build.command_plan(project, batch / 'Build.bat', batch / 'RunUAT.bat',
+        'Windows', 'Development', 'Game', tmp_path, profile='cleveland-beta', max_parallel_actions=2)
+    assert '-MaxParallelActions=2' in commands[0]
+    assert '-ubtargs=-MaxParallelActions=2' in commands[1]
+    assert '-map=/Game/Maps/Cleveland5_0KmWorld' in commands[1]
+    assert '-allmaps' not in commands[1]
+
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='POSIX fake executables, not a Windows/Unreal test')
+def test_cleveland_cli_runs_selected_build_and_stages_without_unrelated_city(cleveland_source, monkeypatch, tmp_path):
+    root, project, engine, batch = cleveland_source
+    monkeypatch.setattr(build.platform, 'system', lambda: 'Linux')
+    (root / 'citypacks/test-city/buildings.json').unlink()
+    archive = tmp_path / 'beta archive'
+    arguments = tmp_path / 'beta args.txt'
+    (batch / 'RunUAT.sh').write_text(
+        f'#!/bin/sh\nprintf "%s\\n" "$@" > "{arguments}"\nmkdir -p "{archive}/Linux/Game"\n')
+    report_path = tmp_path / 'beta.json'
+    assert build.main(['--profile', 'cleveland-beta', '--project', str(project),
+        '--engine', str(engine), '--target', 'Game', '--archive', str(archive),
+        '--report', str(report_path)]) == 0
+    arguments = arguments.read_text().splitlines()
+    assert '-map=/Game/Maps/Cleveland5_0KmWorld' in arguments
+    assert '-ubtargs=-MaxParallelActions=2' in arguments
+    data = json.loads(report_path.read_text())
+    assert data['profile'] == 'cleveland-beta'
+    assert data['status'] == 'packaged_not_play_tested'
+    assert not data['play_tested']
+    assert len(data['citypack_audits']) == 1
+    assert 'Linux/Game/citypacks/cleveland/burke_gp_1997/racing_line.json' in data['sha256']
+
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='POSIX fake executables, not a Windows/Unreal test')
+def test_cleveland_missing_payload_stops_before_any_build(cleveland_source, monkeypatch, tmp_path):
+    root, project, engine, _ = cleveland_source
+    monkeypatch.setattr(build.platform, 'system', lambda: 'Linux')
+    (root / 'citypacks/cleveland/burke_gp_1997/checkpoints.json').unlink()
+    report_path = tmp_path / 'missing-course.json'
+    assert build.main(['--profile', 'cleveland-beta', '--project', str(project),
+        '--engine', str(engine), '--report', str(report_path)]) == 1
+    data = json.loads(report_path.read_text())
+    assert data['steps'] == []
+    assert not data['play_tested']
+    assert data['citypack_audits'][0]['status'] == 'failed'
+
+
+def test_cleveland_rejects_archive_without_its_launch_executable(cleveland_source, tmp_path):
+    root, _, _, _ = cleveland_source
+    archive = tmp_path / 'inner-only'
+    app = archive / 'Windows/Game'
+    (app / 'Content/Paks').mkdir(parents=True)
+    (app / 'Content/Paks/Game.pak').write_bytes(b'fixture only')
+    inner = app / 'Binaries/Win64/Game-Win64-Development.exe'
+    inner.parent.mkdir(parents=True)
+    inner.write_bytes(b'fixture only')
+    with pytest.raises(ValueError, match='launch executable'):
+        build.stage_runtime_data(root, archive, 'Game', 'Game', 'Windows', profile='cleveland-beta')

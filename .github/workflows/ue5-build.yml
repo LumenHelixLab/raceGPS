@@ -33,7 +33,7 @@ jobs:
         run: |
           $archivePath = Join-Path $env:RUNNER_TEMP "racegps-game-${{ github.run_id }}-${{ github.run_attempt }}"
           $evidencePath = Join-Path $env:RUNNER_TEMP "racegps-evidence-${{ github.run_id }}-${{ github.run_attempt }}/build.json"
-          python scripts/build.py --config '${{ inputs.configuration }}' --archive $archivePath --report $evidencePath
+          python scripts/build.py --profile cleveland-beta --max-parallel-actions 2 --config '${{ inputs.configuration }}' --archive $archivePath --report $evidencePath
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Retain build evidence even on failure
         if: always()
